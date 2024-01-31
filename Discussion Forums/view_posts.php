@@ -4,7 +4,7 @@ require("connect.php");
 // Handle comment submission
 
 // Fetch and display posts
-$queryPosts = "SELECT * FROM posts ORDER BY created_at ASC";
+$queryPosts = "SELECT * FROM posts WHERE post_id = -1 ORDER BY created_at ASC";
 $resultPosts = mysqli_query($conn, $queryPosts);
 
 if ($resultPosts) {
@@ -25,7 +25,7 @@ if ($resultPosts) {
 
         // Display comments for each post
         $postId = $rowPost['id'];
-        $queryComments = "SELECT * FROM comments WHERE post_id = $postId ORDER BY created_at ASC";
+        $queryComments = "SELECT * FROM posts WHERE post_id != -1 AND post_id = $postId ORDER BY created_at ASC";
         $resultComments = mysqli_query($conn, $queryComments);
 
         // Comment submission form
@@ -42,26 +42,25 @@ if ($resultPosts) {
         echo "</td>";
         echo "</tr>";
 
-        if ($resultComments) {
+        if (mysqli_num_rows($resultComments) > 0) {
+
+            echo "<tr>";
+            echo "<td style='padding-left: 20px;'><strong>Comments</strong></td>";
+            echo "</tr>";
+            
             while ($rowComment = mysqli_fetch_assoc($resultComments)) {
                 $rawCommentDateTime = $rowComment['created_at'];
                 $commentDateTimeObj = new DateTime($rawCommentDateTime);
                 $formattedCommentDateTime = $commentDateTimeObj->format('Y-m-d h:i A');
 
-                // Add indentation for comments
-                echo "<tr>";
-                echo "<td style='padding-left: 20px;'><strong>Comments</strong></td>";
-                echo "</tr>";
                 echo "<tr>";
                 echo "<td style='padding-left: 20px;'>";
-                echo "{$rowComment['username']} {$formattedCommentDateTime} <br>";
-                echo "{$rowComment['comment']}</td>";
+                echo "<strong>{$rowComment['username']}</strong> {$formattedCommentDateTime} <br>";
+                echo "{$rowComment['message']}</td>";
                 echo "</tr>";
                 // Add an empty row for spacing between comments
                 echo "<tr><td>&nbsp;</td></tr>";
             }
-        } else {
-            echo "Error fetching comments: " . mysqli_error($conn);
         }
     }
 

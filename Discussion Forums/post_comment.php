@@ -7,9 +7,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_id']) && isset($_
     $comment_message = $_POST['comment_message'];
 
     // Insert the comment into the comments table
-    $commentQuery = "INSERT INTO comments (post_id, username, comment) VALUES (?, ?, ?)";
+    $commentQuery = "INSERT INTO posts (username, message, post_id) VALUES (?, ?, ?)";
     $commentStmt = mysqli_prepare($conn, $commentQuery);
-    mysqli_stmt_bind_param($commentStmt, "iss", $post_id, $comment_username, $comment_message);
+    mysqli_stmt_bind_param($commentStmt, "ssi", $comment_username, $comment_message, $post_id);
     $commentResult = mysqli_stmt_execute($commentStmt);
 
     if (!$commentResult) {
@@ -18,6 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_id']) && isset($_
 
     mysqli_stmt_close($commentStmt);
 }
-header("Location: index.php"); // Redirect back to the main page after comment submission
+header("Location: index.php"); 
 exit();
 ?>

@@ -4,11 +4,12 @@ require("connect.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $message = $_POST['message'];
+    $default = -1;
 
-    $query = "INSERT INTO posts (username, message) VALUES (?, ?)";
+    $query = "INSERT INTO posts (username, message, post_id) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
 
-    mysqli_stmt_bind_param($stmt, "ss", $username, $message);
+    mysqli_stmt_bind_param($stmt, "ssi", $username, $message , $default);
 
     $result = mysqli_stmt_execute($stmt);
 
