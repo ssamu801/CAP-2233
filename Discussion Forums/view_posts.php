@@ -4,7 +4,10 @@ require("connect.php");
 // Handle comment submission
 
 // Fetch and display posts
-$queryPosts = "SELECT * FROM posts WHERE post_id = -1 ORDER BY created_at ASC";
+$queryPosts = " SELECT * 
+                FROM topics t
+                JOIN users u ON t.user_id = u.id   
+                ORDER BY t.date_created ASC";
 $resultPosts = mysqli_query($conn, $queryPosts);
 
 if ($resultPosts) {
@@ -14,18 +17,22 @@ if ($resultPosts) {
     echo "<table class='invisible-border' width='100%'>";
 
     while ($rowPost = mysqli_fetch_assoc($resultPosts)) {
-        $rawDateTime = $rowPost['created_at'];
+        $rawDateTime = $rowPost['date_created'];
         $dateTimeObj = new DateTime($rawDateTime);
         $formattedDateTime = $dateTimeObj->format('Y-m-d h:i A');
         
         echo "<tr>";
-        echo "<td><strong>{$rowPost['username']} </strong> {$formattedDateTime} <br>";
-        echo "{$rowPost['message']}</td>";
+        echo "<td><strong>{$rowPost['name']} </strong> {$formattedDateTime} <br>";
+        echo "{$rowPost['content']}</td>";
         echo "</tr>";
 
         // Display comments for each post
         $postId = $rowPost['id'];
-        $queryComments = "SELECT * FROM posts WHERE post_id != -1 AND post_id = $postId ORDER BY created_at ASC";
+        $queryComments = "  SELECT * 
+                            FROM comments c
+                            JOIN topics t ON c.topic_id = t.id
+                            JOIN users u ON t.user_id = u.id  
+                            ORDER BY c.date_created ASC";
         $resultComments = mysqli_query($conn, $queryComments);
 
         // Comment submission form
@@ -49,14 +56,14 @@ if ($resultPosts) {
             echo "</tr>";
             
             while ($rowComment = mysqli_fetch_assoc($resultComments)) {
-                $rawCommentDateTime = $rowComment['created_at'];
+                $rawCommentDateTime = $rowComment['date_created'];
                 $commentDateTimeObj = new DateTime($rawCommentDateTime);
                 $formattedCommentDateTime = $commentDateTimeObj->format('Y-m-d h:i A');
 
                 echo "<tr>";
                 echo "<td style='padding-left: 20px;'>";
-                echo "<strong>{$rowComment['username']}</strong> {$formattedCommentDateTime} <br>";
-                echo "{$rowComment['message']}</td>";
+                echo "<strong>{$rowComment['name']}</strong> {$formattedCommentDateTime} <br>";
+                echo "{$rowComment['comment']}</td>";
                 echo "</tr>";
                 // Add an empty row for spacing between comments
                 echo "<tr><td>&nbsp;</td></tr>";
