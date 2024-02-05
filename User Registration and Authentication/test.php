@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <title>Login and Register | WASP: A Digital University-Based Mental Health and Well-Being Support Platform</title>
+
 </head>
 <body>
-    <h1>TEST PAGE</h1>
+    <h1>TEST PAGE</h1>     //for testing only
 </body>
 </html>
