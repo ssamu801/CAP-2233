@@ -175,6 +175,7 @@ Class Action {
 		$data = " title = '$title' ";
 		$data .= ", category_ids = '".(implode(",",$category_ids))."' ";
 		$data .= ", content = '".htmlentities(str_replace("'","&#x2019;",$content))."' ";
+	//	$data .= ", toggle_value = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
 
 		if(empty($id)){
 		$data .= ", user_id = '{$_SESSION['login_id']}' ";
