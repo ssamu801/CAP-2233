@@ -8,6 +8,66 @@ if(isset($_GET['id'])){
 }
 
 ?>
+<style>
+	/* toggle css*/
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 6%;
+  margin-top: -45px; 
+}
+
+input[type=checkbox] {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+
+.toggle-label {
+  cursor: pointer;
+  width: 100%; 
+  padding-top: 50%; 
+  background: grey;
+  display: block;
+  border-radius: 100px;
+  position: relative;
+}
+
+.toggle-label:after {
+  content: '';
+  position: absolute;
+  top: 5.5%;
+  left: 5%;
+  width: 45%; 
+  height: 90%; 
+  background: #fff;
+  border-radius: 90px;
+  transition: 0.3s;
+}
+
+#switch:checked + label {
+  background: #007bff;
+}
+
+#switch:checked + label:after {
+  left: calc(100% - 5%);
+  transform: translateX(-100%);
+}
+
+.toggle-label:active:after {
+  width: 65%;
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.desc {
+	margin-top: -30px; 
+  margin-left: 10px; 
+}
+</style>
 <div class="container-fluid">
 	<form action="" id="manage-topic">
 				<input type="hidden" name="id" value="<?php echo isset($_GET['id']) ? $_GET['id']:'' ?>" class="form-control">
@@ -37,6 +97,15 @@ if(isset($_GET['id'])){
 				<textarea name="content" class="text-jqte"><?php echo isset($content) ? $content : '' ?></textarea>
 			</div>
 		</div>
+		
+		<!-- toggle -->
+		<div class="toggle-wrap">
+    			<div class="toggle-switch">
+        			<input type="checkbox" id="switch" name="toggle_value" />
+        			<label for="switch" class="toggle-label"></label>
+    			</div>
+    			<div class="desc">Post anonymously</div>
+		</div>  
 	</form>
 </div>
 
