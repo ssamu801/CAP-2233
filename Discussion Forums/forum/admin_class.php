@@ -176,6 +176,13 @@ Class Action {
 		$data .= ", category_ids = '".(implode(",",$category_ids))."' ";
 		$data .= ", content = '".htmlentities(str_replace("'","&#x2019;",$content))."' ";
 
+		if(isset($_POST['toggle_value'])){
+			$data .= ", isAnonymous = '".isset($_POST['toggle_value'])."' ";
+		 }
+		 else{
+			$data .= ", isAnonymous = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
+		 }
+		 
 		if(empty($id)){
 		$data .= ", user_id = '{$_SESSION['login_id']}' ";
 			$save = $this->db->query("INSERT INTO topics set ".$data);

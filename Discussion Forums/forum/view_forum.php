@@ -1,5 +1,6 @@
 <?php include 'db_connect.php' ?>
 <?php
+error_reporting(E_ERROR | E_PARSE);
 if(isset($_GET['id'])){
 $qry = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id where t.id= ".$_GET['id']);
 foreach($qry->fetch_array() as $k => $val){
