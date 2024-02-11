@@ -179,10 +179,10 @@ Class Action {
 
 		if(isset($_POST['toggle_value'])){
 			$data .= ", isAnonymous = '".isset($_POST['toggle_value'])."' ";
-		 }
-		 else{
+	 	}
+	 	else{
 			$data .= ", isAnonymous = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
-		 }
+	 	}
 		 
 		if(empty($id)){
 		$data .= ", user_id = '{$_SESSION['login_id']}' ";
