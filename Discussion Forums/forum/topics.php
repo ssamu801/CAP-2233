@@ -71,7 +71,7 @@
 					                        <span class="fa fa-ellipsis-v"></span>
 					                      </a>
 					                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					                        <a class="dropdown-item edit_topic" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Report Post</a>
+					                        <a class="dropdown-item report_topic" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Report Post</a>
 					                      </div>
 					                    </div> 	
 				                    <?php endif; ?>
@@ -146,6 +146,10 @@
 		_conf("Are you sure to delete this topic?","delete_topic",[$(this).attr('data-id')],'mid-large')
 	})
 
+	$('.report_topic').click(function(){
+		uni_modal("Report Post","manage_report_post.php?id="+$(this).attr('data-id'),'mid-large')
+		
+	})
 	function delete_topic($id){
 		start_load()
 		$.ajax({

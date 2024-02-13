@@ -16,6 +16,7 @@
 				<a href="index.php?page=topics" class="nav-item nav-topics"><span class='icon-field'><i class="fa fa-comment"></i></span> Discussion</a>
 				<?php if($_SESSION['login_type'] == 1): ?>
 				<a href="index.php?page=users" class="nav-item nav-users"><span class='icon-field'><i class="fa fa-users"></i></span> Users</a>
+				<a href="index.php?page=post_reports" class="nav-item nav-post-reports"><span class='icon-field'><i class="fa fa-flag"></i></span> Post Reports</a>
 			<?php endif; ?>
 		</div>
 
