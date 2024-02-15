@@ -71,6 +71,12 @@ if($action == "delete_topic"){
 		echo $save;
 }
 
+if($action == "save_report_post"){
+	$save = $crud->save_report_post();
+	if($save)
+		echo $save;
+}
+
 
 if($action == "save_comment"){
 	$save = $crud->save_comment();

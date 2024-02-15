@@ -1,6 +1,6 @@
-<?php 
-
-?>
+<?php if($_SESSION['login_type'] != 1): ?>
+	<script> location.replace("index.php?page=home"); </script>
+<?php endif; ?>
 
 <div class="container-fluid">
 	

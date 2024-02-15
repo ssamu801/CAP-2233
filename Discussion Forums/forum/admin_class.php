@@ -200,6 +200,21 @@ Class Action {
 			return 1;
 		}
 	}
+
+	function save_report_post(){
+		extract($_POST);
+		
+		$data = " post_id = $post_id ";
+		$data .= ", reporter_id = $user_id";
+		$data .= ", report_reason = '".$choice."' ";
+
+			$save = $this->db->query("INSERT INTO post_reports set ".$data);
+		
+		if($save)
+			return 1;
+		
+	}
+
 	function save_comment(){
 		extract($_POST);
 		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";

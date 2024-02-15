@@ -91,7 +91,7 @@
 								<hr>
 								
 								<span class="float-left badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span>
-								<span class="float-left badge badge-primary text-white ml-2"><i class="fa fa-comments"></i> <?php echo number_format($view) ?> comment/s <?php echo $replies > 0 ? " and ".number_format($replies).' replies':'' ?> </span>
+								<span class="float-left badge badge-primary text-white ml-2"><i class="fa fa-comments"></i> <?php echo number_format($comments) ?> comment/s <?php echo $replies > 0 ? " and ".number_format($replies).' replies':'' ?> </span>
 								<span class="float-right">
 									<span>Tags: </span>
 								<?php 
