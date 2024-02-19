@@ -99,6 +99,15 @@
 	
 	$('#manage-category').submit(function(e){
 		e.preventDefault()
+
+		var name = $('[name="name"]').val();
+  		var description = $('[name="description"]').val();
+
+  		if(name == '' || description == ''){
+    		alert("Please fill in all fields");
+    		return;
+  		}
+		
 		start_load()
 		$.ajax({
 			url:'ajax.php?action=save_category',

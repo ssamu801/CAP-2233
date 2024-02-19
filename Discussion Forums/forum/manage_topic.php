@@ -116,6 +116,17 @@ input[type=checkbox] {
 	$('.text-jqte').jqte();
 	$('#manage-topic').submit(function(e){
 		e.preventDefault()
+
+		
+		var title = $('input[name="title"]').val();
+ 		var content = $('textarea[name="content"]').val();
+  		var categoryIds = $('#category_ids').val();
+
+		if (title === '' || content === '' || categoryIds === null) {
+    		alert("Please fill out all fields");
+    		return;
+  		}
+		
 		start_load()
 		$.ajax({
 			url:'ajax.php?action=save_topic',
