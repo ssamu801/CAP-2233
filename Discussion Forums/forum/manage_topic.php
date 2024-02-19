@@ -115,35 +115,20 @@ input[type=checkbox] {
 	})
 	$('.text-jqte').jqte();
 	$('#manage-topic').submit(function(e){
-    e.preventDefault();
-    
-    var empty = false;
-    $(this).find('input, select, textarea').each(function(){
-        if($(this).val() == ''){
-            empty = true;
-            return false; 
-        }
-    });
-
-    if(empty){
-        alert('Please fill out all fields before submitting.');
-        return;
-    }
-
-    start_load();
-    $.ajax({
-        url: 'ajax.php?action=save_topic',
-        method: 'POST',
-        data: $(this).serialize(),
-        success: function(resp){
-            if(resp == 1){
-                alert_toast("Data successfully saved.",'success')
-                setTimeout(function(){
-                    location.reload()
-                },1000)
-            }
-        }
-    });
-});
-
+		e.preventDefault()
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=save_topic',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					alert_toast("Data successfully saved.",'success')
+					setTimeout(function(){
+						location.reload()
+					},1000)
+				}
+			}
+		})
+	})
 </script>
