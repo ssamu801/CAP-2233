@@ -20,22 +20,55 @@ if(isset($_GET['id'])){
 		    </div>
         </div>
   
-        <input type="radio" id="choice1" name="choice" value="Hate Speech">
+		<input type="radio" id="choice1" name="choice" value="Hate Speech" onclick="hideTextarea()">
         <label for="choice1">Hate Speech</label><br>
   
-        <input type="radio" id="choice2" name="choice" value="Violence">
+        <input type="radio" id="choice2" name="choice" value="Violence" onclick="hideTextarea()">
         <label for="choice2">Violence</label><br>
   
-        <input type="radio" id="choice3" name="choice" value="Harrassment">
+        <input type="radio" id="choice3" name="choice" value="Harrassment" onclick="hideTextarea()">
         <label for="choice3">Harrassment</label><br>
 
-        <input type="radio" id="choice4" name="choice" value="Misleading Information">
+        <input type="radio" id="choice4" name="choice" value="Misleading Information" onclick="hideTextarea()">
         <label for="choice4">Misleading Information</label><br>
+
+		<input type="radio" id="choice5" name="choice" value="Other" onclick="showTextarea()">
+        <label for="choice5">Other</label><br>
+
+		<div class="row form-group" id="textarea-div" style="display: none;">
+			<div class="col-md-12">
+				<label for="textarea">Please specify the issue:</label><br>
+				<textarea  maxlength="250" name="issue" style="width: 100%;" oninput="autoExpand(this)"></textarea>
+                <div id="counter-wrapper" style="text-align: right;">
+                    <span id="counter">0</span>
+                    <span>/ 250</span>
+                </div>
+			</div>
+		</div>
+
 
     </form>
 </div>
 
 <script>
+
+	function showTextarea() {
+        var textareaDiv = document.getElementById("textarea-div");
+        textareaDiv.style.display = "block";
+    }
+
+	function autoExpand(textarea) {
+    	textarea.style.height = 'auto';
+    	textarea.style.height = (textarea.scrollHeight) + 'px';
+		
+		var counter = document.getElementById("counter");
+    	counter.innerHTML = textarea.value.length;
+	}
+
+	function hideTextarea() {
+        var textareaDiv = document.getElementById("textarea-div");
+        textareaDiv.style.display = "none";
+    }
 
 	$('#manage-report-post').submit(function(e){
 		e.preventDefault()

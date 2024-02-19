@@ -206,8 +206,14 @@ Class Action {
 		
 		$data = " post_id = $post_id ";
 		$data .= ", reporter_id = $user_id";
-		$data .= ", report_reason = '".$choice."' ";
 
+		if($choice == "Other"){
+			$data .= ", report_reason = '".$issue."' ";
+		}
+		else{
+			$data .= ", report_reason = '".$choice."' ";
+		}
+		
 			$save = $this->db->query("INSERT INTO post_reports set ".$data);
 		
 		if($save)

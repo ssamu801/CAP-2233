@@ -99,6 +99,20 @@
 	
 	$('#manage-category').submit(function(e){
 		e.preventDefault()
+
+		var isEmpty = false;
+    	$(this).find('input[type="text"], textarea').each(function(){
+        	if($(this).val().trim() === ''){
+            	isEmpty = true;
+            	return false; 
+        	}
+    	});
+
+    	if(isEmpty){
+        	alert('Please fill out all fields before submitting.');
+        	return;
+    	}
+
 		start_load()
 		$.ajax({
 			url:'ajax.php?action=save_category',

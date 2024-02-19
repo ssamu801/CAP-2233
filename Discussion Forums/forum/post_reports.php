@@ -44,6 +44,7 @@
 									<td class="">
 										<p>Reported By: <b><?php echo $row['username'] ?></b></p>
 										<p>Date Reported: <b><?php echo $formattedCommentDateTime?></b></p>
+										<p>Reason for Reporting: <?php echo $row['report_reason'] ?></p>
 										<p>Content:</p>
 										<p class="truncate"><?php echo strip_tags($desc) ?></p>
 										
@@ -84,6 +85,5 @@
 			}
 		})
 	}
-	$('table').dataTable()
 	$('table').dataTable()
 </script>
