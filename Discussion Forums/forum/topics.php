@@ -16,6 +16,7 @@
     border-top-width: 1px !important;
 }
 </style>
+
 	<div class="col-lg-12">
 		<div class="row mb-4 mt-4">
 			<div class="col-md-12">
@@ -27,12 +28,13 @@
 
 			<!-- Table Panel -->
 			<div class="col-md-12">
+				
 				<div class="card">
 					<div class="card-header">
 						<b>Topic List</b>
 						<span class="">
 
-							<button class="btn btn-primary btn-block btn-sm col-sm-2 float-right" type="button" id="new_topic">
+							<button class="btn navbar-color btn-block text-white btn-sm col-sm-2 float-right" type="button" id="new_topic">
 					<i class="fa fa-plus"></i> Create Topic</button>
 				</span>
 					</div>
@@ -85,9 +87,10 @@
 								<?php if($row['isAnonymous'] == 1): ?>
     								<p class="row justify-content-left"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
 								<?php else: ?>    
-    								<p class="row justify-content-left"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+    								<p class="row float-right"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
 								<?php endif; ?>
 
+								<br>
 								<hr>
 								
 								<span class="float-left badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span>
