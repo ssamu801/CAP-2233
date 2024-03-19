@@ -9,14 +9,16 @@
 }
 </style>
 
-<nav class="navbar navbar-light fixed-top bg-primary" style="padding:0;min-height: 3.5rem">
+<nav class="navbar navbar-light" style="background-color:#107a32;">
   <div class="container-fluid mt-2 mb-2">
   	<div class="col-lg-12">
   		<div class="col-md-1 float-left" style="display: flex;">
   		
   		</div>
       <div class="col-md-4 float-left text-white">
-        <large><b>Simple Forum/Disucssion System</b></large>
+        <large><b>                <a href="/" class="d-flex text-white text-decoration-none">
+                    <span class="fs-5">W<span class="d-none d-sm-inline">ASP</span></span>
+                </a></b></large>
       </div>
       <div class="col-md-4 float-left">
         <form id="manage-search">

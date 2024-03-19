@@ -44,4 +44,6 @@
   <script type="text/javascript" src="assets/js/paging.js" charset="utf-8"></script>
 
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
 

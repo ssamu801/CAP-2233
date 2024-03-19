@@ -81,7 +81,7 @@ input[type=checkbox] {
 		<div class="row form-group">
 			<div class="col-md-8">
 				<label class="control-label">Tags/Category</label>
-				<select name="category_ids[]" id="category_ids" multiple="multiple" class="custom-select select2">
+				<select name="category_ids[]" id="category_ids" multiple="multiple" class="custom-select select2" >
 					<option value=""></option>
 				<?php
 				$tag = $conn->query("SELECT * FROM categories order by name asc");
@@ -122,7 +122,7 @@ input[type=checkbox] {
  		var content = $('textarea[name="content"]').val();
   		var categoryIds = $('#category_ids').val();
 
-		if (title === '' || content === '' || categoryIds === null) {
+		if (title === '' || content === '' || categoryIds == "") {
     		alert("Please fill out all fields");
     		return;
   		}
