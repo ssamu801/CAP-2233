@@ -115,4 +115,21 @@
                 <div class="col">
                  
 			
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the current page URL
+        var currentPageUrl = window.location.href;
 
+        // Get all navbar links
+        var navbarLinks = document.querySelectorAll(".nav-link");
+
+        // Loop through each navbar link
+        navbarLinks.forEach(function(link) {
+            // Check if the link's href matches the current page URL
+            if (link.href === currentPageUrl) {
+                // Add the "active" class to the active link
+                link.classList.add("active-link");
+            }
+        });
+    });
+</script>
