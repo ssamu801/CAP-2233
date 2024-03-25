@@ -15,9 +15,10 @@
         }
 
         .dropdown-item {
-            color: #0d622a; /* Text color for links */
+            color: #ffffff; /* Text color for links */
             transition: background-color 0.3s, color 0.3s; /* Smooth transition effect */
-            padding-right: 100px;
+            border-radius: 30px;
+            padding-left: 15px;
         }
 
         /* Active link color */
@@ -29,6 +30,11 @@
 
         @media (min-width: 768px) {
 
+            .dditem{
+                margin-left:20px;
+                width: 200px;
+            }
+
             ul{
                 margin-left: -10px;
             }
@@ -38,7 +44,7 @@
                 border-radius: 30px;
             }
 
-            .nav li:hover {
+            .nav li.submenu:hover {
                 background-color: #ffffff; /* Background color for links on hover */
                 border-radius: 30px;
                 transition: background-color 0.3s, color 0.3s;
@@ -49,10 +55,23 @@
                 color: #0b5523; /* Text color for links on hover */
                 border-radius: 30px;
             }
+
             .dropdown-item:hover {
-                color: #ffffff; /* Text color for links on hover */
-                background-color: #0b5523; /* Background color for links on hover */
+                color: #0b5523; /* Text color for links on hover */
+                background-color: #ffffff; /* Background color for links on hover */
                 transition: background-color 0.3s, color 0.3s;
+            }
+
+            .accordion-dropdown a:hover{
+                background-color: #ffffff; /* Background color for links on hover */
+                border-radius: 30px;
+                transition: background-color 0.3s, color 0.3s;
+                color: #0b5523;
+            }
+
+            .accordion-dropdown a.smenu {
+                width:500%;
+                border-radius: 30px;
             }
         }
 
@@ -67,15 +86,20 @@
                 color: #ffffff; /* Text color for links on hover */
                 background-color: #0b5523; /* Background color for links on hover */
             }
+
+            .accordion-dropdown a:hover{
+                background-color: #ffffff; /* Background color for links on hover */
+                border-radius: 30px;
+                transition: background-color 0.3s, color 0.3s;
+                color: #0b5523;
+            }
         }
 
         .bi {
             color: #ffffff; /* Color for icons */
         }
 
-		.collapse a{
-		text-indent:10px;
-	}
+
     </style>
 
 <div class="container-fluid overflow-hidden">
@@ -97,6 +121,21 @@
                         <a href="index.php?page=topics" class="nav-link px-sm-3 px-2">
                             <i class="fs-5 bi-chat"></i><span class="ms-1 d-none d-sm-inline"> Discussion</span></a>
                     </li>
+                    <li class="accordion accordion-dropdown" id="accordionExample">
+                        <a href="index.php?page=dummy" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="fs-5 bi-question-circle"></i><span class="ms-1 d-none d-sm-inline"> Dropdown</span> </a>
+                    </li>
+                        </a>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <div>
+                            <ul class="nav">   
+                                <li class="dditem"><a class="dropdown-item" href="#">New project...</a></li>
+                                <li class="dditem"><a class="dropdown-item" href="#">Settings</a></li>
+                                <li class="dditem"><a class="dropdown-item" href="#">Profile</a></li>
+                            </ul>
+    </div>  
+                        </div>
+                    </li>    
 					<?php if($_SESSION['login_type'] == 1): ?>
                     	<li class="submenu">
                         	<a href="index.php?page=users" class="nav-link px-sm-3 px-2">
