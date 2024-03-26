@@ -15,6 +15,12 @@
         }
 
         .dropdown-item {
+            color: #0b5523; /* Text color for links */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition effect */
+            padding-left: 15px;
+        }
+
+        .dditem-link{
             color: #ffffff; /* Text color for links */
             transition: background-color 0.3s, color 0.3s; /* Smooth transition effect */
             border-radius: 30px;
@@ -57,10 +63,11 @@
             }
 
             .dropdown-item:hover {
-                color: #0b5523; /* Text color for links on hover */
-                background-color: #ffffff; /* Background color for links on hover */
+                color: #ffffff; /* Text color for links on hover */
+                background-color: #0b5523; /* Background color for links on hover */
                 transition: background-color 0.3s, color 0.3s;
             }
+            
 
             .accordion-dropdown a:hover{
                 background-color: #ffffff; /* Background color for links on hover */
@@ -129,9 +136,9 @@
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item" href="#">New project...</a></li>
-                                <li class="dditem"><a class="dropdown-item" href="#">Settings</a></li>
-                                <li class="dditem"><a class="dropdown-item" href="#">Profile</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">New project...</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Settings</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Profile</a></li>
                             </ul>
                             </div>  
                         </div>
