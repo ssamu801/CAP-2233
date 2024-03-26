@@ -124,18 +124,18 @@
                     <li class="accordion accordion-dropdown" id="accordionExample">
                         <a href="index.php?page=dummy" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                             <i class="fs-5 bi-question-circle"></i><span class="ms-1 d-none d-sm-inline"> Dropdown</span> </a>
-                    </li>
+                    
                         </a>
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                             <div>
-                            <ul class="nav">   
+                                <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item" href="#">New project...</a></li>
                                 <li class="dditem"><a class="dropdown-item" href="#">Settings</a></li>
                                 <li class="dditem"><a class="dropdown-item" href="#">Profile</a></li>
                             </ul>
-    </div>  
+                            </div>  
                         </div>
-                    </li>    
+                    </li>
 					<?php if($_SESSION['login_type'] == 1): ?>
                     	<li class="submenu">
                         	<a href="index.php?page=users" class="nav-link px-sm-3 px-2">
