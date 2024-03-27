@@ -107,27 +107,6 @@
                                                                                 <label for="privateCheckbox">Private</label>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="submenu">
-                                                                            <label for="servicesCheckbox"><strong>Services</strong></label>
-                                                                            <div class="subsubmenu">
-                                                                                <input type="checkbox" id="advocacyBuildingCheckbox" value="advocacyBuilding">
-                                                                                <label for="advocacyBuildingCheckbox">Advocacy Building</label></br>
-                                                                                <input type="checkbox" id="consultationCheckbox" value="consultation">
-                                                                                <label for="consultationCheckbox">Consultation</label></br>
-                                                                                <input type="checkbox" id="counselingTherapyCheckbox" value="counselingTherapy">
-                                                                                <label for="counselingTherapyCheckbox">Counseling/Therapy</label></br>
-                                                                                <input type="checkbox" id="drugRehabilitationCheckbox" value="drugRehabilitation">
-                                                                                <label for="drugRehabilitationCheckbox">Drug Rehabilitation</label></br>
-                                                                                <input type="checkbox" id="emergencyServicesCheckbox" value="emergencyServices">
-                                                                                <label for="emergencyServicesCheckbox">Emergency Services</label></br>
-                                                                                <input type="checkbox" id="medicationCheckbox" value="medication">
-                                                                                <label for="medicationCheckbox">Medication</label></br>
-                                                                                <input type="checkbox" id="psychologicalAssessmentCheckbox" value="psychologicalAssessment">
-                                                                                <label for="psychologicalAssessmentCheckbox">Psychological Assessment</label></br>
-                                                                                <input type="checkbox" id="trainingCheckbox" value="training">
-                                                                                <label for="trainingCheckbox">Training</label>
-                                                                            </div>
-                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -144,8 +123,8 @@
                                                                                     <p class="cbox-category"><?php echo $resources['category'];?></p>
                                                                                     <a class="cbox-title" href="<?php echo $resources['ref'];?>" target="_blank"><?php echo $resources['name'];?></a>
                                                                                     <p class="cbox-classification"><strong><?php echo $resources['classification'];?></strong></p>
-                                                                                    <p class="cbox-services"><?php echo $resources['services']; ?></p>
-                                                                                    <p class="cbox-setup"><?php echo $resources['setup']; ?></p>
+                                                                                    <p class="cbox-services"><strong>Services: </strong><?php echo $resources['services']; ?></p>
+                                                                                    <p class="cbox-setup" style="color: green;"><strong><?php echo $resources['setup']; ?></strong></p>
                                                                                     <p class="cbox-expense"><span class="material-icons md-14">attach_money</span><?php echo $resources['expense']; ?></p>
                                                                                     <?php if (!empty($resources['number'])) : ?>
                                                                                         <?php $numbers = explode(' | ', $resources['number']); ?>
@@ -155,7 +134,7 @@
                                                                                                 <?php if ($index !== 0) : ?>
                                                                                                     <br>
                                                                                                 <?php endif; ?>
-                                                                                                <?php echo $number; ?>
+                                                                                                 <?php echo $number; ?>
                                                                                             <?php endforeach; ?>
                                                                                         </div>
                                                                                     <?php endif; ?>
@@ -171,15 +150,6 @@
                                                                     <?php endforeach; ?>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="page_col">
-                                                        <div class="page">
-                                                            <a href="#">&laquo;</a>
-                                                            <a href="#" class="active">1</a>
-                                                            <a href="#">2</a>
-                                                            <a href="#">3</a>
-                                                            <a href="#">&raquo;</a>
                                                         </div>
                                                     </div>
                                                 </div>
