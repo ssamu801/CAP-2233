@@ -107,14 +107,16 @@
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-body bg-info">
+                                    <a href="index.php?page=medias">   
                                     <div class="card-body text-white">
                                         <span class="float-right summary_icon"><i class="bi bi-image"></i></span>
                                         <div style='width:90%;'>
                                             <h4><b class="whole-words">
-                                                Medias
+                                                Media Resources
                                             </b></h4>
                                         </div>
                                     </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>

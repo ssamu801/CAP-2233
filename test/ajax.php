@@ -135,6 +135,18 @@ if($action == "save_article"){
 		echo $save;
 }
 
+if($action == "save_embed"){
+	$save = $crud->save_embed();
+	if($save)
+		echo $save;
+}
+
+if($action == "save_media"){
+	$uploadStatus = $crud->save_media();
+    if($uploadStatus)
+        echo $uploadStatus;
+}
+
 if($action == "save_event"){
 	$save = $crud->save_event();
 	if($save)

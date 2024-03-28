@@ -1,11 +1,39 @@
 <?php include 'db_connect.php' ?>
 <?php
 error_reporting(E_ERROR | E_PARSE);
-if(isset($_GET['id'])){
-    $qry = $conn->query("SELECT * FROM articles where article_id= ".$_GET['id']);
-    foreach($qry->fetch_array() as $k => $val){
-        $$k=$val;
+
+$vid_id = '';
+
+function getYouTubeVideoID($url)
+{
+    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $url, $matches)) {
+        return $matches[1]; // Return the extracted video ID
+    } else {
+        return ''; // Return empty string if video ID extraction fails
     }
+}
+
+
+if(isset($_GET['id'])){
+
+    if($_GET['type'] === 'Video'){
+        $qry = $conn->query("SELECT * FROM embed_videos where video_id= ".$_GET['id']);
+        foreach($qry->fetch_array() as $k => $val){
+            $$k=$val;
+        }
+   
+        $video_id = getYouTubeVideoID($link);
+        $youtube_embed_url = "https://www.youtube.com/embed/{$link}";
+    }
+    else{
+        $qry = $conn->query("SELECT * FROM media_files where upload_id= ".$_GET['id']);
+        foreach($qry->fetch_array() as $k => $val){
+            $$k=$val;
+        }
+    }
+        
+    }
+
 
     if(!empty($category_ids)){
         $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order by name asc");
@@ -13,7 +41,6 @@ if(isset($_GET['id'])){
             $tags[$row['id']] = $row['name'];
         endwhile;
     }
-}
 ?>
 <style type="text/css">
     .avatar {
@@ -52,25 +79,36 @@ if(isset($_GET['id'])){
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <?php if($_SESSION['login_id'] == $row['user_id'] || $_SESSION['login_type'] == 1): ?>
-                    <div class="dropleft float-right mr-4" style="position: relative;">
-                        <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="fa fa-ellipsis-v"></span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item edit_topic" data-id="<?php echo $id ?>" href="javascript:void(0)">Edit</a>
-                            <a class="dropdown-item delete_topic" data-id="<?php echo $id ?>" href="javascript:void(0)">Delete</a>
-                        </div>
+                <!-- Embed video -->
+                <?php if ($_GET['type'] == 'Video' && !empty($link)): ?>
+                    <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A', strtotime($added_at)) ?></i></small></span>
+                    <span class="float-right mr-4 text-primary"><small><i>Uploader: <?php echo $uploader ?></i></small></span>
+                    <div class="col-md-8">
+                        <h4><b><?php echo $title ?></b></h4>
                     </div>
-                <?php endif; ?>
-                <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A',strtotime($added_at)) ?></i></small></span>
-                <span class="float-right mr-4 text-primary"><small><i>Publisher/Author: <?php echo ucwords($publisher) ?></i></small></span>
-                <div class="col-md-8">
-                    <h4><b><?php echo $title ?></b></h4>
-                </div>
+                    <hr>
                 <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="embed-responsive-item" src= <?php echo ($link) ?>></iframe>
+                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/<?php echo $video_id ?>" allowfullscreen></iframe>
                 </div>
+                <?php endif; ?>
+                <!-- Display images -->
+
+                
+                <?php if ($_GET['type'] == 'File' && !empty($id)): ?>
+                    <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A', strtotime($upload_date)) ?></i></small></span>
+                    <span class="float-right mr-4 text-primary"><small><i>Uploader: <?php echo $uploaded_by ?></i></small></span>
+                    <div class="col-md-8">
+                        <h4><b><?php echo $title ?></b></h4>
+                    </div>
+                    <hr>
+                    <?php
+                    $image_qry = $conn->query("SELECT * FROM media_files WHERE upload_id = $upload_id");
+                    while ($image_row = $image_qry->fetch_assoc()) {
+                        echo '<img src="medias/' . $image_row['file_name'] . '" class="img-fluid mb-2" alt="Image">';
+                    }
+                    ?>
+                <?php endif; ?>
+                <!-- <img src="medias/e057d201-ddec-4a4d-acbf-a512f2aeb274.jpeg" alt="Image Description"> -->
                 <hr>
                 <div class="w-100">
                     <!-- Additional content goes here -->
@@ -79,7 +117,6 @@ if(isset($_GET['id'])){
         </div>
     </div>
 </div>
-
 <script>
 	$('.jqte').jqte()
 	$('.edit_topic').click(function(){
