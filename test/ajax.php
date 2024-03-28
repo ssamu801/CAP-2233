@@ -129,6 +129,12 @@ if($action == "delete_career"){
 		echo $save;
 }
 
+if($action == "save_article"){
+	$save = $crud->save_article();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_event"){
 	$save = $crud->save_event();
 	if($save)

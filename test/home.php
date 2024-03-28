@@ -34,9 +34,50 @@
 		max-height: calc(100%)!important;
 		max-width: calc(100%)!important;
 	}
+
+    .tm-site-header {
+    position: relative;
+    overflow: hidden;
+    margin: -15px; 
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('img/rise-of-the-YA-novel1.jpg') no-repeat;
+    background-size: cover;
+    opacity: 0.3; /* Adjust the opacity as desired */
+    z-index: -1;
+    background-color:red;
+}
+
+.text-container {
+    position: relative;
+    z-index: 1;
+    padding: 80px;
+}
+
+.tm-site-name {
+    /* Styles for the site name text */
+}
+
+
 </style>
 
-<div class="containe-fluid">
+<div class="tm-site-header">
+    <!-- Background image with opacity -->
+    <div class="background-image"></div>
+
+    <!-- Text container -->
+    <div class="text-container">
+        <h1 class="tm-site-name">WASP Information and Resources Repository</h1>
+    </div>
+</div>
+
+<div class="container-fluid">
     <div class="row mb-4 mt-4">
 			<div class="col-md-12">
 				
@@ -46,19 +87,20 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <?php echo "Welcome back ". $_SESSION['login_name']."!"  ?>
-                    <hr>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-body bg-primary">
+                                    <a href="index.php?page=articles">
                                     <div class="card-body text-white">
-                                        <span class="float-right summary_icon"><i class="fa fa-users"></i></span>
-                                        <h4><b>
-                                            <?php echo $conn->query("SELECT * FROM users")->num_rows; ?>
-                                        </b></h4>
-                                        <p><b>Users</b></p>
+                                        <span class="float-right summary_icon"><i class="bi bi-newspaper"></i></span>
+                                        <div style='width:90%;'>
+                                            <h4><b class="whole-words">
+                                                Articles and Resources
+                                            </b></h4>
+                                        </div>
                                     </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -66,11 +108,12 @@
                             <div class="card">
                                 <div class="card-body bg-info">
                                     <div class="card-body text-white">
-                                        <span class="float-right summary_icon"><i class="fa fa-comments"></i></span>
-                                        <h4><b>
-                                            <?php echo $conn->query("SELECT * FROM topics")->num_rows; ?>
-                                        </b></h4>
-                                        <p><b>Forum Topics</b></p>
+                                        <span class="float-right summary_icon"><i class="bi bi-image"></i></span>
+                                        <div style='width:90%;'>
+                                            <h4><b class="whole-words">
+                                                Medias
+                                            </b></h4>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -79,18 +122,17 @@
                             <div class="card">
                                 <div class="card-body bg-warning">
                                     <div class="card-body text-white">
-                                        <span class="float-right summary_icon"><i class="fa fa-tags"></i></span>
+                                        <span class="float-right summary_icon"><i class="bi bi-heart"></i></span>
                                         <h4><b>
-                                            <?php echo $conn->query("SELECT * FROM categories")->num_rows; ?>
+                                            Motivational Contents
                                         </b></h4>
-                                        <p><b>Tags</b></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                     </div>	
-
+<!--
                     <hr class="divider" style="max-width: 100%">
                     <h4><i class="fa fa-tags text-primary"></i> Tags</h4>
                     <div class="row">
@@ -110,7 +152,7 @@
                         </div>
                         </div>
                     <?php endwhile; ?>
-                    </div>
+                    </div> -->
                 </div>
             </div>      			
         </div>

@@ -201,6 +201,19 @@ Class Action {
 		}
 	}
 
+	function save_article(){
+		extract($_POST);
+		$data = " title = '$title' ";
+		$data .= ", link = '$link' ";
+		$data .= ", publisher = '$publisher' ";
+		$data .= ", added_by = '$added_by' ";
+
+		$save = $this->db->query("INSERT INTO articles set ".$data);
+
+		if($save)
+			return 1;
+	}
+
 	function save_report_post(){
 		extract($_POST);
 		
