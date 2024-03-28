@@ -30,9 +30,15 @@ if(isset($_GET['code'])){
                 'summary' => $eventData['title'], 
                 'location' => $eventData['location'], 
                 'description' => $eventData['description'], 
-                'attendees' => $eventData['email']
-                
-            ); 
+                'attendees' => array($eventData['user_email'],$eventData['counselor_email']),
+                 'reminders' => array(
+                    'useDefault' => FALSE,
+                    'overrides' => array(
+                        array('method' => 'email', 'minutes' => 24 * 60),
+                        array('method' => 'popup', 'minutes' => 10),
+                      ),
+                 )
+                 );
              
             $event_datetime = array( 
                 'event_date' => $eventData['date'], 
@@ -93,7 +99,7 @@ if(isset($_GET['code'])){
      
     $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
      
-    header("Location: profile.php"); 
+    header("Location: pendingrequests.php"); 
     exit(); 
 } 
 ?>
