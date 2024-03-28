@@ -231,39 +231,52 @@ Class Action {
 		include 'db_connect.php';
 		$uploadStatus = '';
 	
-		if(isset($_FILES['mediaFile']['name']) && isset($_POST['mediaTitle'])){
-			$fileCount = count($_FILES['mediaFile']['name']);
-			$mediaTitle = $_POST['mediaTitle'];
-			$added_by = $_POST['added_by'];
-			$uploader = $_POST['uploader'];
+		$query = "SELECT MAX(upload_id) AS max_upload_id FROM media_files";
 	
-			for($i=0; $i<$fileCount; $i++){
-				$fileName = $_FILES['mediaFile']['name'][$i];
-				$fileTmpName = $_FILES['mediaFile']['tmp_name'][$i];
-				$fileType = $_FILES['mediaFile']['type'][$i];
-				$fileSize = $_FILES['mediaFile']['size'][$i];
-				$fileError = $_FILES['mediaFile']['error'][$i];
+		$result = $conn->query($query);
 	
-				if($fileError === 0){
-					$uploadPath = 'medias/' . $fileName;
-					move_uploaded_file($fileTmpName, $uploadPath);
+		if ($result) {
+			$row = $result->fetch_assoc();
+			$maxUploadId = $row['max_upload_id'];
 	
-					// Insert file details into database
-					$sql = "INSERT INTO media_files (file_name, file_type, file_size, title, added_by, uploaded_by) VALUES ('$fileName', '$fileType', $fileSize, '$mediaTitle','$added_by', '$uploader')";
-					if ($conn->query($sql) === TRUE) {
-						$uploadStatus .= "File '$fileName' uploaded successfully.<br>";
-
+			$maxUploadId++;
+	
+			$result->free();
+	
+			if(isset($_FILES['mediaFile']['name']) && isset($_POST['mediaTitle'])){
+				$fileCount = count($_FILES['mediaFile']['name']);
+				$mediaTitle = $_POST['mediaTitle'];
+				$added_by = $_POST['added_by'];
+				$uploader = $_POST['uploader'];
+	
+				for($i=0; $i<$fileCount; $i++){
+					$fileName = $_FILES['mediaFile']['name'][$i];
+					$fileTmpName = $_FILES['mediaFile']['tmp_name'][$i];
+					$fileType = $_FILES['mediaFile']['type'][$i];
+					$fileSize = $_FILES['mediaFile']['size'][$i];
+					$fileError = $_FILES['mediaFile']['error'][$i];
+	
+					if($fileError === 0){
+						$uploadPath = 'medias/' . $fileName;
+						move_uploaded_file($fileTmpName, $uploadPath);
+	
+						// Insert file details into database
+						$sql = "INSERT INTO media_files (upload_id, file_name, file_type, file_size, title, added_by, uploaded_by) VALUES ($maxUploadId, '$fileName', '$fileType', $fileSize, '$mediaTitle','$added_by', '$uploader')";
+						if ($conn->query($sql) === TRUE) {
+							$uploadStatus .= "File '$fileName' uploaded successfully.<br>";
+	
+						} else {
+							$uploadStatus .= "Error uploading file '$fileName': " . $conn->error . "<br>";
+						}
 					} else {
-						$uploadStatus .= "Error uploading file '$fileName': " . $conn->error . "<br>";
+						$uploadStatus .= "Error uploading file '$fileName': " . $fileError . "<br>";
 					}
-				} else {
-					$uploadStatus .= "Error uploading file '$fileName': " . $fileError . "<br>";
 				}
+	
+				if(!empty($uploadStatus)){ 
+					return 1;
+				} 
 			}
-
-			if(!empty($uploadStatus)){ 
-				return 1;
-			} 
 		}
 	}
 

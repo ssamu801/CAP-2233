@@ -81,7 +81,7 @@ if(isset($_GET['id'])){
             <div class="card-body">
                 <!-- Embed video -->
                 <?php if ($_GET['type'] == 'Video' && !empty($link)): ?>
-                    <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A', strtotime($added_at)) ?></i></small></span>
+                    <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A', strtotime($created_at)) ?></i></small></span>
                     <span class="float-right mr-4 text-primary"><small><i>Uploader: <?php echo $uploader ?></i></small></span>
                     <div class="col-md-8">
                         <h4><b><?php echo $title ?></b></h4>
