@@ -56,7 +56,6 @@ p {
 }
 
 .waspchat {
-    position: sticky;
     top: 0;
     background: green;
     padding: 10px;
@@ -106,75 +105,92 @@ p {
 a {
     color: rgb(60, 158, 219);
     background-color: transparent;
-    font-size: 16px;
+    font-size: 12px;
 }
 
-.search_bar_container {
-    padding-top: 10px;
-    background: green;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-}
-
-.search_bar input[type=text] {
-    flex: 1;
-    text-align: left;
-    padding: 14px;
-    box-sizing: border-box;
-    font-size: 18px;
-    padding: 10px;
-    margin: 1rem;
-    border-radius: 5px;
-    width: 300px;
-}
-
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    margin-right: 20px;
-}
-
-.dropdown {
+/* Default styles */
+.custom-select {
     position: relative;
-    display: inline-block;
+    background-color: green;
+    height: auto;
+    width: auto;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    margin-top: -0.5rem;
 }
 
-.dropdown-content {
+.custom-select select {
     display: none;
+}
+
+.select-selected:after {
     position: absolute;
-    background-color: #4CAF50;
-    color: white;
-    min-width: 220px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    padding: 15px;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    margin-top: .6rem;
+    border: 6px solid transparent;
+    align-items: center;
+    border-color: #fff transparent transparent transparent;
 }
 
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
+.select-items div,
+.select-selected {
+    color: #ffffff;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
 }
 
-.dropdown-content a:hover {background-color: #ddd;}
+.select-items {
+    position: absolute;
+    background-color: green;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    width: 350px;
+    border-radius: 4px;
+}
 
-.dropdown:hover .dropdown-content {display: block;}
+.select-hide {
+    display: none;
+}
 
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.select-items div:hover,
+.same-as-selected {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.select-selected:after {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #ffffff transparent transparent transparent;
+}
+
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 7px;
+}
+
+/* Media screen adjustments */
+@media screen and (max-width: 1100px) {
+    .select-items {
+        width: 350px;
+        max-width: 350px;
+    }
+}
 
 .resources_wrapper {
     background-color: white;
 }
 
-.search_bar_container,
-.filter_container,
 .resource_elements {
     padding: 10px;
 }
@@ -208,18 +224,18 @@ a {
     text-align: left;
     font-size: 14px;
     line-height: 1.15;
-    padding: 5px;
-}
-.cbox-title .a,
-.cbox-email .a {
-    font-size: 14px;
+    margin-left: .5rem;
+    margin-right: .5rem;
 }
 
 .cbox-classification {
     margin-top: 1rem;
 }
 
-.cbox-category,
+.cbox-location {
+    margin-top: 1rem;
+}
+
 .cbox-classification,
 .cbox-number,
 .cbox-email,
@@ -234,6 +250,7 @@ a {
     display: flex;
     align-items: flex-start;
     margin-bottom: 1rem;
+    line-height: 1.2;
 }
 
 .cbox-number .material-icons {
@@ -243,9 +260,11 @@ a {
 
 .cbox-services {
     line-height: 1.3;
+    text-indent: -8px;
+    padding-left: 15px;
+    text-align: justify;
 }
 
-.cbox-category,
 .cbox-setup {
     font-style: italic;
 }
@@ -253,24 +272,6 @@ a {
 .cbox-location {
     text-indent: -8px;
     padding-left: 15px;
-}
-
-.page {
-    margin-top: 20px;
-    padding-bottom: 40px;
-    text-align: right;
-}
-
-.page a {
-    color: black;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
-}
-
-.page a.active {
-    background-color: green;
-    color: white;
 }
 
 @media screen and (max-width: 1100px) {
@@ -286,28 +287,11 @@ a {
 }
 
 @media screen and (max-width: 1100px) {
-    .search_bar {
-        justify-content: center;
-        align-items: center;
-    }
-
-    .search_bar input[type=text] {
-      display: block;
-      text-align: left;
-      width: 100%;
-      margin: 0;
-      padding: 14px;
-    }
-
     .dropdown {
         position: relative;
         display: block;
         margin-top: 1rem;
         align-items: center;
-    }
-    
-    .search_bar input[type=text] {
-      border: 1px solid #ccc;  
     }
 }
 
