@@ -60,11 +60,9 @@
 							</div>
 						</div> 
 
-						<div class='px-4 py-3'> <h5 class='mb-0'>About</h5> 
+						<div class='px-4 py-3'> 
 							<div class='p-4 rounded shadow-sm bg-light'> 
 							<p class='font-italic mb-1'>Email: $USERNAME</p>
-							<p class='font-italic mb-1'>Course: </p>
-							<p class='font-italic mb-0'>Age:</p>
 							</div> 
 						</div> 
 					</div> 
