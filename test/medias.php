@@ -55,8 +55,8 @@
 							?>
 							<li class="list-group-item mb-4">
 								<div>
-									<?php if($_SESSION['login_type'] == 1): ?>
-									<!--	
+									<!--
+									<?php if($_SESSION['login_type'] == 1): ?>	
 					                    <div class="dropleft float-right mr-4">
 					                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					                        <span class="fa fa-ellipsis-v"></span>
