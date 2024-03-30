@@ -159,7 +159,7 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker">Appointments</a></li>
+                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker">Add Appointment Request</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingrequests">Apointment Requests</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records">Client Records</a></li>
                             </ul>
