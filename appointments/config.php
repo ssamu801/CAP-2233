@@ -10,7 +10,7 @@ define('DB_NAME', 'cap2233');
 define('GOOGLE_CLIENT_ID', '472089813729-248s67smlbbus4r3jl488hdjh0pe77ck.apps.googleusercontent.com'); 
 define('GOOGLE_CLIENT_SECRET', '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'); 
 define('GOOGLE_OAUTH_SCOPE', 'https://www.googleapis.com/auth/calendar'); 
-define('REDIRECT_URI', 'http://localhost:3000/calendarsync.php'); 
+define('REDIRECT_URI', 'http://localhost:3000/index.php?page=appointments/calendarsync'); 
  
 // Start session 
 if(!session_id()) session_start(); 

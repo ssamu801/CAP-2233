@@ -3,7 +3,7 @@
 include_once 'calendarapi.class.php'; 
      
 // Include database configuration file 
-require_once '../db_connect.php'; 
+require_once './db_connect.php'; 
  
 $statusMsg = ''; 
 $status = 'danger'; 
@@ -81,6 +81,12 @@ if(isset($_GET['code'])){
                         $status = 'success'; 
                         $statusMsg = '<p>Event #'.$event_id.' has been added to Google Calendar successfully!</p>'; 
                         $statusMsg .= '<p><a href="https://calendar.google.com/calendar/" target="_blank">Open Calendar</a>'; 
+
+                        echo '<script type="text/javascript">
+                        setTimeout(function() {
+                            window.location.href = "index.php?page=appointments/pendingrequests";
+                        }, 0000); 
+                        </script>';
                     } 
                 } catch(Exception $e) { 
                     //header('Bad Request', true, 400); 
@@ -99,7 +105,14 @@ if(isset($_GET['code'])){
      
     $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
      
-    header("Location: pendingrequests.php"); 
     exit(); 
 } 
 ?>
+
+<script type="text/javascript">
+    function redirectAfterDelay(url, delay) {
+        setTimeout(function() {
+            window.location.href = url;
+        }, delay);
+    }
+</script>
