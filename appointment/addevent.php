@@ -1,6 +1,6 @@
 <?php     
 // Include database configuration file 
-require_once 'connect.php'; 
+require_once 'db_connect.php'; 
  
 $postData = $statusMsg = $valErr = ''; 
 $status = 'danger'; 

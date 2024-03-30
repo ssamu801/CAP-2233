@@ -24,7 +24,7 @@
             </thead>
 
      <?php
-     	include("connect.php");
+     	include("db_connect.php");
 
          $sql = "
          SELECT * FROM events WHERE status = 'Pending'";
