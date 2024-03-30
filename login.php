@@ -34,11 +34,11 @@ header("location:index.php?page=home");
                 <span class="title">Hello, Lasallian!</span>
                 <form id="login-form">
                     <div class="input-field">
-                        <input type="text" name="idNum" placeholder="Enter your ID Number" required/>
+                        <input type="text" name="idNum" placeholder=" Enter your ID Number" required/>
                         <i class="uil uil-dialpad-alt icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="password" class="password" placeholder="Enter Password" name="password_login" required/>
+                        <input type="password" class="password" placeholder=" Enter Password" name="password_login" required/>
                         <i class="uil uil-lock icon"></i>
                         <i class="uil uil-eye-slash eye"></i>
                     </div>
@@ -62,19 +62,19 @@ header("location:index.php?page=home");
                 <span class="title">Sign Up</span>
                 <form action="register.php" method="post">
                     <div class="input-field">
-                        <input type="text" name="name" placeholder="Enter a Username" required />
+                        <input type="text" name="name" placeholder=" Enter a Username" required />
                         <i class="uil uil-user-circle icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="text" name="fullName" placeholder="Enter Full Name" required/>
+                        <input type="text" name="fullName" placeholder=" Enter Full Name" required/>
                         <i class="uil uil-dialpad-alt icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="text" name="idNum" placeholder="Enter your ID Number" minlength="8" maxlength="8" required />
+                        <input type="text" name="idNum" placeholder=" Enter your ID Number" minlength="8" maxlength="8" required />
                         <i class="uil uil-dialpad-alt icon"></i>
                     </div>
                     <div class="input-field">
-                        <input type="text" name="email" placeholder="Enter Email" required />
+                        <input type="text" name="email" placeholder=" Enter Email" required />
                         <i class="uil uil-envelope icon"></i>
                     </div>
                     <div class="input-field">

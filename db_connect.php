@@ -1,5 +1,5 @@
 <?php 
-
+require_once 'appointments/config.php';
 $conn= new mysqli('cap-2233-cap2233.a.aivencloud.com:10292',
                   'avnadmin',
                   'AVNS_ZQTc4dKbpYkzHCia2nZ',

@@ -159,9 +159,9 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">New project...</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Settings</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Profile</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker">Appointments</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingrequests">Apointment Requests</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records">Client Records</a></li>
                             </ul>
                             </div>  
                         </div>
