@@ -7,7 +7,8 @@
 	<div class="row">
 	<div class="col-lg-12">
 			<br>
-			<button class="btn float-right btn-sm" id="new_user" style="background-color:#107a32; color:#ffffff"><i class="fa fa-plus"></i> New user</button>
+			<!-- hidden -->
+		<!--	<button class="btn float-right btn-sm" id="new_user" style="background-color:#107a32; color:#ffffff"><i class="fa fa-plus"></i> New user</button> -->
 	</div>
 	</div>
 	<br>
@@ -19,7 +20,7 @@
 		</div>
 		<div class="card col-lg-12">
 			<div class="card-body">
-				<table class="table-striped table-bordered col-md-12">
+				<table class="table-striped table-bordered">
 			<thead>
 				<tr>
 					<th class="text-center">#</th>
@@ -32,7 +33,7 @@
 			<tbody>
 				<?php
  					include 'db_connect.php';
- 					$type = array("","Admin","Staff","Alumnus/Alumna");
+ 					$type = array("","Admin","Secretary","Counselor","Staff","Student");
  					$users = $conn->query("SELECT * FROM users order by name asc");
  					$i = 1;
  					while($row= $users->fetch_assoc()):
