@@ -135,6 +135,12 @@ if($action == "save_article"){
 		echo $save;
 }
 
+if($action == "save_article_rating"){
+	$save = $crud->save_article_rating();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_embed"){
 	$save = $crud->save_embed();
 	if($save)

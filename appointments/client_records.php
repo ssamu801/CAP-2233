@@ -1,5 +1,4 @@
 <?php  include('./db_connect.php'); ?>
-
 <style>
 	.record_row:hover{
 		cursor: pointer;
@@ -26,15 +25,15 @@
 				                <tr>
 					                <th class="text-center">ID Number</th>
 					                <th class="text-center">Name</th>
-					                <th class="text-center">Username</th>
-					                <th class="text-center">Type</th>
+					                <th class="text-center">Email</th>
 				                </tr>
 			                </thead>
 							<tbody>
 				                <?php
  					                include './db_connect.php';
+									$counselor_email = $_SESSION['login_email'];
  					                $type = array("","Admin","Staff","Subscriber");
- 					                $users = $conn->query("SELECT * FROM users WHERE type=3 order by name asc");
+ 					                $users = $conn->query("SELECT u.id, u.name, u.email FROM users u JOIN events e ON u.email=e.user_email WHERE e.counselor_email ='$counselor_email' GROUP BY u.id ORDER BY u.name ASC");
  					                $i = 1;
  					                while($row= $users->fetch_assoc()):
 				                ?>
@@ -42,15 +41,12 @@
 				 	                <td class="text-center">
 				 		                <?php echo $row['id'] ?>
 				 	                </td>
-				 	                <td>
+				 	                <td class="text-center">
 				 		                <?php echo ucwords($row['name']) ?>
 				 	                </td>
 				 	
-				 	                <td>
-				 		                <?php echo $row['username'] ?>
-				 	                </td>
-				 	                <td>
-				 		                <?php echo $type[$row['type']] ?>
+				 	                <td class="text-center">
+				 		                <?php echo $row['email'] ?>
 				 	                </td>
 
 				                </tr>

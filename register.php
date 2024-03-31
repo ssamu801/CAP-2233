@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 // SQL query to insert user data into the database
                 $query = "INSERT INTO users (id, name, username, email, password, type) 
-                        VALUES($idNum, '$fullname', '$username', '$email', '$hashed_password', 1)";
+                        VALUES($idNum, '$fullname', '$username', '$email', '$hashed_password', 5)";
 
                 // Check for query execution errors
                 if (mysqli_query($conn, $query)) {

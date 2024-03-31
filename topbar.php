@@ -20,7 +20,7 @@
                     <span class="fs-5">W<span class="d-none d-sm-inline">ASP</span></span>
                 </a></b></large>
       </div>
-      <div class="col-md-4 float-left">
+      <div class="col-md-4 float-left hidden">
         <form id="manage-search">
             <input type="text" placeholder="Search here" id="find" class="form-control" value="<?php echo isset($_GET['keyword'])? $_GET['keyword'] :'' ?>">
         </form>

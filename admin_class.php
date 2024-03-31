@@ -214,6 +214,21 @@ Class Action {
 			return 1;
 	}
 
+	function save_article_rating(){
+		extract($_POST);
+		$data = " article_id = '$article_id' ";
+		$data .= ", title = '$title' ";
+		$data .= ", user_rating = '$user_rating' ";
+		$data .= ", voter_id = '$login_id' ";
+		$data .= ", type = '$type' ";
+
+
+		$save = $this->db->query("INSERT INTO resources_ratings set ".$data);
+
+		if($save)
+			return 1;
+	}
+
 	function save_embed(){
 		extract($_POST);
 		$data = " title = '$title' ";
@@ -257,7 +272,7 @@ Class Action {
 					$fileError = $_FILES['mediaFile']['error'][$i];
 	
 					if($fileError === 0){
-						$uploadPath = 'medias/' . $fileName;
+						$uploadPath = 'information_resources/medias/' . $fileName;
 						move_uploaded_file($fileTmpName, $uploadPath);
 	
 						// Insert file details into database

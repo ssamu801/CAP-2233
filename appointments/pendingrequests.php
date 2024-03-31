@@ -8,7 +8,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <b>Client Records</b>
+                        <b>Pending Requests</b>
                         <span class=""></span>
                     </div>
                     <div class="card-body">
@@ -20,6 +20,7 @@
                                     <th class="text-center">Date</th>
                                     <th class="text-center">Start Time</th>
                                     <th class="text-center">End Time</th>
+                                    <th class="text-center">Location</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -39,7 +40,6 @@
 				 	                    <td class="text-center">
 				 		                    <?php echo$row['title'] ?>
 				 	                    </td>
-				 	
 				 	                    <td class="text-center">
 				 		                    <?php echo $row['date'] ?>
 				 	                    </td>
@@ -49,6 +49,10 @@
                                          <td class="text-center">
                                             <?php echo $row['time_to'] ?>
 				 	                    </td>
+                                         <td class="text-center">
+                                            <?php echo $row['location'] ?>
+				 	                    </td>
+                                        
                                         
                                          
                                         <form method='post' action='index.php?page=appointments/addevent'> 

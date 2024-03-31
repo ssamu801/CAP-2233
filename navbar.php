@@ -128,9 +128,9 @@
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion1">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#"> New project...</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Settings</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Profile</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/home"><i class="fs-5 bi-house-door"></i> Home</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/articles"><i class="fs-5 bi-newspaper"></i> Articles</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Rresources</a></li>
                             </ul>
                             </div>  
                         </div>
@@ -159,9 +159,13 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker">Add Appointment Request</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingrequests">Apointment Requests</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records">Client Records</a></li>
+                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2): ?>
+                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
+                                <?php endif; ?>
+                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2 || $_SESSION['login_type'] == 3): ?>
+                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingrequests"><i class="bi bi-file-earmark-check"></i> Appointment Requests</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records"><i class="fs-5 bi-archive"></i> Client Records</a></li>
+                                <?php endif; ?>
                             </ul>
                             </div>  
                         </div>
@@ -176,8 +180,6 @@
                             <div>
                                 <ul class="nav">   
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=crisis_support/crisisresources"><i class="fs-5 bi-link-45deg"></i> External Crisis Support Links</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Settings</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Profile</a></li>
                             </ul>
                             </div>  
                         </div>
@@ -194,7 +196,6 @@
                                 <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/post_reports"><i class="fs-5 bi-flag"></i> Post Reports</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/users"><i class="fs-5 bi-people"></i> Users</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="#">Profile</a></li>
                             </ul>
                             </div>  
                         </div>
