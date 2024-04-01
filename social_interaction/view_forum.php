@@ -82,7 +82,12 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
                     </div>
                 <?php endif; ?>
                 <span class="float-right mr-4"><small><i><?php echo date('M d, Y h:i A',strtotime($date_created)) ?></i></small></span>
+				<?php if($isAnonymous == 1): ?>
+                 <span class="float-right mr-4 text-primary"><small><i>Posted By: Anonymous</i></small></span>
+				 <?php endif; ?>
+				 <?php if($isAnonymous == 0): ?>
                  <span class="float-right mr-4 text-primary"><small><i>Posted By: <?php echo ucwords($name) ?></i></small></span>
+				 <?php endif; ?>
                  <div class="col-md-8">
 					<h4><b><?php echo $title ?></b></h4>
 				</div>
