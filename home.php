@@ -88,15 +88,15 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body bg-primary">
-                                    <a href="index.php?page=articles">
+                                    <a href="index.php?page=information_resources/articles">
                                     <div class="card-body text-white">
                                         <span class="float-right summary_icon"><i class="bi bi-newspaper"></i></span>
                                         <div style='width:90%;'>
                                             <h4><b class="whole-words">
-                                                Articles and Resources
+                                                Articles
                                             </b></h4>
                                         </div>
                                     </div>
@@ -104,15 +104,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body bg-info">
-                                    <a href="index.php?page=medias">   
+                                    <a href="index.php?page=information_resources/medias">   
                                     <div class="card-body text-white">
                                         <span class="float-right summary_icon"><i class="bi bi-image"></i></span>
                                         <div style='width:90%;'>
                                             <h4><b class="whole-words">
-                                                Media Resources
+                                                Media Contents
                                             </b></h4>
                                         </div>
                                     </div>
@@ -120,18 +120,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body bg-warning">
-                                    <div class="card-body text-white">
-                                        <span class="float-right summary_icon"><i class="bi bi-heart"></i></span>
-                                        <h4><b>
-                                            Motivational Contents
-                                        </b></h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+             
                         
                     </div>	
 <!--
