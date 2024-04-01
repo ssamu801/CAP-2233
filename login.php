@@ -26,7 +26,7 @@ header("location:index.php?page=home");
 
     <div class="container">
         <div class="logo"> <!--sample logo for now-->
-            <img src="images/DLSU_logo.png" alt="Logo" class="img-fluid">
+            <img src="img/wasp_logo.png" alt="Logo" class="img-fluid">
         </div>
         <div class="forms">
             <!-- Login Form -->
