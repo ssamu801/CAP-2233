@@ -97,7 +97,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 				<?php endif; ?>
 				<hr>
 				<div class="w-100">
-				<span class="badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span>
+			<!--	<span class="badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span> -->
 				<span class="badge badge-primary text-white ml-2"><i class="fa fa-comments"></i> <?php echo number_format(count($com_arr)) ?> comment/s</span>
 				</div>
 				<div id="content" class="w-100 mt-4">
