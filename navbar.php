@@ -146,6 +146,10 @@
                                 <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/categories"><i class="fs-5 bi-tag"></i> Categories/Tags</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/topics"><i class="fs-5 bi-chat"></i> Discussion</a></li>
+                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 4): ?>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/post_approval"><i class="fs-5 bi-file-earmark-check"></i> Pending Posts</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/comment_approval"><i class="fs-5 bi-chat-left-quote"></i> Pending Comments</a></li>
+                                <?php endif; ?>
                             </ul>
                             </div>  
                         </div>

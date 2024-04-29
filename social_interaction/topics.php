@@ -45,14 +45,14 @@
 							while($row= $tag->fetch_assoc()):
 								$tags[$row['id']] = $row['name'];
 							endwhile;
-							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id order by unix_timestamp(date_created) desc");
+							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id WHERE t.status='Approved' order by unix_timestamp(date_created) desc");
 							while($row= $topic->fetch_assoc()):
 								$trans = get_html_translation_table(HTML_ENTITIES,ENT_QUOTES);
 						        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
 						        $desc = strtr(html_entity_decode($row['content']),$trans);
 						        $desc=str_replace(array("<li>","</li>"), array("",","), $desc);
 						        $view = $conn->query("SELECT * FROM forum_views where topic_id=".$row['id'])->num_rows;
-						        $comments = $conn->query("SELECT * FROM comments where topic_id=".$row['id'])->num_rows;
+						        $comments = $conn->query("SELECT * FROM comments where status='Approved' AND topic_id=".$row['id'])->num_rows;
 						        $replies = $conn->query("SELECT * FROM replies where comment_id in (SELECT id FROM comments where topic_id=".$row['id'].")")->num_rows;
 							?>
 							<li class="list-group-item mb-4">
@@ -85,12 +85,12 @@
 								<hr>
 								<p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>
 								<?php if($row['isAnonymous'] == 1): ?>
-    								<p class="row justify-content-left"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
+    								<p class="row justify-content-left mr-1"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
 								<?php else: ?>    
-    								<p class="row float-right"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+    								<p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+									<br>
 								<?php endif; ?>
-
-								<br>
+								
 								<hr>
 								
 							<!--	<span class="float-left badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span> -->

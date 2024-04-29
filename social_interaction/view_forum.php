@@ -6,7 +6,7 @@ $qry = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id 
 foreach($qry->fetch_array() as $k => $val){
 	$$k=$val;
 }
-$comments = $conn->query("SELECT c.*,u.name,u.username FROM comments c inner join users u on u.id = c.user_id where c.topic_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+$comments = $conn->query("SELECT c.*,u.name,u.username FROM comments c inner join users u on u.id = c.user_id where c.status='Approved' and c.topic_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
 $com_arr= array();
 while($row= $comments->fetch_assoc()){
 	$com_arr[] = $row;

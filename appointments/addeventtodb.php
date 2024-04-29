@@ -13,7 +13,7 @@ if(isset($_POST['submit'])){
     $title = !empty($_POST['title'])?trim($_POST['title']):''; 
     $description = !empty($_POST['description'])?trim($_POST['description']):''; 
     $location = !empty($_POST['location'])?trim($_POST['location']):''; 
-    $date = !empty($_POST['date'])?trim($_POST['date']):''; 
+   // $date = !empty($_POST['date'])?trim($_POST['date']):''; -- UPDATEDDDDDDDDDDDDDDDDDDDDD
     $time_from = !empty($_POST['time_from'])?trim($_POST['time_from']):''; 
     $time_to = !empty($_POST['time_to'])?trim($_POST['time_to']):''; 
     $user_name = !empty($_POST['client_name'])?trim($_POST['client_name']):''; 
@@ -25,9 +25,7 @@ if(isset($_POST['submit'])){
     if(empty($title)){ 
         $valErr .= 'Please enter event title.<br/>'; 
     } 
-    if(empty($date)){ 
-        $valErr .= 'Please enter event date.<br/>'; 
-    } 
+
      
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
@@ -38,9 +36,13 @@ if(isset($_POST['submit'])){
         $db_title = $title; 
         $db_description = $description; 
         $db_location = $location; 
-        $db_date = $date; 
+
+        $selected_option = $_POST['time'];
+        list($date, $time_from, $time_to) = explode('|', $selected_option);
+
         $db_time_from = $time_from; 
         $db_time_to = $time_to; 
+        $db_date = $date; 
         $db_user_name = $user_name; 
         $db_email1 = $user_email; 
         $db_email2 = $counselor_email; 

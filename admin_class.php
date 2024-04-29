@@ -201,6 +201,22 @@ Class Action {
 		}
 	}
 
+	function approve_topic(){
+		extract($_POST);
+		$approve = $this->db->query("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
+		if($approve){
+			return 1;
+		}
+	}
+
+	function decline_topic(){
+		extract($_POST);
+		$decline = $this->db->query("UPDATE topics SET status='Rejected', reviewed_by='$login_name', reason='$reason' WHERE id = ".$post_id);
+		if($decline){
+			return 1;
+		}
+	}
+
 	function save_article(){
 		extract($_POST);
 		$data = " title = '$title' ";
@@ -336,6 +352,23 @@ Class Action {
 			return 1;
 		}
 	}
+
+	function approve_comment(){
+		extract($_POST);
+		$approve_comment = $this->db->query("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
+		if($approve_comment){
+			return 1;
+		}
+	}
+
+	function decline_comment(){
+		extract($_POST);
+		$decline_comment = $this->db->query("UPDATE comments SET status='Rejected', reviewed_by='$login_name', reason='$reason' WHERE id = ".$post_id);
+		if($decline_comment){
+			return 1;
+		}
+	}
+
 	function save_reply(){
 		extract($_POST);
 		$data = " reply = '".htmlentities(str_replace("'","&#x2019;",$reply))."' ";

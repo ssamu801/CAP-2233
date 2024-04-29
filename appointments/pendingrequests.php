@@ -15,8 +15,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th class="text-center">Name</th>
                                     <th class="text-center">Email</th>
-                                    <th class="text-center">Title</th>
                                     <th class="text-center">Date</th>
                                     <th class="text-center">Start Time</th>
                                     <th class="text-center">End Time</th>
@@ -27,18 +27,26 @@
                             <tbody>
                             <?php
                    
+                                $login_id = $_SESSION['login_id'];
                                 include './db_connect.php';
-                                $requests = $conn->query("SELECT * FROM events WHERE status = 'Pending'");
+                                $requests = $conn->query("SELECT e.id, e.user_email, e.user_name, e.date, e.location, e.time_from, e.time_to
+                                                            FROM events e
+                                                            JOIN availability a ON e.date = a.date
+                                                            AND e.time_from = a.time_from
+                                                            AND e.time_to = a.time_to
+                                                            WHERE e.status = 'Pending'
+                                                            AND a.status = 'Available'
+                                                            AND a.counselorID = $login_id;");
                                 $total = mysqli_num_rows($requests);
                                 if($total > 0):
                                     while($row= $requests->fetch_assoc()):
                             ?>
                                     <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
 				 	                    <td class="text-center">
-				 		                    <?php echo $row['user_email'] ?>
+				 		                    <?php echo $row['user_name'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
-				 		                    <?php echo$row['title'] ?>
+				 		                    <?php echo$row['user_email'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
 				 		                    <?php echo $row['date'] ?>

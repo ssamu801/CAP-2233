@@ -71,6 +71,18 @@ if($action == "delete_topic"){
 		echo $save;
 }
 
+if($action == "approve_topic"){
+	$save = $crud->approve_topic();
+	if($save)
+		echo $save;
+}
+
+if($action == "decline_topic"){
+	$save = $crud->decline_topic();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_report_post"){
 	$save = $crud->save_report_post();
 	if($save)
@@ -90,6 +102,17 @@ if($action == "delete_comment"){
 
 }
 
+if($action == "approve_comment"){
+	$save = $crud->approve_comment();
+	if($save)
+		echo $save;
+}
+
+if($action == "decline_comment"){
+	$save = $crud->decline_comment();
+	if($save)
+		echo $save;
+}
 
 if($action == "save_reply"){
 	$save = $crud->save_reply();
