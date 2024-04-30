@@ -53,6 +53,10 @@ if(!empty($_SESSION['status_response'])){
             <label>Client Email</label>
             <input type="text" name="attendees" class="form-control" required>
         </div>
+        <div class="form-group">
+            <label>Client ID Number</label>
+            <input type="text" name="student_id" class="form-control" required>
+        </div>
         <div class="form-group ">
             <label>Time</label>
             <select name="time" id="time" class="form-control">

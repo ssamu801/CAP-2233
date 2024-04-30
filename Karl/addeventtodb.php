@@ -18,6 +18,7 @@ if(isset($_POST['submit'])){
     $time_to = !empty($_POST['time_to'])?trim($_POST['time_to']):''; 
     $user_name = !empty($_POST['client_name'])?trim($_POST['client_name']):''; 
     $user_email = !empty($_POST['attendees'])?trim($_POST['attendees']):''; 
+    $student_id = !empty($_POST['student_id'])?trim($_POST['student_id']):''; 
     $counselor_name = !empty($_POST['counselor_name'])?trim($_POST['counselor_name']):''; 
     $counselor_email = !empty($_POST['attendees2'])?trim($_POST['attendees2']):''; 
      
@@ -30,9 +31,9 @@ if(isset($_POST['submit'])){
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
         // Insert data into the database 
-        $sqlQ = "INSERT INTO events (title, description, location, date, time_from, time_to, created, user_name, user_email, counselor_email, status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)"; 
+        $sqlQ = "INSERT INTO events (title, description, location, date, time_from, time_to, created, user_name, user_email, counselor_email, status, student_id) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?)"; 
         $stmt = $conn->prepare($sqlQ); 
-        $stmt->bind_param("ssssssssss", $db_title, $db_description, $db_location, $db_date, $db_time_from, $db_time_to, $db_user_name, $db_email1, $db_email2, $db_status); 
+        $stmt->bind_param("sssssssssss", $db_title, $db_description, $db_location, $db_date, $db_time_from, $db_time_to, $db_user_name, $db_email1, $db_email2, $db_status, $db_student_id); 
         $db_title = $title; 
         $db_description = $description; 
         $db_location = $location; 
@@ -47,6 +48,7 @@ if(isset($_POST['submit'])){
         $db_email1 = $user_email; 
         $db_email2 = $counselor_email; 
         $db_status = "Pending";
+        $db_student_id = $student_id; 
         $insert = $stmt->execute(); 
          
         // Check if the insert was successful before redirecting
