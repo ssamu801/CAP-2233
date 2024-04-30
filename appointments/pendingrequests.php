@@ -52,10 +52,18 @@
 				 		                    <?php echo $row['date'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
-                                            <?php echo $row['time_from'] ?>
+                                         <?php
+                                            $time_from = $row['time_from'];
+                                            $formatted_time = date("h:i A", strtotime($time_from));
+                                            echo $formatted_time;
+                                        ?>
 				 	                    </td>
                                          <td class="text-center">
-                                            <?php echo $row['time_to'] ?>
+                                         <?php
+                                            $time_from = $row['time_to'];
+                                            $formatted_time = date("h:i A", strtotime($time_from));
+                                            echo $formatted_time;
+                                        ?>
 				 	                    </td>
                                          <td class="text-center">
                                             <?php echo $row['location'] ?>
