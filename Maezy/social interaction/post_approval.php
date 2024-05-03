@@ -52,17 +52,16 @@
 							?>
 							<li class="list-group-item mb-4">
 								<div>
-									
 				                    <span class="float-right mr-1"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small>
-                                        <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
-                                        <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $row['id'] ?>">Decline</button>
+                                        <button class="btn btn-success btn-sm ml-2 accept" data-id="<?php echo $row['id'] . ' ' . $row['user_id']; ?>">Accept</button>
+                                        <button class="btn btn-secondary btn-sm ml-2 decline" data-id="<?php echo $row['id'] ?>">Decline</button>
                                     </span>
 									<a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>"
 									 class=" filter-text"><?php echo $row['title'] ?></a>
 
 								</div>
                                 <div>
-                                    <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>
+                                    <span style="font-size: smaller;"> <i class="bi-tags-fill"></i> Tags: </span>
                                         <?php foreach(explode(",",$row['category_ids']) as $cat): ?>
                                             <span class="badge badge-info text-white ml-2"><?php echo $tags[$cat] ?></span>
                                         <?php endforeach; ?>
@@ -134,22 +133,23 @@
     $('table').dataTable();
     
 
-    $('#accept').click(function(){
-        _conf("Approve this post?","approve_topic",[$(this).attr('data-id')],'mid-large'); 
+    $('.accept').click(function(){
+        var dataId = $(this).attr('data-id').split(' '); // Splitting the data-id string into an array
+    	_conf("Approve this post?","approve_topic",dataId,'mid-large');
     });
 
-	$('#decline').click(function(){
+	$('.decline').click(function(){
 		uni_modal("Decline Post","social_interaction/decline_topic.php?id="+$(this).attr('data-id'),'mid-large')
 	})
 });
 
-function approve_topic(id){
+function approve_topic(id, posterID){
 	var login_name = '<?php echo $_SESSION['login_name']; ?>'; 
     start_load();
     $.ajax({
         url: 'ajax.php?action=approve_topic',
         method: 'POST',
-        data: { id: id, login_name: login_name },
+        data: { id: id, login_name: login_name, poster_id: posterID }, // Added poster_id to the data object
         success: function(resp){
             if(resp == 1){
                 alert_toast("Post approved", 'success');

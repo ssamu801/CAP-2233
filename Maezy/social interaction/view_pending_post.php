@@ -110,8 +110,8 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 								</i></small>
 			</div>
             <div class="text-center mb-3"> <!-- Add this div for centering buttons -->
-                <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $id ?>">Accept</button>
-                <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $id ?>">Decline</button>
+                <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $id . ' ' . $user_id; ?>">Accept</button>
+                <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $id; ?>">Decline</button>
             </div>
 		</div>
 		
@@ -125,7 +125,8 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
     
 
     $('#accept').click(function(){
-        _conf("Approve this post?","approve_topic",[$(this).attr('data-id')],'mid-large'); 
+		var dataId = $(this).attr('data-id').split(' ')
+        _conf("Approve this post?","approve_topic",dataId,'mid-large');
     });
 
 	$('#decline').click(function(){
@@ -133,18 +134,19 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 	})
 });
 
-function approve_topic(id){
+function approve_topic(id, posterID){
 	var login_name = '<?php echo $_SESSION['login_name']; ?>'; 
     start_load();
+	console.log(posterID);
     $.ajax({
         url: 'ajax.php?action=approve_topic',
         method: 'POST',
-        data: { id: id, login_name: login_name },
+        data: { id: id, login_name: login_name, poster_id: posterID }, 
         success: function(resp){
             if(resp == 1){
                 alert_toast("Post approved", 'success');
                 setTimeout(function(){
-                    window.location.href = 'index.php?page=social_interaction/post_approval'; 
+					window.location.href = 'index.php?page=social_interaction/post_approval'; 
                 }, 1500);
             }
         }

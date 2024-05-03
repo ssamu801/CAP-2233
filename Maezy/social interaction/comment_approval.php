@@ -52,8 +52,8 @@
 								<div>
 									
 				                    <span class="float-right mr-1"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small>
-                                        <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
-                                        <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $row['id'] ?>">Decline</button>
+                                        <button class="btn btn-success btn-sm ml-2 accept" data-id="<?php echo $row['id'] . ' ' . $row['user_id'] ?>">Accept</button>
+                                        <button class="btn btn-secondary btn-sm ml-2 decline" data-id="<?php echo $row['id']?>">Decline</button>
                                     </span>
 									<a href="index.php?page=social_interaction/view_pending_comment&id=<?php echo $row['id'] ?>"
 									 class=" filter-text">Comment to: <?php echo $row['title'] ?></a>
@@ -61,7 +61,7 @@
 								</div>
 								<hr>
 								<p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>    
-    								<p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+    								<p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Comment By: <?php echo $row['name'] ?></i></span></p>
 									<br>
 								
 								<hr>
@@ -122,22 +122,24 @@
     $('table').dataTable();
     
 
-    $('#accept').click(function(){
-        _conf("Approve this comment?","approve_comment",[$(this).attr('data-id')],'mid-large'); 
+    $('.accept').click(function(){
+		var dataId = $(this).attr('data-id').split(' ');
+		console.log(dataId);
+        _conf("Approve this comment?","approve_comment",dataId,'mid-large'); 
     });
 
-	$('#decline').click(function(){
+	$('.decline').click(function(){
 		uni_modal("Decline comment","social_interaction/decline_comment.php?id="+$(this).attr('data-id'),'mid-large')
 	})
 });
 
-function approve_comment(id){
+function approve_comment(id, commenterID){
 	var login_name = '<?php echo $_SESSION['login_name']; ?>'; 
     start_load();
     $.ajax({
         url: 'ajax.php?action=approve_comment',
         method: 'POST',
-        data: { id: id, login_name: login_name },
+        data: { id: id, login_name: login_name, commenter_id: commenterID },
         success: function(resp){
             if(resp == 1){
                 alert_toast("Comment approved", 'success');

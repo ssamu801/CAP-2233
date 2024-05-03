@@ -103,7 +103,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			</div>
             <div class="text-center mb-3"> <!-- Add this div for centering buttons -->
 			
-                <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $id ?>">Accept</button>
+                <button class="btn btn-success btn-sm ml-2 accept" data-id="<?php echo $id . ' ' . $user_id; ?>">Accept</button>
                 <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $id ?>">Decline</button>
             </div>
 		</div>
@@ -117,8 +117,10 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
     $('table').dataTable();
     
 
-    $('#accept').click(function(){
-        _conf("Approve this comment?","approve_comment",[$(this).attr('data-id')],'mid-large'); 
+    $('.accept').click(function(){
+		var dataId = $(this).attr('data-id').split(' ');
+		console.log(dataId);
+        _conf("Approve this comment?","approve_comment",dataId,'mid-large'); 
     });
 
 	$('#decline').click(function(){
@@ -126,13 +128,13 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 	})
 });
 
-function approve_comment(id){
+function approve_comment(id, commenterID){
 	var login_name = '<?php echo $_SESSION['login_name']; ?>'; 
     start_load();
     $.ajax({
         url: 'ajax.php?action=approve_comment',
         method: 'POST',
-        data: { id: id, login_name: login_name },
+        data: { id: id, login_name: login_name, commenter_id: commenterID },
         success: function(resp){
             if(resp == 1){
                 alert_toast("Comment approved", 'success');
