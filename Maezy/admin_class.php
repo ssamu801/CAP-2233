@@ -203,20 +203,57 @@ Class Action {
 
 	function approve_topic(){
 		extract($_POST);
-		$approve = $this->db->query("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
+	
+		$approve = $this->db->query("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = $id");
+	
 		if($approve){
-			return 1;
+			$sql = "SELECT title FROM topics WHERE id=$id LIMIT 1";
+			$result = $this->db->query($sql);
+	
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$title = $row['title']; 
+	
+				//type, topic id, comment id
+				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your post $title has been approved', 'We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 1, $id)");
+	
+				if($notif){
+					return 1; 
+				}
+			}
 		}
+	
 	}
+	
 
 	function decline_topic(){
 		extract($_POST);
-		$decline = $this->db->query("UPDATE topics SET status='Rejected', reviewed_by='$login_name', reason='$reason' WHERE id = ".$post_id);
-		if($decline){
-			return 1;
+	
+		// Update the topic status to 'Rejected' in the database
+		$decline = $this->db->query("UPDATE topics SET status='Rejected', reviewed_by='$login_name', reason='$reason' WHERE id = $post_id");
+	
+		// Check if the update was successful
+		if ($decline) {
+			// Fetch the title and user_id of the declined topic
+			$sql = "SELECT title, user_id FROM topics WHERE id=$post_id LIMIT 1";
+			$result = $this->db->query($sql);
+	
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$title = $row['title']; 
+				$poster_id = $row['user_id']; 
+	
+				// Insert notification into the notifications table
+				$decline_notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your post $title has been rejected', 'We are regret to inform you that your recent post titled $title on our discussion forum has been rejected by our moderators.',NOW(), 2, $post_id)");
+	
+				if ($decline_notif) {
+					return 1; // Return success code
+				}
+			}
 		}
+	
 	}
-
+	
 	function save_article(){
 		extract($_POST);
 		$data = " title = '$title' ";
@@ -353,11 +390,41 @@ Class Action {
 		}
 	}
 
-	function approve_comment(){
+	function approve_comment(){ 
 		extract($_POST);
 		$approve_comment = $this->db->query("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
+		$title = ''; 
+		$comment = '';
+		$poster_id = 0; 
+		$OP = 0;
+		$name = '';
 		if($approve_comment){
-			return 1;
+			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name FROM comments c JOIN topics t ON c.topic_id = t.id JOIN users u ON u.id=c.user_id WHERE c.id=$id LIMIT 1";
+			$result = $this->db->query($sql);
+	
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$topic_id = $row['topic_id']; 
+				$title = $row['title']; 
+				$comment = $row['comment'];
+				$poster_id = $row['user_id']; 
+				$OP = $row['OP'];
+				$name = $row['name'];
+
+	
+				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your comment for $title has been approved', 'We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 3, $id)");
+				
+				if($notif){
+
+					$notif2 = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES ('$OP', '[DISCUSSION FORUM] $name commented on your post $title', '$comment' , NOW(), 5, $topic_id, $id)");
+					
+					if($notif2){
+						return 1; 
+					}
+					
+				}
+			}
+			return 1; 
 		}
 	}
 
@@ -365,7 +432,22 @@ Class Action {
 		extract($_POST);
 		$decline_comment = $this->db->query("UPDATE comments SET status='Rejected', reviewed_by='$login_name', reason='$reason' WHERE id = ".$post_id);
 		if($decline_comment){
-			return 1;
+			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name FROM comments c JOIN topics t ON c.topic_id = t.id JOIN users u ON u.id=c.user_id WHERE c.id=$post_id LIMIT 1";
+			$result = $this->db->query($sql);
+
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$topic_id = $row['topic_id']; 
+				$title = $row['title']; 
+				$poster_id = $row['user_id']; 
+
+	
+				$dec_notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your comment for $title has been rejected', 'We regret to inform you that your comment on the post titled $title on our discussion forum has been rejected by our moderators.' , NOW(), 4, $post_id)");
+	
+				if($dec_notif){
+					return 1; 
+				}
+			}
 		}
 	}
 
