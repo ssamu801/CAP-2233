@@ -33,30 +33,28 @@ if(!empty($_SESSION['status_response'])){
 		</div>
 <div class="col-md-12" style='width:50%; margin-left: auto; ; margin-right: auto; padding-bottom: 20px; padding-top: 20px; background-color:#FFFFFF' >
     <form method="post" action="index.php?page=appointments/addeventtodb" class="form">
-        <div class="form-group">
-            <label>Event Title</label>
-            <input type="text" class="form-control" name="title" value="" required>
-        </div>
-        <div class="form-group">
-            <label>Event Description</label>
-            <textarea name="description" class="form-control" required></textarea>
-        </div>
-        <div class="form-group">
-            <label>Location</label>
-            <input type="text" name="location" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Client Name</label>
-            <input type="text" name="client_name" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Client Email</label>
-            <input type="text" name="attendees" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Client ID Number</label>
-            <input type="text" name="student_id" class="form-control" required>
-        </div>
+            <?php
+
+                   include './db_connect.php';
+                   $id = $_SESSION['login_id'];
+                   $requests = $conn->query("SELECT name, email FROM users where id = '$id';");
+                   $total = mysqli_num_rows($requests);
+                   if($total > 0):
+                       while($row= $requests->fetch_assoc()):
+            ?>
+                        <input type="hidden" name="client_name" value='<?php echo $row["name"]; ?>'>
+                        <input type="hidden" name="attendees" value='<?php echo $row["email"];?>'>
+                        <input type="hidden" name="student_id" value='<?php echo $id;?>'>
+                        <div class="form-group">
+                            <label>Event Title</label>
+                            <input type="text" class="form-control" name="title" value='Consultation - <?php echo $row["name"]; ?>' readonly >
+                        </div>
+                        <div class="form-group">
+                            <label>Event Description</label>
+                            <input type="text" name="description" class="form-control" value='Consultation with student named <?php echo $row["name"]; ?>, ID<?php echo $id; ?>' readonly ></input>
+                        </div>
+                    <?php endwhile; ?>
+                    <?php endif; ?>
         <div class="form-group ">
             <label>Time</label>
             <select name="time" id="time" class="form-control">
@@ -82,6 +80,14 @@ if(!empty($_SESSION['status_response'])){
             </select>
         </div>
         <div class="form-group">
+            <label>Notes for counselor (Optional)</label>
+            <input type="text" name="notes" class="form-control"></input>
+        </div>
+        <div class="form-group">
+            <label>Require urgent assistance: </label>
+            <input type="checkbox" id="Urgent" name="urgency" value="Urgent" style="width: 15px; height:15px;">
+        </div>
+        <div class="form-group">
             <input type="submit" class="form-control navbar-color" name="submit" value="Add Event" style="background-color: #04AA6D;"/>
         </div>
     </form>
@@ -89,3 +95,14 @@ if(!empty($_SESSION['status_response'])){
 
 </body>
 </html>
+
+<?php
+/* Changes as of 11:00PM - May 6, 2024
+
+    - Added lines 36 - 47
+    - Changed lines 48 - 80
+    - Changed lines 83 - 84
+    - Changed lines 87 - 88
+
+   End of Changes*/
+?>

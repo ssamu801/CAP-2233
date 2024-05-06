@@ -15,8 +15,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th class="text-center">Name</th>
                                     <th class="text-center">Email</th>
-                                    <th class="text-center">Title</th>
                                     <th class="text-center">Date</th>
                                     <th class="text-center">Start Time</th>
                                     <th class="text-center">End Time</th>
@@ -27,47 +27,51 @@
                             <tbody>
                             <?php
                    
+                                $login_id = $_SESSION['login_id'];
                                 include './db_connect.php';
-                                $requests = $conn->query("SELECT * FROM events WHERE status = 'Pending'");
+                                $requests = $conn->query("SELECT e.id, e.user_email, e.user_name, e.date, e.location, e.time_from, e.time_to
+                                                            FROM events e
+                                                            JOIN availability a ON e.date = a.date
+                                                            AND e.time_from = a.time_from
+                                                            AND e.time_to = a.time_to
+                                                            WHERE e.status = 'Pending'
+                                                            AND a.status = 'Available'
+                                                            AND a.counselorID = $login_id;");
                                 $total = mysqli_num_rows($requests);
                                 if($total > 0):
                                     while($row= $requests->fetch_assoc()):
                             ?>
                                     <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
 				 	                    <td class="text-center">
-				 		                    <?php echo $row['user_email'] ?>
+				 		                    <?php echo $row['user_name'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
-				 		                    <?php echo$row['title'] ?>
+				 		                    <?php echo$row['user_email'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
 				 		                    <?php echo $row['date'] ?>
 				 	                    </td>
 				 	                    <td class="text-center">
-                                            <?php echo $row['time_from'] ?>
+                                         <?php
+                                            $time_from = $row['time_from'];
+                                            $formatted_time = date("h:i A", strtotime($time_from));
+                                            echo $formatted_time;
+                                        ?>
 				 	                    </td>
                                          <td class="text-center">
-                                            <?php echo $row['time_to'] ?>
+                                         <?php
+                                            $time_from = $row['time_to'];
+                                            $formatted_time = date("h:i A", strtotime($time_from));
+                                            echo $formatted_time;
+                                        ?>
 				 	                    </td>
                                          <td class="text-center">
                                             <?php echo $row['location'] ?>
 				 	                    </td>
-                                        
-                                        
-                                         
-                                        <form method='post' action='index.php?page=appointments/addevent'> 
-                                            <input type='hidden' id='counselor_email' name='counselor_email' value='<?php echo $_SESSION['login_email']; ?>'>
-                                            <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
-                                            <input type='hidden' id='userID' name='userID' value='<?php echo $row['id']; ?>'>
-                                            <input type='hidden' value='<?php echo $row['user_email']; ?>' name='email'>
-                                            <input type='hidden' value='<?php echo $row['title']; ?>' name='title'>
-                                            <input type='hidden' value='<?php echo $row['date']; ?>' name='date'>
-                                            <input type='hidden' value='<?php echo $row['time_from']; ?>' name='time_from'>
-                                            <input type='hidden' value='<?php echo $row['time_to']; ?>' name='time_to'>
-                                            <input type='hidden' value='<?php echo $row['location']; ?>' name='location'>
-                                            <input type='hidden' value='<?php echo $row['student_id']; ?>' name='student_id'>
-                                            <td class="text-center"><input class="btn btn-success text-white" type='submit' name='Accept' value='Accept'/> <input class="btn btn-danger text-white" type='submit' name='Reject' value='Reject'/></td>
-                                        </form>
+                                        <td class="text-center">
+                                        <button class="btn btn-success text-white" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
+                                        </td>
+                                    
                                     </tr>
                             <?php endwhile; ?>
                             <?php else: ?>
@@ -88,7 +92,24 @@
 
 $('table').dataTable();
 
-
+$('#accept').click(function(){
+		uni_modal2("Accept Appointment Request","appointments/pending_modal.php?id="+$(this).attr('data-id'),'mid-large')
+})
 </script>
 
+<?php
+/* Changes as of 11:00PM - May 6, 2024
+    Main changes: updated SQL query
 
+    - Added line 18
+    - Added line 30
+    - Changed line 31
+    - Added lines 32 - 39
+    - Changed line 46
+    - Changed line 49
+    - Added lines 55 - 59
+    - Added lines 62 - 66
+    - Added lines 71 - 74
+
+   End of Changes*/
+?>
