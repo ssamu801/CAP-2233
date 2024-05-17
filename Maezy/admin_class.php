@@ -472,6 +472,62 @@ Class Action {
 			return 1;
 		}
 	}
+
+	function save_appointment(){
+		extract($_POST);
+
+		$stud_id = $student_id;
+
+		$data = " title = '$title' ";
+		$data .= ", description = '$description' ";
+
+		$selectedSchedule = $selectedDate;
+		$schedParts = explode(', ', $selectedSchedule);
+		$datePart = date('Y-m-d', strtotime($schedParts[0]));
+		$timeRange = explode(' - ', $schedParts[2]);
+		$startTime = date('H:i:s', strtotime($timeRange[0]));
+		$endTime = date('H:i:s', strtotime($timeRange[1]));
+
+		$data .= ", mode = '$mode' "; 
+		$data .= ", date = '$datePart' ";
+		$data .= ", time_from = '$startTime' ";
+		$data .= ", time_to = '$endTime' ";
+		$data .= ", user_name = '$user_name' ";
+		$data .= ", user_email = '$user_email' ";
+		$data .= ", student_id = '$student_id' ";
+
+		if(empty($urgency)){ 
+			$urgency = 'Not Urgent';
+		} 
+		if(empty($notes)){
+			$notes = 'No notes indicated.';
+		}
+
+		$data .= ", notes = '$notes' ";
+		$data .= ", urgency = '$urgency' ";
+
+		$appointment = $this->db->query("INSERT INTO events set ".$data);
+
+		if($appointment){
+
+			$id = 0;
+			$sql = "SELECT MAX(id) AS max_value FROM events";
+			$result =$this->db->query($sql);
+
+			if ($result->num_rows > 0) {
+    // Fetch the result as an associative array
+    			$row = $result->fetch_assoc();
+    			$id = $row["max_value"];
+			}
+				$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($stud_id, 6, $id)");
+					
+				if($event_notif){
+					return 1; 
+				}
+		}
+		
+	}
+	
 	function search(){
 		extract($_POST);
 		$data = array();

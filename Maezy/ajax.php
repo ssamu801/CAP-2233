@@ -158,6 +158,12 @@ if($action == "save_article"){
 		echo $save;
 }
 
+if($action == "save_appointment"){
+	$save = $crud->save_appointment();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_article_rating"){
 	$save = $crud->save_article_rating();
 	if($save)
