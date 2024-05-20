@@ -14,8 +14,20 @@ if(isset($_POST['submit'])){
     $description = !empty($_POST['description'])?trim($_POST['description']):''; 
     $location = !empty($_POST['location'])?trim($_POST['location']):''; 
    // $date = !empty($_POST['date'])?trim($_POST['date']):''; -- UPDATEDDDDDDDDDDDDDDDDDDDDD
-    $time_from = !empty($_POST['time_from'])?trim($_POST['time_from']):''; 
-    $time_to = !empty($_POST['time_to'])?trim($_POST['time_to']):''; 
+    $selectedSched = !empty($_POST['selectedDate'])?trim($_POST['selectedDate']):''; 
+
+    $schedParts = explode(', ', $selectedSched);
+
+    // Extract the date part and convert it to the desired format (YYYY-MM-DD)
+    $datePart = date('Y-m-d', strtotime($schedParts[0]));
+
+// Extract the time range part and split it into start and end times
+    $timeRange = explode(' - ', $schedParts[2]);
+    $startTime = date('H:i:s', strtotime($timeRange[0]));
+    $endTime = date('H:i:s', strtotime($timeRange[1]));
+
+    $time_from = $startTime; 
+    $time_to = $endTime; 
     $user_name = !empty($_POST['client_name'])?trim($_POST['client_name']):''; 
     $user_email = !empty($_POST['attendees'])?trim($_POST['attendees']):''; 
     $student_id = !empty($_POST['student_id'])?trim($_POST['student_id']):''; 
@@ -32,6 +44,9 @@ if(isset($_POST['submit'])){
     if(empty($urgency)){ 
         $urgency = 'Not Urgent';
     } 
+    if(empty($notes)){
+        $notes = 'No notes indicated.';
+    }
 
      
     // Check whether user inputs are empty 
@@ -46,12 +61,9 @@ if(isset($_POST['submit'])){
         $db_notes = $notes;
         $db_urgency = $urgency;
 
-        $selected_option = $_POST['time'];
-        list($date, $time_from, $time_to) = explode('|', $selected_option);
-
         $db_time_from = $time_from; 
         $db_time_to = $time_to; 
-        $db_date = $date; 
+        $db_date = $datePart; 
         $db_user_name = $user_name; 
         $db_email1 = $user_email; 
         $db_email2 = $counselor_email; 
@@ -61,12 +73,20 @@ if(isset($_POST['submit'])){
          
         // Check if the insert was successful before redirecting
         if($insert){ 
+            $_SESSION['success_message'] = "Your request has been submitted successfully!";
+            // Redirect to another page
             // JavaScript for automatic redirect 
-            echo '<script type="text/javascript">
-                      setTimeout(function() {
-                          window.location.href = "index.php?page=appointments/eventmaker";
-                      }, 0000); 
-                  </script>';
+            echo '<script>
+            
+                function submitFormAndToast() {
+                    alert_toast("Data successfully saved.", "success");
+                    setTimeout(function() {
+                        window.location.href = "redirect_page.php"; // Replace with the actual URL
+                    }, 2000); // 2000 milliseconds = 2 seconds delay
+                }
+
+    submitFormAndToast();
+</script>';
         } else { 
             $statusMsg = 'Something went wrong, please try again after some time.'; 
         } 
@@ -86,6 +106,18 @@ if(isset($_POST['submit'])){
         setTimeout(function() {
             window.location.href = url;
         }, delay);
+    }
+
+    function submitFormAndToast() {
+    // Here, submit the form using AJAX or any other method
+    // After successful submission, display the toast message
+    alert_toast("Data successfully saved.", 'success');
+
+    // Redirect the user after a delay of 2 seconds (adjust the delay as needed)
+    setTimeout(function () {
+        window.location.href = "index.php?page=appointments/success_page"; // Replace 'redirect_page.php' with the actual URL
+    }, 2000); // 2000 milliseconds = 2 seconds
+    
     }
 </script>
 

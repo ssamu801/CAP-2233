@@ -108,6 +108,17 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="uni_modal2" role='dialog'>
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title"></h5>
+      </div>
+      <div class="modal-body">
+      </div>
+      </div>
+    </div>
+  </div>
   <div class="modal fade" id="view_modal" role='dialog'>
     <div class="modal-dialog modal-md" role="document">
       <div class="modal-content">
@@ -178,6 +189,34 @@
                     $('#uni_modal .modal-dialog').removeAttr("class").addClass("modal-dialog modal-md")
                 }
                 $('#uni_modal').modal({
+                  show:true,
+                  backdrop:'static',
+                  keyboard:false,
+                  focus:true
+                })
+                end_load()
+            }
+        }
+    })
+}
+window.uni_modal2 = function($title = '' , $url='',$size=""){
+    start_load()
+    $.ajax({
+        url:$url,
+        error:err=>{
+            console.log()
+            alert("An error occured")
+        },
+        success:function(resp){
+            if(resp){
+                $('#uni_modal2 .modal-title').html($title)
+                $('#uni_modal2 .modal-body').html(resp)
+                if($size != ''){
+                    $('#uni_modal2 .modal-dialog').addClass($size)
+                }else{
+                    $('#uni_modal2 .modal-dialog').removeAttr("class").addClass("modal-dialog modal-md")
+                }
+                $('#uni_modal2').modal({
                   show:true,
                   backdrop:'static',
                   keyboard:false,

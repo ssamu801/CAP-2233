@@ -1,8 +1,23 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-	<title>Requests</title>
+<title>Requests</title>
+<style>
+    .modal-content{
+        background-color: transparent;
+        border: none;
+    }
+    .modal-header{
+        border: none;
+    }
+    .disabled-date{
+        background-color:#f1f1f1;
+        color:#b1b1b1;
+    }
+</style>
 </head>
+<body>
 
 <?php 
 // Include configuration file 
@@ -27,57 +42,49 @@ if(!empty($_SESSION['status_response'])){
     <div style='width:50%; margin-left: auto; ; margin-right: auto; padding-bottom: 20px; padding-top: 20px;' class="alert alert-<?php echo $status; ?>"><?php echo $statusMsg; ?></div>
 <?php } ?>
 <div class="row mb-4 mt-4">
-			<div class="col-md-12">
-				
-			</div>
-		</div>
+    <div class="col-md-12">
+        
+    </div>
+</div>
 <div class="col-md-12" style='width:50%; margin-left: auto; ; margin-right: auto; padding-bottom: 20px; padding-top: 20px; background-color:#FFFFFF' >
-    <form method="post" action="index.php?page=appointments/addeventtodb" class="form">
-            <?php
-
-                   include './db_connect.php';
-                   $id = $_SESSION['login_id'];
-                   $requests = $conn->query("SELECT name, email FROM users where id = '$id';");
-                   $total = mysqli_num_rows($requests);
-                   if($total > 0):
-                       while($row= $requests->fetch_assoc()):
-            ?>
-                        <input type="hidden" name="client_name" value='<?php echo $row["name"]; ?>'>
-                        <input type="hidden" name="attendees" value='<?php echo $row["email"];?>'>
-                        <input type="hidden" name="student_id" value='<?php echo $id;?>'>
-                        <div class="form-group">
-                            <label>Event Title</label>
-                            <input type="text" class="form-control" name="title" value='Consultation - <?php echo $row["name"]; ?>' readonly >
-                        </div>
-                        <div class="form-group">
-                            <label>Event Description</label>
-                            <input type="text" name="description" class="form-control" value='Consultation with student named <?php echo $row["name"]; ?>, ID<?php echo $id; ?>' readonly ></input>
-                        </div>
-                    <?php endwhile; ?>
-                    <?php endif; ?>
-        <div class="form-group ">
-            <label>Time</label>
-            <select name="time" id="time" class="form-control">
+  <!--  <form method="post"  action="index.php?page=appointments/addeventtodb" class="form" onsubmit="return validateForm()"> -->
+        <form action="" id="addEventToDB" class="form">
         <?php
-                   $text="Example PHP Variable Message";
-
-                   include './db_connect.php';
-                   $requests = $conn->query("SELECT date, time_from, time_to, COUNT(*) AS count_occurrences
-                                             FROM availability
-                                             WHERE status = 'Available'
-                                             GROUP BY date, time_from, time_to;");
-                   $total = mysqli_num_rows($requests);
-                   if($total > 0):
-                       while($row= $requests->fetch_assoc()):
+            include './db_connect.php';
+            $id = $_SESSION['login_id'];
+            $requests = $conn->query("SELECT name, email FROM users where id = '$id';");
+            $total = mysqli_num_rows($requests);
+            if($total > 0):
+                while($row= $requests->fetch_assoc()):
         ?>
-                <option value='<?php echo $row['date'] . '|' . $row['time_from'] . '|' . $row['time_to']; ?>'>
-                  <?php echo date('F j, Y',strtotime($row['date'])); ?> ,
-                  <?php echo date("h:i A", strtotime($row['time_from'])); ?> - 
-                  <?php echo date("h:i A", strtotime($row['time_to'])); ?>
-                </option>
+            <input type="hidden" name="user_name" value='<?php echo $row["name"]; ?>'>
+            <input type="hidden" name="user_email" value='<?php echo $row["email"];?>'>
+            <input type="hidden" name="student_id" value='<?php echo $id;?>'>
+            <div class="form-group">
+                <label>Event Title</label>
+                <input type="text" class="form-control" name="title" value='Consultation - <?php echo $row["name"]; ?>' readonly >
+            </div>
+            <div class="form-group">
+                <label>Event Description</label>
+                <input type="text" name="description" class="form-control" value='Consultation with student named <?php echo $row["name"]; ?>, ID<?php echo $id; ?>' readonly ></input>
+            </div>
         <?php endwhile; ?>
         <?php endif; ?>
-            </select>
+        <div class="form-group">
+            <label>Mode of Session</label><br>
+            <!-- <input type="text" name="location" class="form-control" required> -->
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="mode" id="inlineRadio1" value="Online">
+                <label class="form-check-label" for="inlineRadio1">Online</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="mode" id="inlineRadio2" value="Face-To-Face">
+                <label class="form-check-label" for="inlineRadio2">Face-To-Face</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Select Date</label>
+            <input type="text" id="selectedDate" name="selectedDate" class="form-control" readonly>
         </div>
         <div class="form-group">
             <label>Notes for counselor (Optional)</label>
@@ -88,21 +95,108 @@ if(!empty($_SESSION['status_response'])){
             <input type="checkbox" id="Urgent" name="urgency" value="Urgent" style="width: 15px; height:15px;">
         </div>
         <div class="form-group">
-            <input type="submit" class="form-control navbar-color" name="submit" value="Add Event" style="background-color: #04AA6D;"/>
+            <input type="submit" class="form-control navbar-color" name="submit" value="Submit Request" style="background-color: #107a32; color:white;"/>
         </div>
     </form>
 </div>
 
+<!-- Modal -->
+<div id="dateModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Modal body content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Your JavaScript code -->
+<script>
+    $(document).ready(function() {
+            // Function to open the modal
+            $('#selectedDate').click(function(){
+                var heading = "Update Availability"; // Set the modal title text here
+                view_modal(heading, "./appointments/dateAndTimePicker.php", 'mid-large');
+            });
+
+            function view_modal(heading, url, size) {
+                // Get the modal element
+                var modal = $('#dateModal');
+
+                // Set the modal title
+                modal.find('.modal-title').text(heading);
+
+                // Load the content of cal.php into the modal body
+                modal.find('.modal-body').load(url, function() {
+                    // Adjust the modal size based on the 'size' parameter
+                    if (size === 'mid-large') {
+                        modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-lg');
+                    } else if (size === 'small') {
+                        modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
+                    } else {
+                        modal.find('.modal-dialog').removeClass('modal-sm modal-lg');
+                    }
+                });
+
+                // Show the modal
+                modal.modal('show');
+            }
+
+            // Function to close the modal when the close button is clicked
+            $(".close").click(function() {
+                $("#availabilityModal").modal('hide');
+            });
+
+            // Close the modal if the user clicks outside of it
+            $(window).click(function(event) {
+                if (event.target == document.getElementById("availabilityModal")) {
+                    $("#availabilityModal").modal('hide');
+                }
+            });
+        });
+        function validateForm() {
+    var selectedDate = document.getElementById("selectedDate").value;
+    if (selectedDate.trim() == "") {
+        alert("Please select a schedule.");
+        return false; // Prevent form submission
+    }
+    return true; // Allow form submission
+    }    
+
+    $('.text-jqte').jqte();
+	$('#addEventToDB').submit(function(e){
+		e.preventDefault()
+
+		var selectedDate = document.getElementById("selectedDate").value;
+            if (selectedDate.trim() == "") {
+                alert("Please select a schedule.");
+                return false; // Prevent form submission
+            }
+
+        var selectedLocation = $("input[name='mode']:checked").val();
+        if (!selectedLocation) {
+            alert("Please select mode of session.");
+            return false; // Prevent form submission
+        }    
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=save_appointment',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					alert_toast("Request submitted. Waiting for approval.",'success')
+					setTimeout(function(){
+						location.reload()
+					},1000)
+				}
+			}
+		})
+	})
+</script>
+
 </body>
 </html>
-
-<?php
-/* Changes as of 11:00PM - May 6, 2024
-
-    - Added lines 36 - 47
-    - Changed lines 48 - 80
-    - Changed lines 83 - 84
-    - Changed lines 87 - 88
-
-   End of Changes*/
-?>
