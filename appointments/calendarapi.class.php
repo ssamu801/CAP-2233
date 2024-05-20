@@ -115,7 +115,8 @@ class GoogleCalendarApi {
             $curlPost['attendees'][1] = array('email' => $event_data['attendees'][1],
                                          'additionalGuests' => '3');
         } 
-
+        //line 118
+        $curlPost['sendNotifications'] = true;
         $curlPost['reminders'] = $event_data['reminders'];
          
         $event_date = !empty($event_datetime['event_date'])?$event_datetime['event_date']:date("Y-m-d"); 
@@ -163,4 +164,12 @@ class GoogleCalendarApi {
         return stripos($offsetInSecs, '-') === false ? "+{$hoursAndSec}" : "-{$hoursAndSec}"; 
     } 
 } 
+?>
+
+<?php
+/* Changes as of 11:00PM - May 6, 2024
+
+    - Added line 118 - 119
+	
+   End of Changes*/
 ?>

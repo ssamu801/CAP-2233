@@ -68,20 +68,10 @@
                                          <td class="text-center">
                                             <?php echo $row['location'] ?>
 				 	                    </td>
-                                        
-                                        
-                                         
-                                        <form method='post' action='index.php?page=appointments/addevent'> 
-                                            <input type='hidden' id='counselor_email' name='counselor_email' value='<?php echo $_SESSION['login_email']; ?>'>
-                                            <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
-                                            <input type='hidden' id='userID' name='userID' value='<?php echo $row['id']; ?>'>
-                                            <input type='hidden' value='<?php echo $row['user_email']; ?>' name='email'>
-                                            <input type='hidden' value='<?php echo $row['title']; ?>' name='title'>
-                                            <input type='hidden' value='<?php echo $row['date']; ?>' name='date'>
-                                            <input type='hidden' value='<?php echo $row['time_from']; ?>' name='time_from'>
-                                            <input type='hidden' value='<?php echo $row['time_to']; ?>' name='time_to'>
-                                            <td class="text-center"><input class="btn btn-success text-white" type='submit' name='Accept' value='Accept'/> <input class="btn btn-danger text-white" type='submit' name='Reject' value='Reject'/></td>
-                                        </form>
+                                        <td class="text-center">
+                                        <button class="btn btn-success text-white" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
+                                        </td>
+                                    
                                     </tr>
                             <?php endwhile; ?>
                             <?php else: ?>
@@ -102,7 +92,24 @@
 
 $('table').dataTable();
 
-
+$('#accept').click(function(){
+		uni_modal2("Accept Appointment Request","appointments/pending_modal.php?id="+$(this).attr('data-id'),'mid-large')
+})
 </script>
 
+<?php
+/* Changes as of 11:00PM - May 6, 2024
+    Main changes: updated SQL query
 
+    - Added line 18
+    - Added line 30
+    - Changed line 31
+    - Added lines 32 - 39
+    - Changed line 46
+    - Changed line 49
+    - Added lines 55 - 59
+    - Added lines 62 - 66
+    - Added lines 71 - 74
+
+   End of Changes*/
+?>

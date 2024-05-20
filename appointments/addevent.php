@@ -1,4 +1,5 @@
 <?php     
+
 // Include database configuration file 
 require_once './db_connect.php'; 
  
@@ -11,15 +12,27 @@ if(isset($_POST['Accept'])){
     // Get event info 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
+    $student_id = !empty($_POST['student_id'])?trim($_POST['student_id']):''; 
     $counselor_email = !empty($_POST['counselor_email'])?trim($_POST['counselor_email']):''; 
     $counselor_name = !empty($_POST['counselor_name'])?trim($_POST['counselor_name']):''; 
+    $location = !empty($_POST['location'])?trim($_POST['location']):''; 
+    $time_from = !empty($_POST['time_from'])?trim($_POST['time_from']):''; 
+    $time_to = !empty($_POST['time_to'])?trim($_POST['time_to']):''; 
+    $date = !empty($_POST['date'])?trim($_POST['date']):''; 
      
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
-        // Insert data into the database 
-        $sqlQ = "UPDATE events SET counselor_name=?, counselor_email=?, status=? WHERE id=?";
+        
+        $sqlQ = "INSERT INTO event_notifications (id, description, counselor_name, time, event_start, location, event_end, event_date) VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)";
         $stmt = $conn->prepare($sqlQ);
-        $stmt->bind_param("sssi", $counselor_name, $counselor_email, $db_status, $db_userID);
+        $stmt->bind_param("issssss", $student_id, $notif_desc, $counselor_name, $time_from, $location, $time_to, $date);
+        $notif_desc = "Your appointment has been confirmed";
+        $insert = $stmt->execute();
+
+        // Insert data into the database 
+        $sqlQ = "UPDATE events SET location=?, counselor_name=?, counselor_email=?, status=? WHERE id=?";
+        $stmt = $conn->prepare($sqlQ);
+        $stmt->bind_param("ssssi", $location, $counselor_name, $counselor_email, $db_status, $db_userID);
         $db_status = "Accepted";
         $db_userID = $userID;
         $insert = $stmt->execute();
@@ -74,3 +87,17 @@ exit();
         }, delay);
     }
 </script>
+
+<?php
+/* Changes as of 11:00PM - May 6, 2024
+    Main changes: added event notifications, implemented location update to database for modal
+
+    - Added line 15
+    - Added lines 18 - 21
+    - Added lines 25 - 31
+
+    - Changed line 33
+    - Changed line 35
+
+   End of Changes*/
+?>
