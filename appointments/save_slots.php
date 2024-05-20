@@ -50,6 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 } else {
     // Handle non-POST requests
-    echo "Error: Invalid request method.";
+    echo "Error: Invalid request method."; 
 }
 ?>
