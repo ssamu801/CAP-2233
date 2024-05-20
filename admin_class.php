@@ -203,27 +203,49 @@ Class Action {
 
 	function approve_topic(){
 		extract($_POST);
-	
-		$approve = $this->db->query("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = $id");
-	
-		if($approve){
-			$sql = "SELECT title FROM topics WHERE id=$id LIMIT 1";
-			$result = $this->db->query($sql);
-	
+		
+		// Prepare statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by=?, reason='Approved' WHERE id=?");
+		$approveStmt->bind_param("si", $login_name, $id);
+		
+		$sql = "SELECT title FROM topics WHERE id=? LIMIT 1";
+		$resultStmt = $this->db->prepare($sql);
+		$resultStmt->bind_param("i", $id);
+		
+		// Execute the approve statement
+		if ($approveStmt->execute()) {
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
+			
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
-				$title = $row['title']; 
-	
-				//type, topic id, comment id
-				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your post $title has been approved', 'We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 1, $id)");
-	
-				if($notif){
-					return 1; 
+				$title = $row['title'];
+				
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$message = "We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
+				$heading = "[DISCUSSION FORUM] Your post $title has been approved";
+				$type = 1;
+				
+				$notifStmt->bind_param("issii", $poster_id, $heading, $message, $type, $id);
+				
+				if ($notifStmt->execute()) {
+					return 1;
+				} else {
+					// Notification insert failed
+					error_log("Notification insert failed: " . $notifStmt->error);
 				}
+			} else {
+				// No rows found for the topic
+				error_log("No topic found with ID: " . $id);
 			}
+		} else {
+			// Approval update failed
+			error_log("Approval update failed: " . $approveStmt->error);
 		}
-	
+		
+		return 0;
 	}
+	
 	
 
 	function decline_topic(){
@@ -390,43 +412,73 @@ Class Action {
 		}
 	}
 
-	function approve_comment(){ 
-		extract($_POST);
-		$approve_comment = $this->db->query("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
-		$title = ''; 
-		$comment = '';
-		$poster_id = 0; 
-		$OP = 0;
-		$name = '';
-		if($approve_comment){
-			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name FROM comments c JOIN topics t ON c.topic_id = t.id JOIN users u ON u.id=c.user_id WHERE c.id=$id LIMIT 1";
-			$result = $this->db->query($sql);
+	function approve_comment(){
+		// Extract variables from $_POST safely
+		if (!isset($_POST['id']) || !isset($_POST['login_name'])) {
+			return 0; // Required POST variables not set
+		}
+	
+		$id = $_POST['id'];
+		$login_name = $_POST['login_name'];
+	
+		// Use prepared statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by=?, reason='Approved' WHERE id=?");
+		$approveStmt->bind_param("si", $login_name, $id);
+	
+		if ($approveStmt->execute()) {
+			// Prepare the query to fetch the required details
+			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name 
+					FROM comments c 
+					JOIN topics t ON c.topic_id = t.id 
+					JOIN users u ON u.id = c.user_id 
+					WHERE c.id = ? LIMIT 1";
+			$resultStmt = $this->db->prepare($sql);
+			$resultStmt->bind_param("i", $id);
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
 	
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
-				$topic_id = $row['topic_id']; 
-				$title = $row['title']; 
-				$comment = $row['comment'];
-				$poster_id = $row['user_id']; 
+				$topic_id = $row['topic_id'];
+				$title = $row['title'];
+				$comment = $row['comment']; // Fixed typo
+				$poster_id = $row['user_id'];
 				$OP = $row['OP'];
 				$name = $row['name'];
-
 	
-				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your comment for $title has been approved', 'We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 3, $id)");
-				
-				if($notif){
-
-					$notif2 = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES ('$OP', '[DISCUSSION FORUM] $name commented on your post $title', '$comment' , NOW(), 5, $topic_id, $id)");
-					
-					if($notif2){
-						return 1; 
+				// Prepare notification insert statements
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$heading1 = "[DISCUSSION FORUM] Your comment for $title has been approved";
+				$message1 = "We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
+				$type1 = 3;
+	
+				$notifStmt->bind_param("issii", $poster_id, $heading1, $message1, $type1, $id);
+	
+				if ($notifStmt->execute()) {
+					$notifStmt2 = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES (?, ?, ?, NOW(), ?, ?, ?)");
+					$heading2 = "[DISCUSSION FORUM] $name commented on your post $title";
+					$type2 = 5;
+	
+					$notifStmt2->bind_param("issiii", $OP, $heading2, $comment, $type2, $topic_id, $id);
+	
+					if ($notifStmt2->execute()) {
+						return 1;
+					} else {
+						error_log("Notification 2 insert failed: " . $notifStmt2->error);
 					}
-					
+				} else {
+					error_log("Notification 1 insert failed: " . $notifStmt->error);
 				}
+			} else {
+				error_log("No comment found with ID: " . $id);
 			}
-			return 1; 
+		} else {
+			error_log("Approval update failed: " . $approveStmt->error);
 		}
+	
+		return 0;
 	}
+	
 
 	function decline_comment(){
 		extract($_POST);
