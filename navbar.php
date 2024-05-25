@@ -163,7 +163,7 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
-                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2): ?>
+                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 5): ?>
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
                                 <?php endif; ?>
                                 <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2 || $_SESSION['login_type'] == 3): ?>
@@ -205,8 +205,6 @@
                         </div>
                     </li>
                     <?php endif; ?>
-
-                    <li class="ccordion accordion-dropdown"><a class="dropdown-item dditem-link" href="index.php?page=notifications/notification"><i class="fs-5 bi-house-door"></i> Notifcations</a></li>
 <!--
                     <li class="nav-item submenu">
                         <a href="index.php?page=home" class="nav-link px-sm-3 px-2">
