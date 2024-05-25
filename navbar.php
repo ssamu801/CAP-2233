@@ -205,6 +205,8 @@
                         </div>
                     </li>
                     <?php endif; ?>
+
+                    <li class="ccordion accordion-dropdown"><a class="dropdown-item dditem-link" href="index.php?page=notifications/notification"><i class="fs-5 bi-house-door"></i> Notifcations</a></li>
 <!--
                     <li class="nav-item submenu">
                         <a href="index.php?page=home" class="nav-link px-sm-3 px-2">
