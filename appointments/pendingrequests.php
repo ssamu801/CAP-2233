@@ -40,36 +40,37 @@
                                 $total = mysqli_num_rows($requests);
                                 if($total > 0):
                                     while($row= $requests->fetch_assoc()):
+                                    
                             ?>
                                     <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
-				 	                    <td class="text-center">
-				 		                    <?php echo $row['user_name'] ?>
-				 	                    </td>
-				 	                    <td class="text-center">
-				 		                    <?php echo$row['user_email'] ?>
-				 	                    </td>
-				 	                    <td class="text-center">
-				 		                    <?php echo $row['date'] ?>
-				 	                    </td>
-				 	                    <td class="text-center">
+                                        <td class="text-center">
+                                            <?php echo $row['user_name'] ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php echo $row['user_email'] ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php echo $row['date'] ?>
+                                        </td>
+                                        <td class="text-center">
                                          <?php
                                             $time_from = $row['time_from'];
                                             $formatted_time = date("h:i A", strtotime($time_from));
                                             echo $formatted_time;
                                         ?>
-				 	                    </td>
+                                        </td>
                                          <td class="text-center">
                                          <?php
                                             $time_from = $row['time_to'];
                                             $formatted_time = date("h:i A", strtotime($time_from));
                                             echo $formatted_time;
                                         ?>
-				 	                    </td>
+                                        </td>
                                          <td class="text-center">
                                             <?php echo $row['location'] ?>
-				 	                    </td>
+                                        </td>
                                         <td class="text-center">
-                                        <button class="btn btn-success text-white" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
+                                            <button class="btn btn-success text-white accept-btn" data-id="<?php echo $row['id'] ?>">Accept</button>
                                         </td>
                                     
                                     </tr>
@@ -92,24 +93,8 @@
 
 $('table').dataTable();
 
-$('#accept').click(function(){
-		uni_modal2("Accept Appointment Request","appointments/pending_modal.php?id="+$(this).attr('data-id'),'mid-large')
-})
+$('.accept-btn').click(function(){
+    uni_modal2("Accept Appointment Request", "appointments/pending_modal.php?id=" + $(this).attr('data-id'), 'mid-large');
+});
+
 </script>
-
-<?php
-/* Changes as of 11:00PM - May 6, 2024
-    Main changes: updated SQL query
-
-    - Added line 18
-    - Added line 30
-    - Changed line 31
-    - Added lines 32 - 39
-    - Changed line 46
-    - Changed line 49
-    - Added lines 55 - 59
-    - Added lines 62 - 66
-    - Added lines 71 - 74
-
-   End of Changes*/
-?>
