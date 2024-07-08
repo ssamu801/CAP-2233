@@ -125,12 +125,18 @@
                     <div class="ml-4 mr-4 d-flex flex-column justify-content-center items-center mb-2 input-fields-wrap">
                         <!-- Time slot fields will be dynamically added here -->
                     </div>
-                 <!--   <div class="text-center button-wrapper mb-2"> 
-                        <button class="btn btn-success btn-sm ml-2" id="selectScheduleBtn">Select Schedule</button>
-                    </div>  -->
+                 <div class="text-center button-wrapper mb-2"> 
+                        <button class="btn btn-secondary btn-sm ml-2" id="selectScheduleBtn">Close</button>
+                </div> 
         </div>
     </div>
 </div>
 
 
 <script src="js/dateAndTimePicker.js"></script>
+
+<?php 
+    /* 
+        128-130
+    */
+?>
