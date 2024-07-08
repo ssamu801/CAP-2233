@@ -3,7 +3,7 @@ session_start();
  $id = $_GET['id'];
  $login_id = $_SESSION['login_id'];
  include '../db_connect.php';
- $requests = $conn->query("SELECT e.id, e.user_email, e.user_name, e.date, e.location, e.time_from, e.time_to
+ $requests = $conn->query("SELECT e.id, e.user_email, e.user_name, e.date, e.location, e.student_id, e.time_from, e.time_to
                              FROM events e
                              JOIN availability a ON e.date = a.date
                              AND e.time_from = a.time_from
@@ -17,8 +17,10 @@ session_start();
 <form method='post' action='index.php?page=appointments/addevent'> 
     <input type='hidden' id='counselor_email' name='counselor_email' value='<?php echo $_SESSION['login_email']; ?>'>
     <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
+    <input type='hidden' id='student_id' name='student_id' value='<?php echo $row['student_id']; ?>'>
     <input type='hidden' id='userID' name='userID' value='<?php echo $row['id']; ?>'>
-    <input type='hidden' value='<?php echo $row['user_email']; ?>' name='email'>
+    <input type='hidden' value='<?php echo $row['user_email']; ?>' name='user_email'>
+    <input type='hidden' value='<?php echo $row['user_name']; ?>' name='user_name'>
     <input type='hidden' value='<?php echo $row['title']; ?>' name='title'>
     <input type='hidden' value='<?php echo $row['date']; ?>' name='date'>
     <input type='hidden' value='<?php echo $row['time_from']; ?>' name='time_from'>
@@ -35,9 +37,12 @@ session_start();
     <?php endwhile; ?>
 
 <?php
-/* Changes as of 11:00PM - May 6, 2024
-
-    - Entirely new file
+/* Changes as of 7/8/2024
+    Main changes: Added student id to query, added hidden input for student id, username, and user email.
+   Lines added: 
+	6
+	20
+	22-23
 
    End of Changes*/
 ?>
