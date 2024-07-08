@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
 ini_set('display_errors', 1);
 Class Action {
 	private $db;
@@ -24,9 +25,27 @@ Class Action {
 					if($key != 'passwors' && !is_numeric($key))
 						$_SESSION['login_'.$key] = $value;
 				}
+
+				if( $_SESSION['login_type'] == 1){
 					return 1;
+				}
+				else if( $_SESSION['login_type'] == 2){
+					return 2;
+				}
+				else if( $_SESSION['login_type'] == 3){
+					return 3;
+				}
+				else if( $_SESSION['login_type'] == 4){
+					return 4;
+				}
+				else if( $_SESSION['login_type'] == 5){
+					return 5;
+				}
+
+				// return 1;
+					
 			}else{
-				return 3;
+				return 9;
 			}
 	}
 	function logout(){
@@ -154,6 +173,7 @@ Class Action {
 		extract($_POST);
 		$data = " name = '$name' ";
 		$data .= ", description = '$description' ";
+		$data .= ", created_by = '$login_id' ";
 			if(empty($id)){
 				$save = $this->db->query("INSERT INTO categories set $data");
 			}else{
@@ -167,6 +187,34 @@ Class Action {
 		$delete = $this->db->query("DELETE FROM categories where id = ".$id);
 		if($delete){
 			return 1;
+		}
+	}
+
+	function follow_category(){
+		extract($_POST);
+		$data = " user_id = '$login_id' ";
+		$data .= ", category_id = '$id' ";
+
+		$save = $this->db->query("INSERT INTO categories_follow set $data");
+			
+		if($save)
+			return 1;
+	}
+
+	function unfollow_category() {
+		// Sanitize and validate inputs
+		$login_id = intval($_POST['login_id']);
+		$id = intval($_POST['id']);
+		
+		// Prepare and execute the SQL query
+		$query = "DELETE FROM categories_follow WHERE user_id = $login_id AND category_id = $id";
+		$delete = $this->db->query($query);
+		
+		// Check if deletion was successful
+		if ($delete) {
+			return 1; // Successful deletion
+		} else {
+			return 0; // Error occurred
 		}
 	}
 
@@ -203,27 +251,49 @@ Class Action {
 
 	function approve_topic(){
 		extract($_POST);
-	
-		$approve = $this->db->query("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = $id");
-	
-		if($approve){
-			$sql = "SELECT title FROM topics WHERE id=$id LIMIT 1";
-			$result = $this->db->query($sql);
-	
+		
+		// Prepare statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by=?, reason='Approved' WHERE id=?");
+		$approveStmt->bind_param("si", $login_name, $id);
+		
+		$sql = "SELECT title FROM topics WHERE id=? LIMIT 1";
+		$resultStmt = $this->db->prepare($sql);
+		$resultStmt->bind_param("i", $id);
+		
+		// Execute the approve statement
+		if ($approveStmt->execute()) {
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
+			
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
-				$title = $row['title']; 
-	
-				//type, topic id, comment id
-				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your post $title has been approved', 'We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 1, $id)");
-	
-				if($notif){
-					return 1; 
+				$title = $row['title'];
+				
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$message = "We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
+				$heading = "[DISCUSSION FORUM] Your post $title has been approved";
+				$type = 1;
+				
+				$notifStmt->bind_param("issii", $poster_id, $heading, $message, $type, $id);
+				
+				if ($notifStmt->execute()) {
+					return 1;
+				} else {
+					// Notification insert failed
+					error_log("Notification insert failed: " . $notifStmt->error);
 				}
+			} else {
+				// No rows found for the topic
+				error_log("No topic found with ID: " . $id);
 			}
+		} else {
+			// Approval update failed
+			error_log("Approval update failed: " . $approveStmt->error);
 		}
-	
+		
+		return 0;
 	}
+	
 	
 
 	function decline_topic(){
@@ -251,6 +321,38 @@ Class Action {
 				}
 			}
 		}
+	
+	}
+
+	function like_post(){
+		extract($_POST);
+		$data = " post_id = '$id' ";
+		$data .= ", user_id = '$user_id' ";
+
+		$save = $this->db->query("INSERT INTO post_likes set ".$data);
+
+		if($save)
+			return 1;
+	}
+
+	function unlike_post(){
+		extract($_POST);
+
+		$post_id = 0;
+		$sql = "SELECT id FROM post_likes WHERE post_id=$id AND user_id=$user_id ";
+		$result =$this->db->query($sql);
+
+		if ($result->num_rows > 0) {
+    		$row = $result->fetch_assoc();
+    		$post_id = $row["id"];
+		}
+
+		error_log($post_id);
+		
+		$delete = $this->db->query("DELETE FROM post_likes WHERE id=$post_id");
+					
+		if($delete)
+			return 1; 
 	
 	}
 	
@@ -390,43 +492,73 @@ Class Action {
 		}
 	}
 
-	function approve_comment(){ 
-		extract($_POST);
-		$approve_comment = $this->db->query("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by='$login_name', reason='Approved' WHERE id = ".$id);
-		$title = ''; 
-		$comment = '';
-		$poster_id = 0; 
-		$OP = 0;
-		$name = '';
-		if($approve_comment){
-			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name FROM comments c JOIN topics t ON c.topic_id = t.id JOIN users u ON u.id=c.user_id WHERE c.id=$id LIMIT 1";
-			$result = $this->db->query($sql);
+	function approve_comment(){
+		// Extract variables from $_POST safely
+		if (!isset($_POST['id']) || !isset($_POST['login_name'])) {
+			return 0; // Required POST variables not set
+		}
+	
+		$id = $_POST['id'];
+		$login_name = $_POST['login_name'];
+	
+		// Use prepared statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE comments SET status='Approved', date_approved=NOW(), reviewed_by=?, reason='Approved' WHERE id=?");
+		$approveStmt->bind_param("si", $login_name, $id);
+	
+		if ($approveStmt->execute()) {
+			// Prepare the query to fetch the required details
+			$sql = "SELECT t.id AS topic_id, t.title, c.comment, t.user_id AS OP, c.user_id, u.name 
+					FROM comments c 
+					JOIN topics t ON c.topic_id = t.id 
+					JOIN users u ON u.id = c.user_id 
+					WHERE c.id = ? LIMIT 1";
+			$resultStmt = $this->db->prepare($sql);
+			$resultStmt->bind_param("i", $id);
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
 	
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
-				$topic_id = $row['topic_id']; 
-				$title = $row['title']; 
-				$comment = $row['comment'];
-				$poster_id = $row['user_id']; 
+				$topic_id = $row['topic_id'];
+				$title = $row['title'];
+				$comment = $row['comment']; // Fixed typo
+				$poster_id = $row['user_id'];
 				$OP = $row['OP'];
 				$name = $row['name'];
-
 	
-				$notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your comment for $title has been approved', 'We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated.Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.' , NOW(), 3, $id)");
-				
-				if($notif){
-
-					$notif2 = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES ('$OP', '[DISCUSSION FORUM] $name commented on your post $title', '$comment' , NOW(), 5, $topic_id, $id)");
-					
-					if($notif2){
-						return 1; 
+				// Prepare notification insert statements
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$heading1 = "[DISCUSSION FORUM] Your comment for $title has been approved";
+				$message1 = "We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
+				$type1 = 3;
+	
+				$notifStmt->bind_param("issii", $poster_id, $heading1, $message1, $type1, $id);
+	
+				if ($notifStmt->execute()) {
+					$notifStmt2 = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES (?, ?, ?, NOW(), ?, ?, ?)");
+					$heading2 = "[DISCUSSION FORUM] $name commented on your post $title";
+					$type2 = 5;
+	
+					$notifStmt2->bind_param("issiii", $OP, $heading2, $comment, $type2, $topic_id, $id);
+	
+					if ($notifStmt2->execute()) {
+						return 1;
+					} else {
+						error_log("Notification 2 insert failed: " . $notifStmt2->error);
 					}
-					
+				} else {
+					error_log("Notification 1 insert failed: " . $notifStmt->error);
 				}
+			} else {
+				error_log("No comment found with ID: " . $id);
 			}
-			return 1; 
+		} else {
+			error_log("Approval update failed: " . $approveStmt->error);
 		}
+	
+		return 0;
 	}
+	
 
 	function decline_comment(){
 		extract($_POST);
@@ -473,10 +605,12 @@ Class Action {
 		}
 	}
 
+
 	function save_appointment(){
 		extract($_POST);
 
 		$stud_id = $student_id;
+		$coun_id = 0;
 
 		$data = " title = '$title' ";
 		$data .= ", description = '$description' ";
@@ -496,6 +630,36 @@ Class Action {
 		$data .= ", user_email = '$user_email' ";
 		$data .= ", student_id = '$student_id' ";
 
+		if (!empty($counselor)) {
+			// Include counselor ID in the appointment data
+
+			$counselorName = $_SESSION['counselorName'];
+        	$counselorEmail = $_SESSION['counselorEmail'];
+
+			$coun_id = $counselor;
+
+			$data .= ", isPreferred = 'Yes' ";
+			$data .= ", preferredCounselor = '$counselor' ";
+			$data .= ", counselor_name = '$counselorName' ";
+			$data .= ", counselor_email = '$counselorEmail' ";
+			$data .= ", counselor_id = '$counselor' ";
+
+			error_log($coun_id);
+		}
+		else {
+			// Automatically assign a counselor if not preferred
+			$assignedCounselor = $this->assign_counselor($mode, $datePart, $startTime, $endTime);
+			if ($assignedCounselor) {
+				$data .= ", counselor_name = '{$assignedCounselor['name']}' ";
+				$data .= ", counselor_email = '{$assignedCounselor['email']}' ";
+				$data .= ", counselor_id = '{$assignedCounselor['id']}' ";
+
+				$coun_id = $assignedCounselor['id'];
+
+				error_log($coun_id);
+			} 
+		}
+		
 		if(empty($urgency)){ 
 			$urgency = 'Not Urgent';
 		} 
@@ -505,17 +669,19 @@ Class Action {
 
 		$data .= ", notes = '$notes' ";
 		$data .= ", urgency = '$urgency' ";
-
+		
 		$appointment = $this->db->query("INSERT INTO events set ".$data);
 
-		if($appointment){
+		$update_avail_status = $this->update_avail_status($mode, $datePart, $startTime, $endTime, $coun_id);
+
+		if($appointment && $update_avail_status){
 
 			$id = 0;
 			$sql = "SELECT MAX(id) AS max_value FROM events";
 			$result =$this->db->query($sql);
 
 			if ($result->num_rows > 0) {
-    // Fetch the result as an associative array
+				
     			$row = $result->fetch_assoc();
     			$id = $row["max_value"];
 			}
@@ -527,7 +693,98 @@ Class Action {
 		}
 		
 	}
+
+	function assign_counselor($mode, $date, $startTime, $endTime) {
+		$totalCounselors = 0;
 	
+		error_log('please');
+		// Query to count the number of counselors available on the given date and time
+		$sql = "SELECT COUNT(*) AS totalCounselors 
+				FROM availability 
+				WHERE date = '$date' 
+				AND time_from = '$startTime' 
+				AND time_to = '$endTime'";
+	
+		$result = $this->db->query($sql);
+	
+		if ($result && $result->num_rows > 0) {
+			$row = $result->fetch_assoc();
+			$totalCounselors = $row['totalCounselors'];
+		} 
+	
+		error_log($totalCounselors);
+			if ($totalCounselors == 1) {
+				error_log('huh');
+				// If there is exactly one counselor available, return their details directly
+				$sql = "SELECT a.counselorID, u.name, u.email 
+						FROM availability a 
+						JOIN users u ON a.counselorID = u.id 
+						WHERE a.date = '$date' 
+						LIMIT 1";
+	
+				$res = $this->db->query($sql);
+	
+				if ($res && $res->num_rows > 0) {
+					$row = $res->fetch_assoc();
+					error_log('test: '.$row['counselorID'].' '. $row['name']. ' '. $row['email']);
+					return [
+						'id' => $row['counselorID'],
+						'name' => $row['name'],
+						'email' => $row['email']
+					];
+				}
+			} else {
+				error_log('why');
+				// If more than one counselor is available, find the counselor with the least appointments
+				$sql1 = "SELECT a.counselorID, u.name, u.email, COUNT(*) AS total_appointments 
+						FROM availability a 
+						JOIN users u ON a.counselorID = u.id 
+						WHERE a.date = '$date' 
+						AND a.status = 'Scheduled'
+						GROUP BY a.counselorID 
+						ORDER BY total_appointments ASC 
+						LIMIT 1";
+	
+				$res1 = $this->db->query($sql1);
+	
+				if ($res1 && $res1->num_rows > 0) {
+					$row2 = $res1->fetch_assoc();
+					error_log('test!: '.$row2['counselorID'].' '. $row2['name']. ' '. $row2['email']);
+					return [
+						'id' => $row2['counselorID'],
+						'name' => $row2['name'],
+						'email' => $row2['email']
+					];
+				}
+			}
+
+	}
+	
+	function update_avail_status($mode, $date, $startTime, $endTime, $coun_id){
+		$id = 0;
+		$sql = "SELECT id 
+				FROM availability 
+				WHERE counselorID = '$coun_id'
+				AND date = '$date' 
+				AND time_from = '$startTime' 
+				AND time_to = '$endTime'
+				AND mode = '$mode'
+				LIMIT 1";
+
+		$result = $this->db->query($sql);
+	
+		if ($result && $result->num_rows > 0) {
+			$row = $result->fetch_assoc();
+			$id = $row['id'];
+		} 		
+
+		$update = $this->db->query("UPDATE availability SET status='Scheduled' WHERE id = $id");
+
+		if ($update) {
+			return 1;
+		}
+	}
+
 	function search(){
 		extract($_POST);
 		$data = array();
@@ -561,3 +818,14 @@ Class Action {
 		return json_encode($data);
 	}
 }
+
+/*
+	lines:
+	28-48 redirection to respective dashboards based on type of user
+	176
+	192-219 follow and unfollow category functions
+	613
+	632-661 assignment of counselor  (preferred and random)
+	675-677
+	696-786 assigment of counselor function and function for updating availability status
+*/
