@@ -115,9 +115,9 @@
     </style>
 
 <div class="container-fluid overflow-hidden">
-    <div class="row vh-100 overflow-auto">
+    <div class="row overflow-auto">
         <div class="col-12 col-sm-3 col-xl-2 px-sm-2 navbar-color px-0 d-flex sticky-top ">
-            <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
+            <div class="d-flex vh-100 flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
 
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-sm-start" id="menu">
                     <li class="accordion accordion-dropdown" id="accordion1">
@@ -145,6 +145,7 @@
                             <div>
                                 <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/categories"><i class="fs-5 bi-tag"></i> Categories/Tags</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/followed_categories"><i class="fs-5 bi-tags"></i> Followed Categories</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/topics"><i class="fs-5 bi-chat"></i> Discussion</a></li>
                                 <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 4): ?>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/post_approval"><i class="fs-5 bi-file-earmark-check"></i> Pending Posts</a></li>
@@ -255,3 +256,11 @@
         });
     });
 </script>
+
+<?php
+    /* 
+        118
+        120
+        148 additional tab for followed categories
+    */
+?>

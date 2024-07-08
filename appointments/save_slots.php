@@ -19,6 +19,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Format the selected date into YYYY-MM-DD format
             $formattedDate = date("Y-m-d", strtotime("$selectedYear-$selectedMonth-$selectedDate"));
 
+            // Get the schedule type from the POST data
+            if (isset($_POST["scheduleType"])) {
+                $scheduleType = $_POST["scheduleType"];
+                // Use $scheduleType as needed in your logic or database operations
+            } else {
+                // Handle case where scheduleType is not set
+                echo "Error: Schedule type not provided.";
+                exit;
+            }
+
             // Insert the formatted date into the database
             $loginId = $_SESSION['login_id']; // Assuming you have a login ID stored in session
 
@@ -30,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $timeTo = $timeSlot["timeTo"];
 
                     // Insert time slot data into the database
-                    $sql = "INSERT INTO availability (counselorID, date, time_from, time_to) VALUES ('$loginId', '$formattedDate', '$timeFrom', '$timeTo')";
+                    $sql = "INSERT INTO availability (counselorID, date, time_from, time_to, mode) VALUES ('$loginId', '$formattedDate', '$timeFrom', '$timeTo', '$scheduleType')";
                     if (mysqli_query($conn, $sql)) {
                         echo "Schedule successfully saved.";
                     } else {
@@ -52,4 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Handle non-POST requests
     echo "Error: Invalid request method."; 
 }
+?>
+<?php 
+    /* 
+        21-30
+        43
+    */
 ?>

@@ -7,6 +7,12 @@ if(isset($_GET['id'])){
         $$k=$val;
     }
 
+    $chk = $conn->query("SELECT * FROM resources_views WHERE article_id={$_GET['id']} AND user_id='{$_SESSION['login_id']}' AND type='Article'")->num_rows;
+    if($chk <= 0){
+        $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'Article')");
+    }
+    $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Article' ")->num_rows;
+
     if(!empty($category_ids)){
         $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order by name asc");
         while($row= $tag->fetch_assoc()):
@@ -58,6 +64,9 @@ if(isset($_GET['id'])){
         background: #ccc;
         padding: 0.5rem;
     }
+    .bi-star{
+        color:#444444;
+    }
 </style>
 <div class="container-field">
     <div class="row mb-4 mt-4">
@@ -94,14 +103,15 @@ if(isset($_GET['id'])){
                     if($rating_query_rows == 0) {
                         ?>
                 
-                        <div class="rating-wrapper float-right mr-4" id="test" data-id="<?php echo $article_id ?>">
+                <span class="badge badge-default float-right mr-4 mt-1"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                        <div class="rating-wrapper float-right" id="test" data-id="<?php echo $article_id ?>">
                             <div class="star-wrapper">
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
-                                <span class="badge badge-default"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                                
                             </div>
                         </div>
                     <?php } else { ?>
@@ -340,3 +350,11 @@ if(isset($_GET['id'])){
 		})
 	})
 </script>
+
+<?php 
+    /* 
+        9-14
+        67-69
+        106-107
+    */
+?>

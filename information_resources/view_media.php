@@ -24,12 +24,26 @@ if(isset($_GET['id'])){
    
         $vid_id = getYouTubeVideoID($link);
         $youtube_embed_url = "https://www.youtube.com/embed/{$link}";
+
+        $chk = $conn->query("SELECT * FROM resources_views WHERE article_id={$_GET['id']} AND user_id='{$_SESSION['login_id']}' AND type='Video'")->num_rows;
+        if($chk <= 0){
+            $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'Video')");
+        }
+
+        $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Video' ")->num_rows;
     }
     else{
         $qry = $conn->query("SELECT * FROM media_files where upload_id= ".$_GET['id']);
         foreach($qry->fetch_array() as $k => $val){
             $$k=$val;
         }
+
+        $chk = $conn->query("SELECT * FROM resources_views WHERE article_id={$_GET['id']} AND user_id='{$_SESSION['login_id']}' AND type='File'")->num_rows;
+        if($chk <= 0){
+            $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'File')");
+        }
+
+        $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Video' ")->num_rows;
     }
         
     }
@@ -85,6 +99,9 @@ if(isset($_GET['id'])){
         background: #ccc;
         padding: 0.5rem;
     }
+    .bi-star{
+        color:#444444;
+    }
 </style>
 <div class="container-field">
     <div class="row mb-4 mt-4">
@@ -112,15 +129,17 @@ if(isset($_GET['id'])){
                     if($rating_query_rows == 0) {
                         ?>
                 
-                        <div class="rating-wrapper float-right mr-4" id="test" data-id="<?php echo $video_id ?>">
+                <span class="badge badge-default float-right mr-4 mt-1"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                        <div class="rating-wrapper float-right" id="test" data-id="<?php echo $video_id ?>">
                             <div class="star-wrapper">
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
-                                <span class="badge badge-default"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                                
                             </div>
+                            
                         </div>
                     <?php } else { ?>
                             <div class="rating-wrapper float-right mr-3" data-id="<?php echo $video_id ?>">
@@ -169,14 +188,15 @@ if(isset($_GET['id'])){
                     if($rating_query_rows == 0) {
                         ?>
                 
-                        <div class="rating-wrapper float-right mr-4" id="test" data-id="<?php echo $upload_id ?>">
+                    <span class="badge badge-default float-right mr-4 mt-1"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                        <div class="rating-wrapper float-right" id="test" data-id="<?php echo $upload_id ?>">
                             <div class="star-wrapper">
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
-                                <span class="badge badge-default"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                                
                             </div>
                         </div>
                     <?php } else { ?>
@@ -312,3 +332,12 @@ if(isset($_GET['id'])){
         }
     });
 </script>
+
+<?php 
+    /* 
+        27-33
+        40-46
+        132-133
+        191-192
+    */
+?>

@@ -15,6 +15,9 @@
         background-color:#f1f1f1;
         color:#b1b1b1;
     }
+    .counselor-dropdown {
+        display: none;
+    }
 </style>
 </head>
 <body>
@@ -22,6 +25,8 @@
 <?php 
 // Include configuration file 
 include_once 'config.php'; 
+include './db_connect.php';
+
  
 $postData = ''; 
 if(!empty($_SESSION['postData'])){ 
@@ -34,7 +39,21 @@ if(!empty($_SESSION['status_response'])){
     $status_response = $_SESSION['status_response']; 
     $status = $status_response['status']; 
     $statusMsg = $status_response['status_msg']; 
-} 
+}
+
+if(isset($_SESSION['counselorID'])){
+    unset($_SESSION['counselorID']);
+}
+
+if(isset($_SESSION['counselorName'])){
+    unset($_SESSION['counselorName']);
+}
+
+if(isset($_SESSION['counselorEmail'])){
+    unset($_SESSION['counselorEmail']);
+}
+
+$counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
 ?>
 
 <!-- Status message -->
@@ -61,11 +80,11 @@ if(!empty($_SESSION['status_response'])){
             <input type="hidden" name="user_email" value='<?php echo $row["email"];?>'>
             <input type="hidden" name="student_id" value='<?php echo $id;?>'>
             <div class="form-group">
-                <label>Event Title</label>
+                <label>Session Title</label>
                 <input type="text" class="form-control" name="title" value='Consultation - <?php echo $row["name"]; ?>' readonly >
             </div>
             <div class="form-group">
-                <label>Event Description</label>
+                <label>Session Description</label>
                 <input type="text" name="description" class="form-control" value='Consultation with student named <?php echo $row["name"]; ?>, ID<?php echo $id; ?>' readonly ></input>
             </div>
         <?php endwhile; ?>
@@ -81,6 +100,23 @@ if(!empty($_SESSION['status_response'])){
                 <input class="form-check-input" type="radio" name="mode" id="inlineRadio2" value="Face-To-Face">
                 <label class="form-check-label" for="inlineRadio2">Face-To-Face</label>
             </div>
+        </div>
+        <div class="form-group">
+            <label>Have a Preferred Counselor?</label>
+            <input type="checkbox" name="assignCounselorCheckbox" id="assignCounselorCheckbox" value="Yes" style="width: 15px; height: 15px;">
+        </div>
+        <div class="form-group counselor-dropdown">
+            <label>Select Counselor</label>
+            <select id="counselorDropdown" name="counselor" class="form-control">
+                <option value="">Select Counselor</option> <!-- Added default option -->
+                <?php if($counselors->num_rows > 0): ?>
+                    <?php while($row = $counselors->fetch_assoc()): ?>
+                        <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <option value="">No counselors available</option>
+                <?php endif; ?>
+            </select>
         </div>
         <div class="form-group">
             <label>Select Date</label>
@@ -112,91 +148,168 @@ if(!empty($_SESSION['status_response'])){
     </div>
 </div>
 
-
-<!-- Your JavaScript code -->
 <script>
-    $(document).ready(function() {
-            // Function to open the modal
-            $('#selectedDate').click(function(){
-                var heading = "Update Availability"; // Set the modal title text here
-                view_modal(heading, "./appointments/dateAndTimePicker.php", 'mid-large');
-            });
+$(document).ready(function() {
 
-            function view_modal(heading, url, size) {
-                // Get the modal element
-                var modal = $('#dateModal');
+    var counselorSelected = false;
 
-                // Set the modal title
-                modal.find('.modal-title').text(heading);
+    // Function to get counselor ID when dropdown changes
+    $('#counselorDropdown').change(function() {
+        var selectedValue = $(this).val(); // Get selected value
+        counselorSelected = (selectedValue !== ''); // Update counselor selection status
+        
+        // Clear the selected date if a counselor is selected
+        if (counselorSelected) {
+            $('#selectedDate').val('');
+        }
 
-                // Load the content of cal.php into the modal body
-                modal.find('.modal-body').load(url, function() {
-                    // Adjust the modal size based on the 'size' parameter
-                    if (size === 'mid-large') {
-                        modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-lg');
-                    } else if (size === 'small') {
-                        modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
-                    } else {
-                        modal.find('.modal-dialog').removeClass('modal-sm modal-lg');
-                    }
-                });
-
-                // Show the modal
-                modal.modal('show');
+        // Update session with selected counselor ID
+        $.ajax({
+            type: 'POST',
+            url: './appointments/updateSessionCID.php', // PHP script to handle session update
+            data: { counselorID: selectedValue }, // Data to send to server-side script
+            success: function(response) {
+                console.log('Session updated successfully:'); // Log success message
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating session:', error); // Log error message
             }
-
-            // Function to close the modal when the close button is clicked
-            $(".close").click(function() {
-                $("#availabilityModal").modal('hide');
-            });
-
-            // Close the modal if the user clicks outside of it
-            $(window).click(function(event) {
-                if (event.target == document.getElementById("availabilityModal")) {
-                    $("#availabilityModal").modal('hide');
-                }
-            });
         });
-        function validateForm() {
-    var selectedDate = document.getElementById("selectedDate").value;
-    if (selectedDate.trim() == "") {
-        alert("Please select a schedule.");
-        return false; // Prevent form submission
-    }
-    return true; // Allow form submission
-    }    
+    });
 
-    $('.text-jqte').jqte();
-	$('#addEventToDB').submit(function(e){
-		e.preventDefault()
+    // Show or hide the counselor dropdown based on checkbox
+    $('#assignCounselorCheckbox').change(function() {
+        if ($(this).is(':checked')) {
+            $('.counselor-dropdown').show();
+        } else {
+            $('.counselor-dropdown').hide();
+            $('#counselorDropdown').val(''); // Reset dropdown to default option
+            counselorSelected = false; // Reset counselor selection status
+            
+            // Clear the selected date when hiding counselor dropdown
+            $('#selectedDate').val('');
+        }
+    });
 
-		var selectedDate = document.getElementById("selectedDate").value;
-            if (selectedDate.trim() == "") {
-                alert("Please select a schedule.");
-                return false; // Prevent form submission
+     // Update session mode when a radio button is selected
+     $('input[name="mode"]').change(function() {
+        var selectedMode = $('input[name="mode"]:checked').val(); // Get selected value
+        // Clear the selected date if the mode is changed
+        $('#selectedDate').val('');
+
+        // Update session with selected mode
+        $.ajax({
+            type: 'POST',
+            url: './appointments/updateSessionMode.php', // PHP script to handle session update
+            data: { mode: selectedMode }, // Data to send to server-side script
+            success: function(response) {
+                console.log('Session mode updated successfully.'); // Log success message
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating session mode:', error); // Log error message
             }
+        });
+    });
 
-        var selectedLocation = $("input[name='mode']:checked").val();
-        if (!selectedLocation) {
-            alert("Please select mode of session.");
-            return false; // Prevent form submission
-        }    
-		start_load()
-		$.ajax({
-			url:'ajax.php?action=save_appointment',
-			method:'POST',
-			data:$(this).serialize(),
-			success:function(resp){
-				if(resp == 1){
-					alert_toast("Request submitted. Waiting for approval.",'success')
-					setTimeout(function(){
-						location.reload()
-					},1000)
-				}
-			}
-		})
-	})
+     // Function to open the modal
+     $('#selectedDate').click(function() {
+        var isModeSelected = $('input[name="mode"]:checked').length > 0; // Check if a mode is selected
+
+        if (!isModeSelected) {
+            alert("Please select a mode of session before selecting a date.");
+            return;
+        }
+
+        if ($('#assignCounselorCheckbox').is(':checked') && !counselorSelected) {
+            alert("Please select a counselor before selecting a date.");
+            return;
+        }
+
+        var heading = "Update Availability"; // Set the modal title text here
+        view_modal(heading, "./appointments/dateAndTimePicker.php", 'mid-large');
+    });
+
+    function view_modal(heading, url, size) {
+        // Get the modal element
+        var modal = $('#dateModal');
+
+        // Set the modal title
+        modal.find('.modal-title').text(heading);
+
+        // Load the content of cal.php into the modal body
+        modal.find('.modal-body').load(url, function() {
+            // Adjust the modal size based on the 'size' parameter
+            if (size === 'mid-large') {
+                modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-lg');
+            } else if (size === 'small') {
+                modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
+            } else {
+                modal.find('.modal-dialog').removeClass('modal-sm modal-lg');
+            }
+        });
+
+        // Show the modal
+        modal.modal('show');
+    }
+    // Form submission
+    $('#addEventToDB').submit(function(e) {
+        e.preventDefault();
+
+         // Check if the checkbox is checked but no counselor is selected
+         if ($('#assignCounselorCheckbox').is(':checked') && !counselorSelected) {
+            alert("Please select a counselor before submitting the form.");
+            return;
+        }
+        
+        // Check if a mode of session is selected
+        var isModeSelected = $('input[name="mode"]:checked').length > 0;
+        if (!isModeSelected) {
+            alert("Please select a mode of session.");
+            return;
+        }
+
+        // Check if a date is selected
+        if ($('#selectedDate').val() === '') {
+            alert("Please select a date.");
+            return;
+        }
+
+        // Proceed with form submission via AJAX
+        start_load();
+        $.ajax({
+            url: 'ajax.php?action=save_appointment',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(resp) {
+                if (resp == 1) {
+                    alert_toast("Request submitted. Waiting for approval.", 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }
+            }
+        });
+    });
+
+    // Reset dropdown to default option when page loads
+    $('#assignCounselorCheckbox').trigger('change');
+
+});
 </script>
 
 </body>
 </html>
+
+
+<?php 
+    /* 
+        18-20 css
+        83
+        87
+        104-120 selection of counselor
+        153-213
+        215-227
+        254-259
+        260-297    
+    */
+?>

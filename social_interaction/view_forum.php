@@ -1,5 +1,6 @@
 <?php include 'db_connect.php' ?>
 <?php
+$user_id = $_SESSION['login_id'];
 error_reporting(E_ERROR | E_PARSE);
 if(isset($_GET['id'])){
 $qry = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id where t.id= ".$_GET['id']);
@@ -60,6 +61,82 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 		background: #80808091;
 		padding:5px;
 	}
+	.like-button {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 0; /* Remove padding from the form element */
+    margin: 0; /* Remove margin from the form element */
+	}
+	.like-text {
+    	padding: 6px 12px;
+    	background-color: white;
+    	color: #333;
+    	font-size: 14px;
+    	border: none;
+    	border-right: 1px solid #e0e0e0;
+    	cursor: pointer;
+    	display: flex;
+    	align-items: center;
+    	text-decoration: none;
+    	margin: 0; /* Remove margin from the button */
+	}
+	.like-text:hover {
+    	background-color: #107a32;
+    	color: white;
+	}
+	.bi-hand-thumbs-up {
+    	color: black;
+	}
+	.like-text:hover .bi-hand-thumbs-up {
+    	color: white;
+	}
+	.like-count {
+    	padding: 6px 12px;
+    	background-color: white;
+    	color: #333;
+    	font-size: 14px;
+	}
+	.unlike-button {
+    	display: inline-flex;
+    	align-items: center;
+    	border: 1px solid #e0e0e0;
+    	border-radius: 4px;
+    	overflow: hidden;
+    	padding: 0; /* Remove padding from the form element */
+    	margin: 0; /* Remove margin from the form element */
+	}
+	.unlike-text {
+    	padding: 6px 12px;
+    	background-color: #107a32;
+    	color: white;
+    	font-size: 14px;
+    	border: none;
+    	border-right: 1px solid #e0e0e0;
+    	cursor: pointer;
+    	display: flex;
+    	align-items: center;
+    	text-decoration: none;
+    	margin: 0; /* Remove margin from the button */
+	}
+	.unlike-text:hover {
+    	background-color: white;
+    	color: black;
+	}
+	.bi-hand-thumbs-up-fill {
+    	color: white;
+	}
+	.unlike-text:hover .bi-hand-thumbs-up-fill {
+    	color: black;
+	}
+	.unlike-count {
+    	padding: 6px 12px;
+    	background-color: white;
+    	color: #333;
+    	font-size: 14px;
+	}
 </style>
 <div class="container-field">
 <div class="row mb-4 mt-4">
@@ -105,9 +182,48 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			<!--	<span class="badge badge-secondary text-white"><?php echo number_format($view) ?> view/s</span> -->
 				<span class="badge badge-primary text-white ml-2"><i class="fa fa-comments"></i> <?php echo number_format(count($com_arr)) ?> comment/s</span>
 				</div>
-				<div id="content" class="w-100 mt-4">
+				<div id="content" class="w-100 mt-4 ml-2">
 					<?php echo html_entity_decode($content) ?>
 				</div>
+				<?php 
+					$like = $conn->query("SELECT * FROM post_likes WHERE post_id=$id AND user_id=$user_id");
+					$isLiked = mysqli_num_rows($like);
+					if($isLiked == 0):
+				?>
+				<form action="" id="like-post" class="like-button mt-4 ml-2">
+					<input type="hidden" name="id" value="<?php echo $id ?>" class="form-control">
+					<input type="hidden" name="user_id" value="<?php echo $user_id ?>" class="form-control">
+    				<button type="submit" class="like-text">
+        				<i class="bi bi-hand-thumbs-up"></i><span class="ml-1">Like</span>
+    				</button>
+    				<div class="like-count">
+						<?php 
+							$total = 0;
+							$likes = $conn->query("SELECT * FROM post_likes WHERE post_id=$id");
+							$total = mysqli_num_rows($likes);
+													
+						?>
+        				<span class="ml-1"><?php echo $total ?></span>
+    				</div>
+				</form>
+				<?php else: ?>
+					<form action="" id="unlike-post" class="unlike-button mt-4 ml-2">
+						<input type="hidden" name="id" value="<?php echo $id ?>" class="form-control">
+						<input type="hidden" name="user_id" value="<?php echo $user_id ?>" class="form-control">
+    					<button type="submit" class="unlike-text">
+        					<i class="bi bi-hand-thumbs-up-fill"></i><span class="ml-1">Liked</span>
+    					</button>
+    				<div class="like-count">
+						<?php 
+							$total = 0;
+							$likes = $conn->query("SELECT * FROM post_likes WHERE post_id=$id");
+							$total = mysqli_num_rows($likes);
+													
+						?>
+        				<span class="ml-1"><?php echo $total ?></span>
+    				</div>
+				</form>
+				<?php endif; ?>	
 			</div>
 		</div>
 		<div class="card">
@@ -380,4 +496,50 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
             }
         })
     }
+
+	$('#like-post').submit(function(e){
+		e.preventDefault()
+		
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=like_post',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					setTimeout(function(){
+						location.reload()
+					},1000)
+				}
+			}
+		})
+	})
+
+	$('#unlike-post').submit(function(e){
+		e.preventDefault()
+		
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=unlike_post',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					setTimeout(function(){
+						location.reload()
+					},1000)
+				}
+			}
+		})
+	})
 </script>
+
+<?php
+/*
+	lines:
+	64-139 css
+	188-226 like button
+	499-534 ajax for like functions
+*/
+
+?>

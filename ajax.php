@@ -60,6 +60,18 @@ if($action == "delete_category"){
 		echo $delete;
 }
 
+if($action == "follow_category"){
+	$follow = $crud->follow_category();
+	if($follow)
+		echo $follow;
+}
+
+if($action == "unfollow_category"){
+	$unfollow = $crud->unfollow_category();
+	if($unfollow)
+		echo $unfollow;
+}
+
 if($action == "save_topic"){
 	$save = $crud->save_topic();
 	if($save)
@@ -79,6 +91,18 @@ if($action == "approve_topic"){
 
 if($action == "decline_topic"){
 	$save = $crud->decline_topic();
+	if($save)
+		echo $save;
+}
+
+if($action == "like_post"){
+	$save = $crud->like_post();
+	if($save)
+		echo $save;
+}
+
+if($action == "unlike_post"){
+	$save = $crud->unlike_post();
 	if($save)
 		echo $save;
 }

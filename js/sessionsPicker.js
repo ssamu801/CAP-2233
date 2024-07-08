@@ -1,6 +1,6 @@
 var currentYear, currentMonth, currentDate;
 var selectedDate = null;
-var clickedMonth = null;
+var clickedMonth = null; // Adding 1 to currentMonth to get the correct month number
 var clickedYear = null;
 
 $(document).ready(function() {
@@ -8,7 +8,38 @@ $(document).ready(function() {
     currentYear = currentDate.getFullYear();
     currentMonth = currentDate.getMonth();
     renderCalendar();
+
+    // Event listener for the No. of Sessions input
+    $('#sessionsNo').on('input', function() {
+        validateSessionsInput();
+        addTimeSlotFields();
+    });
 });
+
+function validateSessionsInput() {
+    const sessionsInput = $('#sessionsNo');
+    let sessionsNo = sessionsInput.val();
+
+    // Remove leading zeros
+    sessionsNo = sessionsNo.replace(/^0+/, '');
+
+    // Ensure it's a positive integer and not in scientific notation
+    if (!/^\d+$/.test(sessionsNo)) {
+        // Not a valid positive integer, reset to 1
+        sessionsNo = 1;
+    } else {
+        // Convert to integer
+        sessionsNo = parseInt(sessionsNo);
+
+        // Limit maximum sessions to 20
+        if (sessionsNo > 20) {
+            sessionsNo = 20;
+        }
+    }
+
+    // Update the input field value
+    sessionsInput.val(sessionsNo);
+}
 
 function renderCalendar() {
     const calendar = createCalendar(currentYear, currentMonth, currentDate);
@@ -20,6 +51,7 @@ function createCalendar(year, month, currentDate) {
     '<div class="col-md-7">' +
     '<div class="card">' +
     '<div class="float-end x-button">' +
+    '<div class="float-left mt-3 ml-4"><h5>Select Starting Date</h5></div>' +
     '<button type="button" class="close mt-3 mr-3" data-dismiss="modal">&times;</button>' +
     '</div>' +
     '<hr class="hr-line">' +
@@ -60,7 +92,18 @@ function createCalendar(year, month, currentDate) {
                 if (date === today && year === currentDate.getFullYear() && month === currentDate.getMonth()) {
                     cellClass = 'class="current-date"';
                 }
-                row += '<td ' + cellClass + ' onclick="selectDate(this)">' + date + '</td>'; // Add onclick event to select date
+
+                const dateToCheck = new Date(year, month, date);
+
+                if (dateToCheck >= currentDate) {
+                    row += '<td ' + cellClass + ' onclick="selectDate(this)">' + date + '</td>';
+                }
+                else if(date === today && year === currentDate.getFullYear() && month === currentDate.getMonth()){
+                    row += '<td class="current-date"' + ' onclick="selectDate(this)">' + date + '</td>';
+                }
+                else {
+                    row += '<td class="disabled-date">' + date + '</td>';
+                }
                 date++;
             }
         }
@@ -73,19 +116,10 @@ function createCalendar(year, month, currentDate) {
     return calendar;
 }
 
-// Function to select date and change color
 function selectDate(cell) {
     selectedDate = parseInt(cell.textContent);
-    const currentMonthName = getMonthName(currentMonth);
-    const currentYearNum = currentYear;
-
-    // Get the month and year of the clicked date
     clickedMonth = currentMonth + 1; // Adding 1 to currentMonth to get the correct month number
     clickedYear = currentYear;
-
-    console.log('Clicked date:', selectedDate);
-    console.log('Clicked month:', clickedMonth);
-    console.log('Clicked year:', clickedYear);
 
     // Reset font color of all cells
     const allCells = document.querySelectorAll('.calendar .table td');
@@ -98,14 +132,50 @@ function selectDate(cell) {
     cell.style.backgroundColor = '#0496c7';
     cell.style.color = 'white';
 
-    // Show or hide the plus button based on whether a date is selected
-    const addTimeSlotBtn = document.getElementById('addTimeSlotBtn');
-    if (selectedDate) {
-        addTimeSlotBtn.style.display = 'inline-block'; // Show the plus button
-    } else {
-        addTimeSlotBtn.style.display = 'none'; // Hide the plus button
+    // Add time slot fields
+    addTimeSlotFields();
+}
+
+function addTimeSlotFields() {
+    const sessionsNo = $('#sessionsNo').val();
+    const timeSlotsWrapper = $('.input-fields-wrap');
+    timeSlotsWrapper.empty(); // Clear existing time slots
+
+    if (selectedDate && sessionsNo > 0) {
+        for (let i = 0; i < sessionsNo; i++) {
+            const sessionDate = new Date(clickedYear, clickedMonth - 1, selectedDate);
+            sessionDate.setDate(sessionDate.getDate() + (i * 7)); // Increment by weeks
+
+            const formattedDate = getFormattedDate(sessionDate);
+
+            timeSlotsWrapper.append(
+                `<div class="ml-4 d-flex mb-2">
+                    <span>${formattedDate}</span>
+                </div>`
+            ); 
+            /*
+            timeSlotsWrapper.append(
+                `<div class="ml-4 d-flex justify-content-center items-center mb-2">
+                    <span>${formattedDate}</span>
+                    <input type="time" name="time_from[]" class="form-control input-field" value="" required>
+                    <h3> - </h3>
+                    <input type="time" name="time_to[]" class="form-control input-field" value="" required>
+                </div>`
+            ); 
+            */
+        }
     }
 }
+
+function getFormattedDate(date) {
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    return `${month} ${day}, ${year}`;
+}
+
 
 function getMonthName(month) {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -131,7 +201,7 @@ $('#calendar').on('click', '#nextMonth', function() {
 });
 
 $(document).ready(function() {
-    var maxTimeSlots = 7; // Maximum time slots allowed
+    var maxTimeSlots = 10; // Maximum time slots allowed
     var timeSlotsWrapper = $(".input-fields-wrap"); // Time slots wrapper
     var buttonWrapper = $(".button-wrapper");
     var addTimeSlotButton = $(".add-more-btn"); // Add time slot button
@@ -142,82 +212,30 @@ $(document).ready(function() {
 
     // Function to check if save button should be enabled or disabled
     function checkSaveButton() {
-        var isTimeFieldsValid = true;
-        $(".input-field").each(function() {
-            if ($(this).val() === '') {
-                isTimeFieldsValid = false;
-                return false; // Exit loop early if any field is empty
-            }
-        });
-
-        var isRadioSelected = $("input[name='scheduleType']:checked").length > 0;
-
-        if (isTimeFieldsValid && isRadioSelected && timeSlotCount > 1) {
+        if (timeSlotCount > 1) {
             saveTimeSlotsBtn.prop("disabled", false); // Enable save button
         } else {
             saveTimeSlotsBtn.prop("disabled", true); // Disable save button
         }
     }
 
-    // Function to toggle radio buttons visibility
-    function toggleRadioButtons() {
-        if (timeSlotCount > 1) {
-            $(".radio-wrapper").show();
-        } else {
-            $(".radio-wrapper").hide();
-        }
-    }
-
     $(addTimeSlotButton).click(function(e) { // On add time slot button click
         e.preventDefault();
         if (timeSlotCount < maxTimeSlots) { // Max time slots allowed
-            // Check if all existing time slots are filled
-            var allTimeSlotsFilled = true;
-            $(".input-field").each(function() {
-                if ($(this).val() === '') {
-                    allTimeSlotsFilled = false;
-                    return false; // Exit loop early if any field is empty
-                }
-            });
-    
-            if (allTimeSlotsFilled) {
-                timeSlotCount++; // Increment time slot count
-                $(timeSlotsWrapper).append('<div class="ml-4 d-flex justify-content-center items-center mb-2"><input type="time" name="time_from[]" class="form-control input-field" value="" required><h3> - </h3><input type="time" name="time_to[]" class="form-control input-field" value="" required><button class="remove-btn mr-4"><i class="bi bi-x"></i></button></div>'); // Add time slot fields
-                toggleRadioButtons(); // Toggle radio buttons visibility
-                checkSaveButton(); // Check if save button should be enabled or disabled
-            } else {
-                // Handle case where not all time slots are filled
-                // Optionally show an error message or prevent adding new slots
-                alert('Please fill up the existing time slot before adding a new time slot.');
-            }
-        } else {
-            // Show alert when max time slots are reached
-            alert('Maximum number of time slots per day reached.');
-
+            timeSlotCount++; // Time slot increment
+            $(timeSlotsWrapper).append('<div class="ml-4 d-flex justify-content-center items-center mb-2"><input type="time" name="time_from[]" class="form-control input-field" value="" required><h3> - </h3><input type="time" name="time_to[]" class="form-control input-field" value="" required><button class="remove-btn mr-4"><i class="bi bi-x"></i></button></div>'); // Add time slot fields
+            checkSaveButton(); // Check if save button should be enabled or disabled
         }
     });
-    
 
     $(timeSlotsWrapper).on("click", ".remove-btn", function(e) { // On remove time slot button click
         e.preventDefault();
         $(this).parent('div').remove(); // Remove the time slot fields
         timeSlotCount--; // Decrement time slot count
-        toggleRadioButtons(); // Toggle radio buttons visibility
+        checkSaveButton(); // Check if save button should be enabled or disabled
     });
 
-    // Check initial state of save button
-    checkSaveButton();
-
-    // Check on change events for time fields and radio buttons
-    $(timeSlotsWrapper).on('change', '.input-field', function() {
-        checkSaveButton();
-    });
-
-    $("input[name='scheduleType']").change(function() {
-        checkSaveButton();
-    });
-
-    toggleRadioButtons();
+    checkSaveButton(); // Check initial state of save button
 });
 
 $(".saveTimeSlotsBtn").click(function() {
@@ -227,8 +245,7 @@ $(".saveTimeSlotsBtn").click(function() {
         timeSlots: [],
         selectedDate: selectedDate, // Add the selected date
         selectedMonth: clickedMonth, // Add the selected month (adding 1 because months are zero-indexed)
-        selectedYear: clickedYear, // Add the selected year
-        scheduleType: $("input[name='scheduleType']:checked").val() // Get the selected schedule type
+        selectedYear: clickedYear // Add the selected year
     };
 
     $(".input-field").each(function() {
@@ -245,10 +262,7 @@ $(".saveTimeSlotsBtn").click(function() {
     $.ajax({
         type: "POST",
         url: "./appointments/save_slots.php", // PHP file to handle the data on the server
-        data: { 
-            timeSlotsData: JSON.stringify(timeSlotsData),
-            scheduleType: timeSlotsData.scheduleType // Include the scheduleType in the AJAX data
-        },
+        data: { timeSlotsData: JSON.stringify(timeSlotsData) }, // Send the data as JSON
         success: function(response) {
             // Handle success response from the server
             console.log(response); // For debugging purposes

@@ -122,8 +122,22 @@ header("location:index.php?page=home");
 			},
 			success:function(resp){
 				if(resp == 1){
+                    console.log(resp);
 					location.href ='index.php?page=home';
-				}else{
+				}
+                else if(resp == 2){
+                    location.href ='index.php?page=dashboard_counselor';
+                }
+                else if(resp == 3){
+                    location.href ='index.php?page=dashboard_counselor';
+                }
+                else if(resp == 4){
+                    location.href ='index.php?page=dashboard_counselor';
+                }
+                else if(resp == 5){
+                    location.href ='index.php?page=dashboard_counselor';
+                }
+                else{
 					$('#login-form').prepend('<div class="alert alert-danger">Username or password is incorrect.</div>')
 					$('#login-form button[type="button"]').removeAttr('disabled').html('Login');
 				}
@@ -133,3 +147,9 @@ header("location:index.php?page=home");
 </script>	
 </body>
 </html>
+
+<?php
+    /*
+        125-140 redirectection to respective dashboards after login
+    */ 
+?>

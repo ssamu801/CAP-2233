@@ -106,45 +106,31 @@
     margin-top: 5px;
     margin-bottom: 5px;
 }
-.radio-wrapper{
-    margin-top: -15px;
-}
+
+
 </style>
 
 
 <div class="container">
-    <div class="calendar-container">
-        <div id="calendar" class="calendar"></div>
-        <div class="row d-flex justify-content-center">
-            <div class="col-md-7">
-                <div class="card test">
-                    <div class="ml-3 d-flex items-center">
-                        <h5 class="ml-2">Add available time slots</h5>
-                        <button id="addTimeSlotBtn" class="add-more-btn" style="display: none;"><i class="bi bi-plus"></i></button>
+        <div class="calendar-container">
+            <div id="calendar" class="calendar"></div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-7">
+                    <div class="card test">
+                        <div class="ml-3 d-flex items-center flex-column">
+                            <div class="form-group mr-3">
+                                <label>No. of Sessions</label>
+                                <input type="number" id="sessionsNo" name="sessionsNo" class="form-control" min="1" max="20" required>
+                            </div>
+                            <p class="text-lg font-semibold ml-2">Starting Date and Time</p>
+                        </div>
+                        <div class="ml-4 mr-4 d-flex flex-column justify-content-center items-center mb-2 input-fields-wrap">
+                            <!-- Time slot fields will be dynamically added here -->
+                        </div>
                     </div>
-                    <div class="radio-wrapper ml-4">
-                        <label for="scheduleType" class="mr-1"><b>Face-to-Face?</b></label>
-                        <input type="radio" name="scheduleType" value="Face-to-Face"> Yes
-                        <input type="radio" name="scheduleType" value="Online"> No
-                    </div>
-                    
-                    <div class="ml-4 d-flex flex-column justify-content-center items-center mb-1 input-fields-wrap">
-                        <!-- Time slot fields will be dynamically added here -->
-                    </div>
-                    <div class="text-center button-wrapper mb-2"> 
-                        <button class="btn saveTimeSlotsBtn btn-success btn-sm ml-2" id="saveTimeSlotsBtn">Save</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-
-<script src="js/calendar.js"></script>
-
-<?php 
-    /* 
-        109-111 radio css 
-        122
-        125-129 radio for mode
-    */
-?>
+<script src="js/sessionsPicker.js"></script>

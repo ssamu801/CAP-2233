@@ -1,5 +1,13 @@
-<?php include('db_connect.php');?>
-
+<?php 
+	include('db_connect.php');
+	$login_id = $_SESSION['login_id'];
+?>
+<style>
+	.unfollow:hover{
+		background-color: red;
+		border-color: red;
+	}
+</style>
 <div class="container-fluid">
 <div class="row mb-4 mt-4">
 			<div class="col-md-12">
@@ -16,11 +24,12 @@
 						    Category Form
 				  	</div>
 					<div class="card-body">
-							<input type="hidden" name="id">
-							<div class="form-group">
-								<label class="control-label">Name</label>
-								<input type="text" class="form-control" name="name">
-							</div>
+						<input type="hidden" name="login_id" value="<?php echo $login_id ?>">
+						<input type="hidden" name="id">
+						<div class="form-group">
+							<label class="control-label">Name</label>
+							<input type="text" class="form-control" name="name">
+						</div>
 					</div>
 					<div class="card-body">
 							<input type="hidden" name="id">
@@ -33,7 +42,7 @@
 					<div class="card-footer">
 						<div class="row">
 							<div class="col-md-12">
-								<button class="btn btn-sm btn-primary col-sm-3 offset-md-3"> Save</button>
+								<button class="btn btn-sm btn-success col-sm-3 offset-md-3"> Save</button>
 								<button class="btn btn-sm btn-default col-sm-3" type="button" onclick="$('#manage-category').get(0).reset()"> Cancel</button>
 							</div>
 						</div>
@@ -78,8 +87,30 @@
 										
 									</td>
 									<td class="text-center">
-										<button class="btn btn-sm btn-primary edit_category" type="button" data-id="<?php echo $row['id'] ?>" data-name="<?php echo $row['name'] ?>" data-description="<?php echo $row['description'] ?>">Edit</button>
-										<button class="btn btn-sm btn-danger delete_category" type="button" data-id="<?php echo $row['id'] ?>">Delete</button>
+										<?php if($login_id == $row['created_by'] || $_SESSION['login_type'] == 4 ): ?>
+											<button class="btn btn-sm btn-secondary edit_category" type="button" data-id="<?php echo $row['id'] ?>" data-name="<?php echo $row['name'] ?>" data-description="<?php echo $row['description'] ?>">Edit</button>
+											<button class="btn btn-sm btn-danger delete_category" type="button" data-id="<?php echo $row['id'] ?>">Delete</button>
+										<?php else: ?>
+											<?php 
+												$cat_id = $row['id'];
+												$follow = $conn->query("SELECT * FROM categories_follow WHERE user_id=$login_id AND category_id=$cat_id");
+												$total = mysqli_num_rows($follow);
+												if($total > 0):
+													
+											?>
+												<form action="" class="unfollow-category">
+													<input type="hidden" name="login_id" value="<?php echo $login_id ?>">
+													<input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+													<button class="btn btn-sm btn-success unfollow">Unfollow</button>
+												</form>	
+												<?php else: ?>
+													<form action="" class="follow-category">
+														<input type="hidden" name="login_id" value="<?php echo $login_id ?>">
+														<input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+														<button class="btn btn-sm btn-success">Follow</button>
+													</form>	
+												<?php endif; ?>		
+										<?php endif; ?>	
 									</td>
 								</tr>
 								<?php endwhile; ?>
@@ -123,14 +154,14 @@
 		    type: 'POST',
 			success:function(resp){
 				if(resp==1){
-					alert_toast("Data successfully added",'success')
+					alert_toast("Category successfully added",'success')
 					setTimeout(function(){
 						location.reload()
 					},1500)
 
 				}
 				else if(resp==2){
-					alert_toast("Data successfully updated",'success')
+					alert_toast("Category successfully updated",'success')
 					setTimeout(function(){
 						location.reload()
 					},1500)
@@ -168,5 +199,66 @@
 			}
 		})
 	}
+
+	$('.follow-category').submit(function(e){
+		e.preventDefault()
+		
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=follow_category',
+			data: new FormData($(this)[0]),
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+		    method: 'POST',
+		    type: 'POST',
+			success:function(resp){
+				if(resp==1){
+					alert_toast("Category added to Followed Categories",'success')
+					setTimeout(function(){
+						location.reload()
+					},1500)
+
+				}
+				
+			}
+		})
+	})
+
+	$('.unfollow-category').submit(function(e){
+		e.preventDefault()
+		
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=unfollow_category',
+			data: new FormData($(this)[0]),
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+		    method: 'POST',
+		    type: 'POST',
+			success:function(resp){
+				if(resp==1){
+					alert_toast("Category removed from Followed Categories",'success')
+					setTimeout(function(){
+						location.reload()
+					},1500)
+
+				}
+				
+			}
+		})
+	})
+
 	$('table').dataTable()
 </script>
+
+<?php 
+	/* 
+		1-10
+		27
+		45
+		90-113 follow and unfollow button
+		157, 164 "Category"
+	*/
+?>
