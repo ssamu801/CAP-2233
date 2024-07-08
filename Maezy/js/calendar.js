@@ -1,7 +1,6 @@
-
 var currentYear, currentMonth, currentDate;
 var selectedDate = null;
-var clickedMonth = null;// Adding 1 to currentMonth to get the correct month number
+var clickedMonth = null;
 var clickedYear = null;
 
 $(document).ready(function() {
@@ -106,11 +105,7 @@ function selectDate(cell) {
     } else {
         addTimeSlotBtn.style.display = 'none'; // Hide the plus button
     }
-
-
 }
-
-
 
 function getMonthName(month) {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -136,7 +131,7 @@ $('#calendar').on('click', '#nextMonth', function() {
 });
 
 $(document).ready(function() {
-    var maxTimeSlots = 10; // Maximum time slots allowed
+    var maxTimeSlots = 7; // Maximum time slots allowed
     var timeSlotsWrapper = $(".input-fields-wrap"); // Time slots wrapper
     var buttonWrapper = $(".button-wrapper");
     var addTimeSlotButton = $(".add-more-btn"); // Add time slot button
@@ -147,30 +142,82 @@ $(document).ready(function() {
 
     // Function to check if save button should be enabled or disabled
     function checkSaveButton() {
-        if (timeSlotCount > 1) {
+        var isTimeFieldsValid = true;
+        $(".input-field").each(function() {
+            if ($(this).val() === '') {
+                isTimeFieldsValid = false;
+                return false; // Exit loop early if any field is empty
+            }
+        });
+
+        var isRadioSelected = $("input[name='scheduleType']:checked").length > 0;
+
+        if (isTimeFieldsValid && isRadioSelected && timeSlotCount > 1) {
             saveTimeSlotsBtn.prop("disabled", false); // Enable save button
         } else {
             saveTimeSlotsBtn.prop("disabled", true); // Disable save button
         }
     }
 
+    // Function to toggle radio buttons visibility
+    function toggleRadioButtons() {
+        if (timeSlotCount > 1) {
+            $(".radio-wrapper").show();
+        } else {
+            $(".radio-wrapper").hide();
+        }
+    }
+
     $(addTimeSlotButton).click(function(e) { // On add time slot button click
         e.preventDefault();
         if (timeSlotCount < maxTimeSlots) { // Max time slots allowed
-            timeSlotCount++; // Time slot increment
-            $(timeSlotsWrapper).append('<div class="ml-4 d-flex justify-content-center items-center mb-2"><input type="time" name="time_from[]" class="form-control input-field" value="" required><h3> - </h3><input type="time" name="time_to[]" class="form-control input-field" value="" required><button class="remove-btn mr-4"><i class="bi bi-x"></i></button></div>'); // Add time slot fields
-            checkSaveButton(); // Check if save button should be enabled or disabled
+            // Check if all existing time slots are filled
+            var allTimeSlotsFilled = true;
+            $(".input-field").each(function() {
+                if ($(this).val() === '') {
+                    allTimeSlotsFilled = false;
+                    return false; // Exit loop early if any field is empty
+                }
+            });
+    
+            if (allTimeSlotsFilled) {
+                timeSlotCount++; // Increment time slot count
+                $(timeSlotsWrapper).append('<div class="ml-4 d-flex justify-content-center items-center mb-2"><input type="time" name="time_from[]" class="form-control input-field" value="" required><h3> - </h3><input type="time" name="time_to[]" class="form-control input-field" value="" required><button class="remove-btn mr-4"><i class="bi bi-x"></i></button></div>'); // Add time slot fields
+                toggleRadioButtons(); // Toggle radio buttons visibility
+                checkSaveButton(); // Check if save button should be enabled or disabled
+            } else {
+                // Handle case where not all time slots are filled
+                // Optionally show an error message or prevent adding new slots
+                alert('Please fill up the existing time slot before adding a new time slot.');
+            }
+        } else {
+            // Show alert when max time slots are reached
+            alert('Maximum number of time slots per day reached.');
+
         }
     });
+    
 
     $(timeSlotsWrapper).on("click", ".remove-btn", function(e) { // On remove time slot button click
         e.preventDefault();
         $(this).parent('div').remove(); // Remove the time slot fields
         timeSlotCount--; // Decrement time slot count
-        checkSaveButton(); // Check if save button should be enabled or disabled
+        toggleRadioButtons(); // Toggle radio buttons visibility
     });
 
-    checkSaveButton(); // Check initial state of save button
+    // Check initial state of save button
+    checkSaveButton();
+
+    // Check on change events for time fields and radio buttons
+    $(timeSlotsWrapper).on('change', '.input-field', function() {
+        checkSaveButton();
+    });
+
+    $("input[name='scheduleType']").change(function() {
+        checkSaveButton();
+    });
+
+    toggleRadioButtons();
 });
 
 $(".saveTimeSlotsBtn").click(function() {
@@ -180,7 +227,8 @@ $(".saveTimeSlotsBtn").click(function() {
         timeSlots: [],
         selectedDate: selectedDate, // Add the selected date
         selectedMonth: clickedMonth, // Add the selected month (adding 1 because months are zero-indexed)
-        selectedYear: clickedYear // Add the selected year
+        selectedYear: clickedYear, // Add the selected year
+        scheduleType: $("input[name='scheduleType']:checked").val() // Get the selected schedule type
     };
 
     $(".input-field").each(function() {
@@ -197,11 +245,14 @@ $(".saveTimeSlotsBtn").click(function() {
     $.ajax({
         type: "POST",
         url: "./appointments/save_slots.php", // PHP file to handle the data on the server
-        data: { timeSlotsData: JSON.stringify(timeSlotsData) }, // Send the data as JSON
+        data: { 
+            timeSlotsData: JSON.stringify(timeSlotsData),
+            scheduleType: timeSlotsData.scheduleType // Include the scheduleType in the AJAX data
+        },
         success: function(response) {
             // Handle success response from the server
             console.log(response); // For debugging purposes
-            alert_toast("Schedule Saved.",'success');
+            alert_toast("Schedule Saved.", 'success');
 
             setTimeout(function() {
                 location.reload();
@@ -214,5 +265,3 @@ $(".saveTimeSlotsBtn").click(function() {
         }
     });
 });
-
-
