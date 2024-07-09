@@ -347,7 +347,7 @@ Class Action {
     		$post_id = $row["id"];
 		}
 
-		error_log($post_id);
+		
 		
 		$delete = $this->db->query("DELETE FROM post_likes WHERE id=$post_id");
 					
@@ -630,6 +630,7 @@ Class Action {
 		$data .= ", user_email = '$user_email' ";
 		$data .= ", student_id = '$student_id' ";
 
+		
 		if (!empty($counselor)) {
 			// Include counselor ID in the appointment data
 
@@ -644,7 +645,7 @@ Class Action {
 			$data .= ", counselor_email = '$counselorEmail' ";
 			$data .= ", counselor_id = '$counselor' ";
 
-			error_log($coun_id);
+			
 		}
 		else {
 			// Automatically assign a counselor if not preferred
@@ -656,7 +657,7 @@ Class Action {
 
 				$coun_id = $assignedCounselor['id'];
 
-				error_log($coun_id);
+				
 			} 
 		}
 		
@@ -688,7 +689,13 @@ Class Action {
 				$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($stud_id, 6, $id)");
 					
 				if($event_notif){
-					return 1; 
+					if($mode == 'Face-To-Face'){
+						return $id;
+					}
+					else{
+						return -1;
+					}
+				
 				}
 		}
 		
@@ -697,7 +704,7 @@ Class Action {
 	function assign_counselor($mode, $date, $startTime, $endTime) {
 		$totalCounselors = 0;
 	
-		error_log('please');
+		
 		// Query to count the number of counselors available on the given date and time
 		$sql = "SELECT COUNT(*) AS totalCounselors 
 				FROM availability 
@@ -712,9 +719,9 @@ Class Action {
 			$totalCounselors = $row['totalCounselors'];
 		} 
 	
-		error_log($totalCounselors);
+		
 			if ($totalCounselors == 1) {
-				error_log('huh');
+				
 				// If there is exactly one counselor available, return their details directly
 				$sql = "SELECT a.counselorID, u.name, u.email 
 						FROM availability a 
@@ -726,7 +733,7 @@ Class Action {
 	
 				if ($res && $res->num_rows > 0) {
 					$row = $res->fetch_assoc();
-					error_log('test: '.$row['counselorID'].' '. $row['name']. ' '. $row['email']);
+					
 					return [
 						'id' => $row['counselorID'],
 						'name' => $row['name'],
@@ -734,22 +741,22 @@ Class Action {
 					];
 				}
 			} else {
-				error_log('why');
+				
 				// If more than one counselor is available, find the counselor with the least appointments
 				$sql1 = "SELECT a.counselorID, u.name, u.email, COUNT(*) AS total_appointments 
 						FROM availability a 
 						JOIN users u ON a.counselorID = u.id 
 						WHERE a.date = '$date' 
-						AND a.status = 'Scheduled'
+						AND a.status = 'Available'
 						GROUP BY a.counselorID 
-						ORDER BY total_appointments ASC 
+						ORDER BY total_appointments DESC 
 						LIMIT 1";
 	
 				$res1 = $this->db->query($sql1);
 	
 				if ($res1 && $res1->num_rows > 0) {
 					$row2 = $res1->fetch_assoc();
-					error_log('test!: '.$row2['counselorID'].' '. $row2['name']. ' '. $row2['email']);
+					
 					return [
 						'id' => $row2['counselorID'],
 						'name' => $row2['name'],
@@ -777,6 +784,7 @@ Class Action {
 			$row = $result->fetch_assoc();
 			$id = $row['id'];
 		} 		
+
 
 		$update = $this->db->query("UPDATE availability SET status='Scheduled' WHERE id = $id");
 

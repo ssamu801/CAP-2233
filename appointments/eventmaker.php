@@ -114,8 +114,8 @@ $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
                         <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <option value="">No counselors available</option>
-                <?php endif; ?>
+                <option value="">No counselors available</option>
+            <?php endif; ?>
             </select>
         </div>
         <div class="form-group">
@@ -153,43 +153,54 @@ $(document).ready(function() {
 
     var counselorSelected = false;
 
-    // Function to get counselor ID when dropdown changes
-    $('#counselorDropdown').change(function() {
-        var selectedValue = $(this).val(); // Get selected value
-        counselorSelected = (selectedValue !== ''); // Update counselor selection status
-        
-        // Clear the selected date if a counselor is selected
-        if (counselorSelected) {
-            $('#selectedDate').val('');
-        }
-
-        // Update session with selected counselor ID
-        $.ajax({
-            type: 'POST',
-            url: './appointments/updateSessionCID.php', // PHP script to handle session update
-            data: { counselorID: selectedValue }, // Data to send to server-side script
-            success: function(response) {
-                console.log('Session updated successfully:'); // Log success message
-            },
-            error: function(xhr, status, error) {
-                console.error('Error updating session:', error); // Log error message
-            }
-        });
-    });
-
-    // Show or hide the counselor dropdown based on checkbox
-    $('#assignCounselorCheckbox').change(function() {
+   // Function to handle checkbox change
+   $('#assignCounselorCheckbox').change(function() {
         if ($(this).is(':checked')) {
             $('.counselor-dropdown').show();
         } else {
             $('.counselor-dropdown').hide();
             $('#counselorDropdown').val(''); // Reset dropdown to default option
             counselorSelected = false; // Reset counselor selection status
-            
             // Clear the selected date when hiding counselor dropdown
             $('#selectedDate').val('');
+
+            // Unset counselorID session variable via AJAX
+            $.ajax({
+                type: 'POST',
+                url: './appointments/updateSessionCID.php',
+                data: { action: 'unsetCounselorID' }, // Specify action to unset counselorID
+                success: function(response) {
+                    console.log('Counselor ID session variable unset successfully.');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error unsetting counselor ID session variable:', error);
+                }
+            });
         }
     });
+
+    // Function to handle counselor dropdown change
+    $('#counselorDropdown').change(function() {
+        var selectedValue = $(this).val(); // Get selected counselor ID
+        counselorSelected = (selectedValue !== ''); // Update counselor selection status
+
+        // Clear the selected date field when a new counselor is selected
+        $('#selectedDate').val(''); // Clear selected date
+
+        // AJAX to update session with selected counselor ID
+        $.ajax({
+            type: 'POST',
+            url: './appointments/updateSessionCID.php',
+            data: { counselorID: selectedValue }, // Pass selected counselor ID
+            success: function(response) {
+                console.log('Counselor ID session variable updated successfully.');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating counselor ID session variable:', error);
+            }
+        });
+    });
+
 
      // Update session mode when a radio button is selected
      $('input[name="mode"]').change(function() {
@@ -281,12 +292,19 @@ $(document).ready(function() {
             method: 'POST',
             data: $(this).serialize(),
             success: function(resp) {
-                if (resp == 1) {
-                    alert_toast("Request submitted. Waiting for approval.", 'success');
+                if (resp == -1) {
+                    alert_toast("Request submitted.", 'success');
                     setTimeout(function() {
                         location.reload();
                     }, 1000);
                 }
+                else{
+                    alert_toast("Request submitted.", 'success');
+                    setTimeout(function() {
+                        window.location.href = 'index.php?page=appointments/add_loc_f2f&resp=' + encodeURIComponent(resp);
+                    }, 1000);
+                }
+                
             }
         });
     });
