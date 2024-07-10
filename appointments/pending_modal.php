@@ -3,15 +3,9 @@ session_start();
  $id = $_GET['id'];
  $login_id = $_SESSION['login_id'];
  include '../db_connect.php';
- $requests = $conn->query("SELECT e.id, e.user_email, e.user_name, e.date, e.location, e.student_id, e.time_from, e.time_to
-                             FROM events e
-                             JOIN availability a ON e.date = a.date
-                             AND e.time_from = a.time_from
-                             AND e.time_to = a.time_to
-                             WHERE e.status = 'Pending'
-                             AND a.status = 'Available'
-                             AND a.counselorID = $login_id
-                             AND e.id = $id LIMIT 1;");
+ $requests = $conn->query("SELECT *
+                             FROM events 
+                             WHERE id = $id LIMIT 1;");
     while($row= $requests->fetch_assoc()):
 ?>
 <form method='post' action='index.php?page=appointments/addevent'> 

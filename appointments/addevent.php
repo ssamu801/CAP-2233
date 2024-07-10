@@ -5,10 +5,7 @@ require_once './db_connect.php';
  
 $postData = $statusMsg = $valErr = ''; 
 $status = 'danger'; 
- 
 // If the form is submitted 
-if(isset($_POST['Accept'])){ 
-     
     // Get event info 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
@@ -29,14 +26,14 @@ if(isset($_POST['Accept'])){
         $stmt = $conn->prepare($sqlQ);
         $stmt->bind_param("isssssssss", $student_id, $notif_desc, $user_email, $counselor_name, $time_from, $location, $time_to, $date, $event_status, $user_name);
         $notif_desc = "Your appointment has been confirmed";
-        $event_status = "Pending";
+        $event_status = "Scheduled";
         $insert = $stmt->execute();
 
         // Insert data into the database 
         $sqlQ = "UPDATE events SET location=?, counselor_name=?, counselor_email=?, status=? WHERE id=?";
         $stmt = $conn->prepare($sqlQ);
         $stmt->bind_param("ssssi", $location, $counselor_name, $counselor_email, $db_status, $db_userID);
-        $db_status = "Accepted";
+        $db_status = "Scheduled";
         $db_userID = $userID;
         $insert = $stmt->execute();
         if($insert){ 
@@ -59,25 +56,7 @@ if(isset($_POST['Accept'])){
     }else{ 
         $statusMsg = '<p>Please fill all the mandatory fields:</p>'.trim($valErr, '<br/>'); 
     } 
-}else if(isset($_POST['Reject'])){ 
-    $_SESSION['postData'] = $_POST; 
-    $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
-
-    $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
-    $stmt = $conn->prepare($sqlQ); 
-    $stmt->bind_param("si", $db_status, $db_userID); 
-    $db_status = "Rejected";
-    $db_userID = $userID; 
-    $insert = $stmt->execute();
-
-    if($insert){
-        echo '<script type="text/javascript">
-                        setTimeout(function() {
-                            window.location.href = "$googleOauthURL";
-                        }, 0000); 
-                </script>';
-    }
-} 
+ 
  
 $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
  
