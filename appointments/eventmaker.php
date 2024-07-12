@@ -56,10 +56,6 @@ if(isset($_SESSION['counselorEmail'])){
 $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
 ?>
 
-<!-- Status message -->
-<?php if(!empty($statusMsg)){ ?>
-    <div style='width:50%; margin-left: auto; ; margin-right: auto; padding-bottom: 20px; padding-top: 20px;' class="alert alert-<?php echo $status; ?>"><?php echo $statusMsg; ?></div>
-<?php } ?>
 <div class="row mb-4 mt-4">
     <div class="col-md-12">
         

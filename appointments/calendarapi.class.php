@@ -1,5 +1,5 @@
 <?php 
-
+error_reporting(E_ERROR | E_PARSE);
 class GoogleCalendarApi { 
     const OAUTH2_TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'; 
     const CALENDAR_TIMEZONE_URI = 'https://www.googleapis.com/calendar/v3/users/me/settings/timezone'; 

@@ -1,4 +1,5 @@
 <?php 
+error_reporting(E_ERROR | E_PARSE);
 // Include Google calendar api handler class 
 include_once 'calendarapi.class.php'; 
      
@@ -84,7 +85,7 @@ if(isset($_GET['code'])){
 
                         echo '<script type="text/javascript">
                         setTimeout(function() {
-                            window.location.href = "index.php?page=appointments/pendingrequests";
+                            window.location.href = "index.php?page=home";
                         }, 0000); 
                         </script>';
                     } 
