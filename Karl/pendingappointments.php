@@ -179,10 +179,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                         </td>
                                         <td class="text-center"><?php echo $row['location'] ?></td>
                                         <td class="text-center">
-                                            <select name="status" class="form-control">
-                                                <option value="Scheduled">Scheduled</option>
-                                                <option value="Completed">Completed</option>
-                                                <option value="No Show">No Show</option>
+                                            <select name="status" class="form-control status-dropdown" data-id="<?php echo $row['id'] ?>">
+                                                <option value="Scheduled" <?php if ($row['status'] == 'Scheduled') echo 'selected'; ?>>Scheduled</option>
+                                                <option value="Completed" <?php if ($row['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
+                                                <option value="No Show" <?php if ($row['status'] == 'No Show') echo 'selected'; ?>>No Show</option>
                                             </select>
                                         </td>
                                         <td class="text-center">  
@@ -294,10 +294,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                                         ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <select name="status" class="form-control">
-                                                        <option value="Scheduled">Scheduled</option>
-                                                        <option value="Completed">Completed</option>
-                                                        <option value="No Show">No Show</option>
+                                                    <select name="status" class="form-control status-dropdown" data-id="<?php echo $row['id'] ?>">
+                                                        <option value="Scheduled" <?php if ($row['status'] == 'Scheduled') echo 'selected'; ?>>Scheduled</option>
+                                                        <option value="Completed" <?php if ($row['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
+                                                        <option value="No Show" <?php if ($row['status'] == 'No Show') echo 'selected'; ?>>No Show</option>
                                                     </select>
                                                 </td>
                                                 <td class="text-center">  
@@ -328,6 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Event listener for accepting appointments
@@ -338,12 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
             uni_modal2("Accept Appointment Request", "appointments/pending_modal.php?id=" + appointmentId, 'mid-large');
         }
     });
-});
-</script>
 
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to all reschedule buttons with class 'reschedule-btn'
     var rescheduleButtons = document.querySelectorAll('.reschedule-btn');
     
@@ -352,6 +348,24 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             var appointmentId = this.getAttribute('data-id');
             uni_modal2("Accept Appointment Request","appointments/pending_modal.php?id="+$(this).attr('data-id'),'mid-large')
+        });
+    });
+
+    // AJAX request to update the status
+    $('.status-dropdown').change(function() {
+        var appointmentId = $(this).data('id');
+        var newStatus = $(this).val();
+
+        $.ajax({
+            url: 'appointments/update_status.php',
+            type: 'POST',
+            data: {
+                id: appointmentId,
+                status: newStatus
+            },
+            success: function(response) {
+                alert(response);
+            }
         });
     });
 });
