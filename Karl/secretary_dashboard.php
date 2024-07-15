@@ -91,13 +91,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-center">12</td>
-                                    <td class="text-center">16</td>
-                                    <td class="text-center">9</td>
-                                    <td class="text-center">14</td>
-                                    <td class="text-center">11</td>
+                                    <?php
+                                    // Get the current week's dates
+                                    $currentWeekDates = [];
+                                    for ($i = 0; $i <= 4; $i++) {
+                                        $currentWeekDates[] = date('Y-m-d', strtotime("this week +$i day"));
+                                    }
+
+                                    // Query the database for each day
+                                    foreach ($currentWeekDates as $date) {
+                                        $result = $conn->query("SELECT COUNT(*) FROM events WHERE date = '$date';");
+                                        $count = $result->fetch_assoc()['COUNT(*)'];
+                                        echo "<td class='text-center'>$count</td>";
+                                    }
+                                    ?>
                                 </tr>
-                                <!-- Add more rows as needed -->
                             </tbody>
                         </table>
                     </div>
@@ -149,7 +157,7 @@
     }
 
     .calendar-container {
-        height: 55vh; /* Set height to match the Appointments table */
+        height: 55vh;
     }
 
     .counselor-table-container {
