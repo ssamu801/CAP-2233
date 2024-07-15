@@ -7,14 +7,14 @@
         <div class="col-7">
             <div class="card">
                 <div class="card-header">
-                    <b>Appointments for Today // change db query to specific day</b>
+                    <b>Appointments for Today</b>
                 </div>
                 <div class="card-body">
                     <div class="table-container appointments-table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th class="text-center">Title</th>
+                                    <th class="text-center">Student</th>
                                     <th class="text-center">Mode</th>
                                     <th class="text-center">Location</th>
                                     <th class="text-center">Date</th>
@@ -28,13 +28,13 @@
                                 <form action="appointments/send.php" method="post">
                                     <?php
                                     include './db_connect.php';
-                                    $requests = $conn->query("SELECT title, mode, location, date, time_from, time_to, counselor_name, urgency FROM events WHERE status LIKE 'Accepted'");
+                                    $requests = $conn->query("SELECT user_name, mode, location, date, time_from, time_to, counselor_name, urgency FROM events WHERE status LIKE 'Accepted' AND date = CURDATE();");
                                     $total = mysqli_num_rows($requests);
                                     if ($total > 0):
                                         while ($row = $requests->fetch_assoc()):
                                     ?>
                                             <tr class="client_record record_row">
-                                                <td class="text-center"><?php echo $row['title'] ?></td>
+                                                <td class="text-center"><?php echo $row['user_name'] ?></td>
                                                 <td class="text-center"><?php echo $row['mode'] ?></td>
                                                 <td class="text-center"><?php echo $row['location'] ?></td>
                                                 <td class="text-center"><?php echo $row['date'] ?></td>
@@ -57,19 +57,25 @@
             </div>
         </div>
 
-        <!-- Counselor for the Day and Schedule for the Week -->
+        <!-- Calendar Display -->
         <div class="col-5">
             <div class="card">
                 <div class="card-header">
-                    <b>Counselor of the Day</b>
+                    <b>Calendar</b>
                 </div>
-                <div class="card-body">
-                    <p class="text-center"><strong>Bini Eilish</strong></p> <!-- Change as per current counselor -->
+                <div class="card-body calendar-container">
+                    <div id="calendar"></div>
                 </div>
             </div>
-            <div class="card mt-3">
+        </div>
+    </div>
+
+    <!-- Schedule for the Week -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
                 <div class="card-header">
-                    <b>Counselor of the Day Schedule</b>
+                    <b>Cases this Week</b>
                 </div>
                 <div class="card-body">
                     <div class="table-container counselor-table-container">
@@ -85,39 +91,11 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-center">Cindy Ka-To</td>
-                                    <td class="text-center">Jo Jo</td>
-                                    <td class="text-center">Sean Kamas</td>
-                                    <td class="text-center">Pin Tohra</td>
-                                    <td class="text-center">Juan Ted</td>
-                                </tr>
-                                <!-- Add more rows as needed -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- New Cases, Cancelled, Urgent table -->
-            <div class="card mt-3">
-                <div class="card-header">
-                    <b>Weekly Cases</b>
-                </div>
-                <div class="card-body">
-                    <div class="table-container additional-table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">Cases</th>
-                                    <th class="text-center">Cancelled</th>
-                                    <th class="text-center">Urgent</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center">5</td> 
-                                    <td class="text-center">2</td> 
-                                    <td class="text-center">3</td>
+                                    <td class="text-center">12</td>
+                                    <td class="text-center">16</td>
+                                    <td class="text-center">9</td>
+                                    <td class="text-center">14</td>
+                                    <td class="text-center">11</td>
                                 </tr>
                                 <!-- Add more rows as needed -->
                             </tbody>
@@ -129,27 +107,58 @@
     </div>
 </div>
 
+<!-- FullCalendar CSS and JS -->
+<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+
+<script>
+    $(document).ready(function() {
+        $('#calendar').fullCalendar({
+            events: [
+                <?php
+                $events = $conn->query("SELECT user_name AS title, date, time_from AS start, time_to AS end FROM events;");
+                while ($event = $events->fetch_assoc()):
+                ?>
+                {
+                    title: '<?php echo $event['title']; ?>',
+                    start: '<?php echo $event['date'] . 'T' . $event['start']; ?>',
+                    end: '<?php echo $event['date'] . 'T' . $event['end']; ?>'
+                },
+                <?php endwhile; ?>
+            ],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            defaultView: 'month',
+            editable: false
+        });
+    });
+</script>
+
 <style>
-    /* CSS for positioning the table */
     .table-container {
-        overflow-y: auto; /* Add vertical scroll if content exceeds the height */
+        overflow-y: auto;
     }
 
     .appointments-table-container {
-        height: 50vh; /* Set height to half the screen */
+        height: 55vh;
+    }
+
+    .calendar-container {
+        height: 55vh; /* Set height to match the Appointments table */
     }
 
     .counselor-table-container {
-        height: auto; /* Align with the bottom of Appointments table, accounting for the header and margin */
-    }
-    
-    .additional-table-container {
-        height: auto; /* Adjust height as needed */
+        height: auto;
     }
 
     .card-header {
-        height: 50px; /* Adjust height to accommodate the header content */
-        line-height: 30px; /* Center the text vertically */
+        height: 50px;
+        line-height: 30px;
     }
 
     .table thead th {
@@ -160,7 +169,7 @@
     }
 
     .card-body {
-        padding: 0; /* Remove default padding if any */
+        padding: 0;
     }
 
     .text-center {
@@ -192,11 +201,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 1000; /* Ensure it's above other content */
+        z-index: 1000;
     }
 
     .dashboard-content {
-        margin-top: 80px; /* Adjust according to header height */
+        margin-top: 80px;
         padding: 20px;
     }
 </style>
