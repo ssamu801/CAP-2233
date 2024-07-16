@@ -23,12 +23,11 @@ session_start();
     <input type='hidden' value='<?php echo $row['counselor_id']; ?>' name='counselor_id'>
     <input type='hidden' value='Reschedule' name='action'>
 
-    <label>Message to <?php echo $row['user_name']; ?>:</label>
-    <textarea class="form-control" name="message" rows="4" cols="50" ></textarea>
+    <label>Are you sure you want to reschedule this event?</label>
     <br>
     <span class="float-right mr-1">
-        <input class="btn btn-success ml-2 text-white" type='submit' name='Accept' value='Send'/>
-        <button type="button" class="btn ml-2 btn-secondary" data-dismiss="modal">Cancel</button>
+        <input class="btn btn-success ml-2 text-white" type='submit' name='Accept' value='Yes'/>
+        <button type="button" class="btn ml-2 btn-secondary" data-dismiss="modal">Exit</button>
     </span>
 </form>    
     <?php endwhile; ?>

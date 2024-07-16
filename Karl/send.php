@@ -129,7 +129,7 @@ if (isset($_POST['action'])) {
 
         echo "
         <script>
-            alert('Appointment has been cancelled. User has been notified of cancellation.');
+            alert('User has been notified of the need for rescheduling.');
             document.location.href = '/index.php?page=appointments/pendingappointments';
         </script>
         ";
