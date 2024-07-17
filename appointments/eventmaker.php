@@ -315,7 +315,7 @@ $('#addEventToDB').submit(function(e) {
             if (resp == -1) {
                 alert_toast("Request submitted.", 'success');
                 setTimeout(function() {
-                    location.reload();
+                    window.location.href = 'index.php?page=appointments/addevent';
                 }, 1000);
             }
             else{
