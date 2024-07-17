@@ -384,6 +384,29 @@ Class Action {
 			return 1;
 	}
 
+	function save_article_comment(){
+		extract($_POST);
+		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
+
+		if(empty($id)){
+			$data .= ", article_id = '$article_id' ";
+			$data .= ", user_id = '{$_SESSION['login_id']}' ";
+			$save = $this->db->query("INSERT INTO article_comments set ".$data);
+		}else{
+			$save = $this->db->query("UPDATE article_comments set ".$data." where id=".$id);
+		}
+		if($save)
+			return 1;
+	}
+
+	function delete_article_comment(){
+		extract($_POST);
+		$delete = $this->db->query("DELETE FROM article_comments where id = ".$id);
+		if($delete){
+			return 1;
+		}
+	}
+
 	function save_embed(){
 		extract($_POST);
 		$data = " title = '$title' ";
@@ -395,6 +418,29 @@ Class Action {
 
 		if($save)
 			return 1;
+	}
+
+	function save_embed_comment(){
+		extract($_POST);
+		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
+
+		if(empty($id)){
+			$data .= ", embed_id = '$embed_id' ";
+			$data .= ", user_id = '{$_SESSION['login_id']}' ";
+			$save = $this->db->query("INSERT INTO embed_comments set ".$data);
+		}else{
+			$save = $this->db->query("UPDATE embed_comments set ".$data." where id=".$id);
+		}
+		if($save)
+			return 1;
+	}
+
+	function delete_embed_comment(){
+		extract($_POST);
+		$delete = $this->db->query("DELETE FROM embed_comments where id = ".$id);
+		if($delete){
+			return 1;
+		}
 	}
 
 	function save_media(){
@@ -448,6 +494,39 @@ Class Action {
 				} 
 			}
 		}
+	}
+
+	function save_media_comment(){
+		extract($_POST);
+		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
+
+		if(empty($id)){
+			$data .= ", upload_id = '$media_id' ";
+			$data .= ", user_id = '{$_SESSION['login_id']}' ";
+			$save = $this->db->query("INSERT INTO media_comments set ".$data);
+		}else{
+			$save = $this->db->query("UPDATE media_comments set ".$data." where id=".$id);
+		}
+		if($save)
+			return 1;
+	}
+
+	function delete_media_comment(){
+		extract($_POST);
+			$comment_id = 0;
+			$sql = "SELECT id FROM media_comments where upload_id=".$id;
+			$result =$this->db->query($sql);
+
+			if ($result->num_rows > 0) {
+				
+    			$row = $result->fetch_assoc();
+    			$comment_id = $row["id"];
+			}
+
+			$delete = $this->db->query("DELETE FROM media_comments where id = ".$comment_id);
+			if($delete){
+				return 1;
+			}
 	}
 
 	function save_report_post(){
@@ -719,21 +798,22 @@ Class Action {
 			$totalCounselors = $row['totalCounselors'];
 		} 
 	
-		
+		error_log($date);	
 			if ($totalCounselors == 1) {
-				
 				// If there is exactly one counselor available, return their details directly
 				$sql = "SELECT a.counselorID, u.name, u.email 
 						FROM availability a 
 						JOIN users u ON a.counselorID = u.id 
-						WHERE a.date = '$date' 
+						WHERE a.date = '$date'
+						AND time_from='$startTime' 
+						AND time_to='$endTime'
 						LIMIT 1";
 	
 				$res = $this->db->query($sql);
 	
 				if ($res && $res->num_rows > 0) {
 					$row = $res->fetch_assoc();
-					
+					error_log($row['counselorID']);
 					return [
 						'id' => $row['counselorID'],
 						'name' => $row['name'],

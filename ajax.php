@@ -194,8 +194,32 @@ if($action == "save_article_rating"){
 		echo $save;
 }
 
+if($action == "save_article_comment"){
+	$save = $crud->save_article_comment();
+	if($save)
+		echo $save;
+}
+
+if($action == "delete_article_comment"){
+	$save = $crud->delete_article_comment();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_embed"){
 	$save = $crud->save_embed();
+	if($save)
+		echo $save;
+}
+
+if($action == "save_embed_comment"){
+	$save = $crud->save_embed_comment();
+	if($save)
+		echo $save;
+}
+
+if($action == "delete_embed_comment"){
+	$save = $crud->delete_embed_comment();
 	if($save)
 		echo $save;
 }
@@ -204,6 +228,18 @@ if($action == "save_media"){
 	$uploadStatus = $crud->save_media();
     if($uploadStatus)
         echo $uploadStatus;
+}
+
+if($action == "save_media_comment"){
+	$save = $crud->save_media_comment();
+	if($save)
+		echo $save;
+}
+
+if($action == "delete_media_comment"){
+	$save = $crud->delete_media_comment();
+	if($save)
+		echo $save;
 }
 
 if($action == "save_event"){

@@ -70,7 +70,6 @@
                                 <hr>
                                 <div class="button-group">
                                     <button type='submit' class="btn mr-2 btn-profile">Edit profile</button>
-                                    <button class="btn mr-2 btn-profile">View Schedules</button>
                                     <button type='button' class="btn btn-profile view_notif">Update Availability</button>
                                 </div>
                             </div> 

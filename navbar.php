@@ -167,8 +167,8 @@
                                 <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 5): ?>
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
                                 <?php endif; ?>
-                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2 || $_SESSION['login_type'] == 3): ?>
-                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingrequests"><i class="bi bi-file-earmark-check"></i> Appointment Requests</a></li>
+                                <?php if( $_SESSION['login_type'] == 3): ?>
+                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingappointments"><i class="bi bi-file-earmark-check"></i> Appointments</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records"><i class="fs-5 bi-archive"></i> Client Records</a></li>
                                 <?php endif; ?>
                             </ul>

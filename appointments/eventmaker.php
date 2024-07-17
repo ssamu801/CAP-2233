@@ -53,6 +53,10 @@ if(isset($_SESSION['counselorEmail'])){
     unset($_SESSION['counselorEmail']);
 }
 
+if(isset($_GET['counselor_id'])){
+    $_SESSION['counselorID'] = $_GET['counselor_id'];
+}
+
 $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
 ?>
 

@@ -1,4 +1,5 @@
 <?php include 'db_connect.php' ?>
+<?php $login_id = $_SESSION['login_id']; ?>
 
 <style>
     span.float-right.summary_icon {
@@ -99,17 +100,27 @@
     .table-container {
     max-height: 300px; /* Adjust this height as needed */
     overflow-y: auto;
-}
+    }
 
-.table-container::-webkit-scrollbar {
-    width: 8px;
-}
+    .table-container::-webkit-scrollbar {
+        width: 8px;
+    }
 
-.table-container::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-}
+    .table-container::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
 
+    .fc-content{
+        background-color:#107A32;
+        color:white;
+    }
+
+    .fc-center h2{
+        color: #444444;
+        font-family: "Open Sans", sans-serif;
+        font-weight:bold;
+    }
 </style>
 
 <div class="container-fluid">
@@ -132,7 +143,24 @@
                                                 <span class="summary_icon" style="background-color:#CBA6EF;"><i class="bi bi-file-text-fill" style="color:#6200C3;"></i></span>
                                             </div>
                                             <div class="col-sm info-text">
-                                                <h4 class="num"><b>67</b></h4>
+                                                <h4 class="num">
+                                                    <b>
+                                                        <?php 
+                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id";
+
+                                                            // Execute the query
+                                                            $result = $conn->query($sql);
+
+                                                            if ($result->num_rows > 0) {
+                                                                // Fetch the result
+                                                                $row = $result->fetch_assoc();
+                                                                echo $row['total_rows'];
+                                                            } else {
+                                                                echo "0";
+                                                            }
+                                                        ?>
+                                                    </b>
+                                                </h4>
                                                 <b>All</b>
                                             </div>
                                         </div>
@@ -149,7 +177,24 @@
                                                 <span class="summary_icon" style="background-color:#AAC8F4;"><i class="bi bi-people-fill" style="color:#0547AA;"></i></span>
                                             </div>
                                             <div class="col-sm info-text">
-                                                <h4 class="num"><b>27</b></h4>
+                                                <h4 class="num">
+                                                    <b>
+                                                        <?php 
+                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id AND status='Scheduled' OR status='Pending'";
+
+                                                            // Execute the query
+                                                            $result = $conn->query($sql);
+
+                                                            if ($result->num_rows > 0) {
+                                                                // Fetch the result
+                                                                $row = $result->fetch_assoc();
+                                                                echo $row['total_rows'];
+                                                            } else {
+                                                                echo "0";
+                                                            }
+                                                        ?>
+                                                    </b>
+                                                </h4>
                                                 <b>Upcoming</b>
                                             </div>
                                         </div>
@@ -166,7 +211,24 @@
                                                 <span class="summary_icon" style="background-color:#A0E3B6;"><i class="bi bi-check2-square" style="color:#107A32;"></i></span>
                                             </div>
                                             <div class="col-sm info-text">
-                                                <h4 class="num"><b>23</b></h4>
+                                                <h4 class="num">
+                                                    <b>
+                                                        <?php 
+                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id AND status='Completed' OR status='Accepted'";
+
+                                                            // Execute the query
+                                                            $result = $conn->query($sql);
+
+                                                            if ($result->num_rows > 0) {
+                                                                // Fetch the result
+                                                                $row = $result->fetch_assoc();
+                                                                echo $row['total_rows'];
+                                                            } else {
+                                                                echo "0";
+                                                            }
+                                                        ?>
+                                                    </b>
+                                                </h4>
                                                 <b>Completed</b>
                                             </div>
                                         </div>
@@ -183,7 +245,24 @@
                                                 <span class="summary_icon" style="background-color:#F3B4B4;"><i class="bi bi-person-x-fill" style="color:#B91616;"></i></span>
                                             </div>
                                             <div class="col-sm info-text">
-                                                <h4 class="num"><b>17</b></h4>
+                                                <h4 class="num">
+                                                    <b>
+                                                        <?php 
+                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id AND status='Cancelled' OR status='No Show'";
+
+                                                            // Execute the query
+                                                            $result = $conn->query($sql);
+
+                                                            if ($result->num_rows > 0) {
+                                                                // Fetch the result
+                                                                $row = $result->fetch_assoc();
+                                                                echo $row['total_rows'];
+                                                            } else {
+                                                                echo "0";
+                                                            }
+                                                        ?>
+                                                    </b>
+                                                </h4>
                                                 <b>Cancelled</b>
                                             </div>
                                         </div>
@@ -210,107 +289,208 @@
                             <div class="card-body tab-content pt-1" id="postTabsContent">
                                 <div class="tab-pane fade show active" id="flagged-posts" role="tabpanel" aria-labelledby="flagged-posts-tab">
                                     <div class="table-container">
-                                        <table class="table">
-                                            <thead>
-                                            <tr>
-                                                <th class="text-center">Name</th>
-                                                <th class="text-center">Date</th>
-                                                <th class="text-center">Start Time</th>
-                                                <th class="text-center">End Time</th>
-                                                <th class="text-center">Location</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-center">Yujin Domingo</td>
-                                                <td class="text-center">2024-05-02</td>
-                                                <td class="text-center">09:00 AM</td>
-                                                <td class="text-center">10:00 AM</td>
-                                                <td class="text-center">Andrew Gonzales Hall A1008</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Miles Morales</td>
-                                                <td class="text-center">2024-05-07</td>
-                                                <td class="text-center">11:00 AM</td>
-                                                <td class="text-center">12:00 PM</td>
-                                                <td class="text-center">Andrew Gonzales Hall A1008</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Arlo Marquez</td>
-                                                <td class="text-center">2024-05-10</td>
-                                                <td class="text-center">09:00 AM</td>
-                                                <td class="text-center">10:00 AM</td>
-                                                <td class="text-center">Andrew Gonzales Hall A1008</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Yana Madrid</td>
-                                                <td class="text-center">2024-05-13</td>
-                                                <td class="text-center">09:00 AM</td>
-                                                <td class="text-center">10:00 AM</td>
-                                                <td class="text-center">Zoom Link</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Winston Mercado</td>
-                                                <td class="text-center">2024-05-15</td>
-                                                <td class="text-center">09:00 AM</td>
-                                                <td class="text-center">10:00 AM</td>
-                                                <td class="text-center">Andrew Gonzales Hall A1008</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-center">Yujin Domingo</td>
-                                                <td class="text-center">2024-05-02</td>
-                                                <td class="text-center">09:00 AM</td>
-                                                <td class="text-center">10:00 AM</td>
-                                                <td class="text-center">Andrew Gonzales Hall A1008</td>
-                                            </tr>
-                            
-                                            </tbody>
-                                        </table>
+                                        <ul class="w-100 list-group" id="topic-list">
+                                            <?php
+                                            // Get tags
+                                            $tag = $conn->query("SELECT * FROM categories ORDER BY name ASC");
+                                            while ($row = $tag->fetch_assoc()) {
+                                                $tags[$row['id']] = $row['name'];
+                                            }
+
+                                            // Get unique student IDs
+                                            $sql_students = "SELECT student_id FROM events WHERE counselor_id=$login_id AND student_id != '' GROUP BY student_id";
+                                            $result_students = $conn->query($sql_students);
+
+                                            if ($result_students->num_rows > 0) {
+                                                while ($row_student = $result_students->fetch_assoc()) {
+                                                    $student_id = $row_student['student_id'];
+
+                                                    // Get topics for each student_id
+                                                    $sql_topics = "SELECT t.*, u.name 
+                                                                FROM topics t 
+                                                                INNER JOIN users u ON u.id = t.user_id 
+                                                                WHERE t.user_id = $student_id 
+                                                                ORDER BY unix_timestamp(date_created) DESC";
+                                                    $topic = $conn->query($sql_topics);
+
+                                                    while ($row = $topic->fetch_assoc()) {
+                                                        $trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+                                                        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
+                                                        $desc = strtr(html_entity_decode($row['content']), $trans);
+                                                        $desc = str_replace(array("<li>", "</li>"), array("", ","), $desc);
+                                                        $view = $conn->query("SELECT * FROM forum_views WHERE topic_id=" . $row['id'])->num_rows;
+                                                        $comments = $conn->query("SELECT * FROM comments WHERE topic_id=" . $row['id'])->num_rows;
+                                                        $replies = $conn->query("SELECT * FROM replies WHERE comment_id IN (SELECT id FROM comments WHERE topic_id=" . $row['id'] . ")")->num_rows;
+
+                                                        // Check for detected words
+                                                        $wordsToDetect = [];
+                                                        $stmt = $conn->query("SELECT word FROM word_bank WHERE type='Mental Health'");
+                                                        while ($word_row = $stmt->fetch_assoc()) {
+                                                            $wordsToDetect[] = $word_row['word'];
+                                                        }
+
+                                                        $text = strip_tags($desc);
+                                                        $detected = false;
+
+                                                        foreach ($wordsToDetect as $word) {
+                                                            if (stripos($text, $word) !== false) {
+                                                                $detected = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if ($detected) {
+                                                            ?>
+                                                            <li class="list-group-item mb-4">
+                                                                <div>
+                                                                    <a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
+                                                                </div>
+                                                                <div>
+                                                                    <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>
+                                                                    <?php foreach (explode(",", $row['category_ids']) as $cat): ?>
+                                                                        <span class="badge badge-info text-white ml-2"><?php echo $tags[$cat] ?></span>
+                                                                    <?php endforeach; ?>
+                                                                </div>
+                                                                <hr>
+                                                                <p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>
+                                                                <?php if ($row['isAnonymous'] == 1): ?>
+                                                                    <p class="row justify-content-left mr-1"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
+                                                                <?php else: ?>    
+                                                                    <p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+                                                                    <br>
+                                                                <?php endif; ?>
+                                                                <hr>
+                                                                <span class="float-left"><strong>Words Detected: </strong></span>
+                                                                <br>
+                                                                <span class="float-left mr-1"><small><i>
+                                                                <?php
+                                                                    $i = 0;
+                                                                    foreach ($wordsToDetect as $word) {
+                                                                        if (stripos($text, $word) !== false) {
+                                                                            echo $word . " ";
+                                                                            $i++;
+                                                                        }
+                                                                    }
+
+                                                                    if ($i == 0) {
+                                                                        echo "None detected.";
+                                                                    }
+                                                                ?>
+                                                                </i></small>
+                                                            </li>
+                                                            <?php
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                echo "<li class='list-group-item'>No students found for the specified counselor.</li>";
+                                            }
+
+                                            ?>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="approved-posts" role="tabpanel" aria-labelledby="approved-posts-tab">
                                     <div class="table-container">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">Name</th>
-                                                    <th class="text-center">Date</th>
-                                                    <th class="text-center">Start Time</th>
-                                                    <th class="text-center">End Time</th>
-                                                    <th class="text-center">Location</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="text-center">John Doe</td>
-                                                    <td class="text-center">2024-06-01</td>
-                                                    <td class="text-center">09:00 AM</td>
-                                                    <td class="text-center">10:00 AM</td>
-                                                    <td class="text-center">Room 101</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">Jane Smith</td>
-                                                    <td class="text-center">2024-06-03</td>
-                                                    <td class="text-center">11:00 AM</td>
-                                                    <td class="text-center">12:00 PM</td>
-                                                    <td class="text-center">Room 102</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">Alice Johnson</td>
-                                                    <td class="text-center">2024-06-05</td>
-                                                    <td class="text-center">01:00 PM</td>
-                                                    <td class="text-center">02:00 PM</td>
-                                                    <td class="text-center">Room 103</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center">Bob Brown</td>
-                                                    <td class="text-center">2024-06-07</td>
-                                                    <td class="text-center">03:00 PM</td>
-                                                    <td class="text-center">04:00 PM</td>
-                                                    <td class="text-center">Room 104</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <ul class="w-100 list-group" id="topic-list">
+                                            <?php
+                                            // Get tags
+                                            $tag = $conn->query("SELECT * FROM categories ORDER BY name ASC");
+                                            while ($row = $tag->fetch_assoc()) {
+                                                $tags[$row['id']] = $row['name'];
+                                            }
+
+                                            // Get unique student IDs
+                                            $sql_students = "SELECT student_id FROM events WHERE counselor_id !=$login_id AND student_id != '' GROUP BY student_id";
+                                            $result_students = $conn->query($sql_students);
+
+                                            if ($result_students->num_rows > 0) {
+                                                while ($row_student = $result_students->fetch_assoc()) {
+                                                    $student_id = $row_student['student_id'];
+
+                                                    // Get topics for each student_id
+                                                    $sql_topics = "SELECT t.*, u.name 
+                                                                FROM topics t 
+                                                                INNER JOIN users u ON u.id = t.user_id 
+                                                                WHERE t.user_id = $student_id 
+                                                                ORDER BY unix_timestamp(date_created) DESC";
+                                                    $topic = $conn->query($sql_topics);
+
+                                                    while ($row = $topic->fetch_assoc()) {
+                                                        $trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+                                                        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
+                                                        $desc = strtr(html_entity_decode($row['content']), $trans);
+                                                        $desc = str_replace(array("<li>", "</li>"), array("", ","), $desc);
+                                                        $view = $conn->query("SELECT * FROM forum_views WHERE topic_id=" . $row['id'])->num_rows;
+                                                        $comments = $conn->query("SELECT * FROM comments WHERE topic_id=" . $row['id'])->num_rows;
+                                                        $replies = $conn->query("SELECT * FROM replies WHERE comment_id IN (SELECT id FROM comments WHERE topic_id=" . $row['id'] . ")")->num_rows;
+
+                                                        // Check for detected words
+                                                        $wordsToDetect = [];
+                                                        $stmt = $conn->query("SELECT word FROM word_bank WHERE type='Mental Health'");
+                                                        while ($word_row = $stmt->fetch_assoc()) {
+                                                            $wordsToDetect[] = $word_row['word'];
+                                                        }
+
+                                                        $text = strip_tags($desc);
+                                                        $detected = false;
+
+                                                        foreach ($wordsToDetect as $word) {
+                                                            if (stripos($text, $word) !== false) {
+                                                                $detected = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if ($detected) {
+                                                            ?>
+                                                            <li class="list-group-item mb-4">
+                                                                <div>
+                                                                    <a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
+                                                                </div>
+                                                                <div>
+                                                                    <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>
+                                                                    <?php foreach (explode(",", $row['category_ids']) as $cat): ?>
+                                                                        <span class="badge badge-info text-white ml-2"><?php echo $tags[$cat] ?></span>
+                                                                    <?php endforeach; ?>
+                                                                </div>
+                                                                <hr>
+                                                                <p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>
+                                                                <?php if ($row['isAnonymous'] == 1): ?>
+                                                                    <p class="row justify-content-left mr-1"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
+                                                                <?php else: ?>    
+                                                                    <p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+                                                                    <br>
+                                                                <?php endif; ?>
+                                                                <hr>
+                                                                <span class="float-left"><strong>Words Detected: </strong></span>
+                                                                <br>
+                                                                <span class="float-left mr-1"><small><i>
+                                                                <?php
+                                                                    $i = 0;
+                                                                    foreach ($wordsToDetect as $word) {
+                                                                        if (stripos($text, $word) !== false) {
+                                                                            echo $word . " ";
+                                                                            $i++;
+                                                                        }
+                                                                    }
+
+                                                                    if ($i == 0) {
+                                                                        echo "None detected.";
+                                                                    }
+                                                                ?>
+                                                                </i></small>
+                                                            </li>
+                                                            <?php
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                echo "<li class='list-group-item'>No students found for the specified counselor.</li>";
+                                            }
+
+                                            ?>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -321,7 +501,7 @@
                     <div class="appointments mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <b>Scheduled Appointments</b>
+                                <b>Scheduled Appointments For Today <?php echo date('Y-m-d'); ?></b>
                             </div>
                             <div class="card-body table-container">
                                 <table class="table">
@@ -343,107 +523,33 @@
                                             <div style="margin-top: -5px;"> - Initial Consultation</div>
                                         </div>
                                         <tr style="background-color: #84b894;">
-                                            <td class="text-center">
-                                                Yujin Domingo
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-02
-                                            </td>
-                                            <td class="text-center">
-                                                09:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                10:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                Face-to-Face
-                                            </td>
+                                        <?php
+                                            // SQL query to select records from today
+                                            $sql = "SELECT user_name, date, time_from, time_to, mode
+                                                    FROM events
+                                                    WHERE DATE(date) = CURDATE()
+                                                    ORDER BY time_from, time_to";
+                                            
+                                            // Execute the query
+                                            $result = $conn->query($sql);
+
+                                            if ($result->num_rows > 0) {
+                                                // Output data of each row
+                                                while($row = $result->fetch_assoc()) {
+                                                    echo "<tr>";
+                                                    echo "<td class='text-center'>" . $row["user_name"] . "</td>";
+                                                    echo "<td class='text-center'>" . $row["date"] . "</td>";
+                                                    echo "<td class='text-center'>" . $row["time_from"] . "</td>";
+                                                    echo "<td class='text-center'>" . $row["time_to"] . "</td>";
+                                                    echo "<td class='text-center'>" . $row["mode"] . "</td>";
+                                                    echo "</tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='5' class='text-center'>No appointments scheduled for today</td></tr>";
+                                            } 
+                                        ?>
                                         </tr>
-                                        <tr>
-                                            <td class="text-center">
-                                                Miles Morales
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-07
-                                            </td>
-                                            <td class="text-center">
-                                                11:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                12:00 PM
-                                            </td>
-                                            <td class="text-center">
-                                                Face-to-Face
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #84b894;">
-                                            <td class="text-center">
-                                                Arlo Marquez
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-10
-                                            </td>
-                                            <td class="text-center">
-                                                09:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                10:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                Face-to-Face
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #84b894;">
-                                            <td class="text-center">
-                                                Yana Madrid
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-13
-                                            </td>
-                                            <td class="text-center">
-                                                09:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                10:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                Online
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">
-                                                Winston Mercado
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-15
-                                            </td>
-                                            <td class="text-center">
-                                                09:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                10:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                Online
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #84b894;">
-                                            <td class="text-center">
-                                                Yujin Domingo
-                                            </td>
-                                            <td class="text-center">
-                                                2024-05-17
-                                            </td>
-                                            <td class="text-center">
-                                                09:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                10:00 AM
-                                            </td>
-                                            <td class="text-center">
-                                                Online
-                                            </td>
-                                        </tr>
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -451,51 +557,50 @@
                     </div>
                     <div class="appointments mb-4">
                         <div class="card">
-                            <div class="card-header">
-                                <b>Appointments Booked</b>
+                            <div class="card-header mb-3">
+                                <b>Calendar</b>
                             </div>
-                            <div class="card-body">
-                            <?php
- 
-                                $dataPoints = array( 
-                                    array("label"=>"Upcoming", "symbol" => "Upcoming","y"=>27),
-                                    array("label"=>"Cancelled", "symbol" => "Cancelled","y"=>13),
-                                    array("label"=>"No Show", "symbol" => "No Show","y"=>4),
-                                )
-  
-                            ?>
-                            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-
+                            <div class="card-body calendar-container px-3">
+                                <div id="calendar"></div>
                             </div>
-                        </div>
+                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+
+<!-- FullCalendar CSS and JS -->
+<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
 <script>
-    window.onload = function() {
  
- var chart = new CanvasJS.Chart("chartContainer", {
-     theme: "light2",
-     animationEnabled: true,
-     title: {
-         text: ""
-     },
-     data: [{
-         type: "doughnut",
-         indexLabel: "{symbol} - {y}",
-         yValueFormatString: "#,##0.0",
-         showInLegend: true,
-         legendText: "{label} : {y}",
-         dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
-     }]
- });
- chart.render();
-  
- }
+    $(document).ready(function() {
+        $('#calendar').fullCalendar({
+            events: [
+                <?php
+                $events = $conn->query("SELECT user_name AS title, date, time_from AS start, time_to AS end FROM events WHERE status='Scheduled';");
+                while ($event = $events->fetch_assoc()):
+                ?>
+                {
+                    title: '<?php echo $event['title']; ?>',
+                    start: '<?php echo $event['date'] . 'T' . $event['start']; ?>',
+                    end: '<?php echo $event['date'] . 'T' . $event['end']; ?>'
+                },
+                <?php endwhile; ?>
+            ],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            defaultView: 'month',
+            editable: false
+        });
+    });
     
     $(document).ready(function() {
         $('#postTabs a').on('click', function (e) {

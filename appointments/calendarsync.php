@@ -31,15 +31,15 @@ if(isset($_GET['code'])){
                 'summary' => $eventData['title'], 
                 'location' => $eventData['location'], 
                 'description' => $eventData['description'], 
-                'attendees' => array($eventData['user_email'],$eventData['counselor_email']),
-                 'reminders' => array(
+                'attendees' => array($eventData['user_email'], $eventData['counselor_email']),
+                'reminders' => array(
                     'useDefault' => FALSE,
                     'overrides' => array(
                         array('method' => 'email', 'minutes' => 24 * 60),
                         array('method' => 'popup', 'minutes' => 10),
-                      ),
-                 )
-                 );
+                    ),
+                )
+            );
              
             $event_datetime = array( 
                 'event_date' => $eventData['date'], 
@@ -59,13 +59,30 @@ if(isset($_GET['code'])){
              
             if(!empty($access_token)){ 
                 try { 
+                    // Delete existing Google Calendar event if exists
+                    if (!empty($eventData['google_calendar_event_id'])) {
+                        $GoogleCalendarApi->DeleteCalendarEvent($access_token, 'primary', $eventData['google_calendar_event_id']);
+                        // echo '<script>alert("1")</script>';
+
+                        $sqlQ = " UPDATE events SET location = NULL, google_calendar_event_id = NULL WHERE id = ?"; 
+                        $stmt = $conn->prepare($sqlQ);  
+                        $stmt->bind_param("i", $db_event_id); 
+                        $db_event_id = $event_id; 
+                        $stmt->execute(); 
+
+                        echo '<script type="text/javascript">
+                        setTimeout(function() {
+                            window.location.href = "index.php?page=appointments/pendingappointments";
+                        }, 0000); 
+                        </script>';
+                        exit();
+                    }
+                    // echo '<script>alert("2")</script>'; 
+
                     // Get the user's calendar timezone 
                     $user_timezone = $GoogleCalendarApi->GetUserCalendarTimezone($access_token); 
-                 
-                    // Create an event on the primary calendar 
+                
                     $google_event_id = $GoogleCalendarApi->CreateCalendarEvent($access_token, 'primary', $calendar_event, 0, $event_datetime, $user_timezone); 
-                     
-                    //echo json_encode([ 'event_id' => $event_id ]); 
                      
                     if($google_event_id){ 
                         // Update google event reference in the database 
@@ -81,17 +98,32 @@ if(isset($_GET['code'])){
                          
                         $status = 'success'; 
                         $statusMsg = '<p>Event #'.$event_id.' has been added to Google Calendar successfully!</p>'; 
-                        $statusMsg .= '<p><a href="https://calendar.google.com/calendar/" target="_blank">Open Calendar</a>'; 
+                        $statusMsg .= '<p><a href="https://calendar.google.com/calendar/" target="_blank">Open Calendar</a></p>'; 
 
-                        echo '<script type="text/javascript">
+                        if($_SESSION['login_type'] == 3){
+                            echo '<script type="text/javascript">
+                            setTimeout(function() {
+                            window.location.href = "index.php?page=appointments/pendingappointments";
+                        }, 0000); 
+                        </script>';
+                        }
+                        else if($_SESSION['login_type'] == 5){
+                            echo '<script type="text/javascript">
                         setTimeout(function() {
                             window.location.href = "index.php?page=home";
                         }, 0000); 
                         </script>';
+                        }
+                        else{
+                            echo '<script type="text/javascript">
+                        setTimeout(function() {
+                            window.location.href = "index.php?page=home";
+                        }, 0000); 
+                        </script>';
+                        }
+
                     } 
                 } catch(Exception $e) { 
-                    //header('Bad Request', true, 400); 
-                    //echo json_encode(array( 'error' => 1, 'message' => $e->getMessage() )); 
                     $statusMsg = $e->getMessage(); 
                 } 
             }else{ 
