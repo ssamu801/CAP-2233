@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	
-<?php session_start(); ?>
+<?php session_start(); 
+date_default_timezone_set('Asia/Manila');?>
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">

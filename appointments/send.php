@@ -3,9 +3,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require '../phpmailer/src/Exception.php';
+require '../phpmailer/src/PHPMailer.php';
+require '../phpmailer/src/SMTP.php';
 
 include '../db_connect.php';
 
@@ -130,7 +130,7 @@ if (isset($_POST['action'])) {
         echo "
         <script>
             alert('User has been notified of the need for rescheduling.');
-            document.location.href = '/index.php?page=appointments/pendingappointments';
+            window.location.href = '../index.php?page=appointments/pendingappointments';
         </script>
         ";
     }

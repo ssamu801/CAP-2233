@@ -134,7 +134,7 @@ input[type=checkbox] {
 			data:$(this).serialize(),
 			success:function(resp){
 				if(resp == 1){
-					alert_toast("Data successfully saved.",'success')
+					alert_toast("Post submitted. Kindly wait for approval of post.",'success')
 					setTimeout(function(){
 						location.reload()
 					},1000)

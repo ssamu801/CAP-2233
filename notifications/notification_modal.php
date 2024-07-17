@@ -38,14 +38,17 @@
         <p>Hi!</p>
 
         <?php while ($row = $result->fetch_assoc()) { 
-            if($row['type'] == '6') { ?>
+            if($row['type'] == '6') { 
+                $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+                $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']);
+        ?>
                 <div>
                     <p>Your appointment has been successfully submitted and confirmed. Here are the details of your appointment:
                     </p>
                     <ul>
                         <li><strong>Counselor Name:</strong> <?php echo $row['counselor_name']?> </li>
                         <li><strong>Date:</strong> <?php echo $row['date']?></li>
-                        <li><strong>Time:</strong> <?php echo $row['time_from']+" to "+$row['time_to']?></li>
+                        <li><strong>Time:</strong> <?php echo $time_from->format('g:i A')." to ".$time_to->format('g:i A')?></li>
                         <li><strong>Location:</strong> <?php echo $row['location']?></li>
                     </ul>
                     <p>Please ensure to arrive at the location at least 10 minutes before your scheduled time. If you need to

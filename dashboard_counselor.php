@@ -277,6 +277,17 @@
                                 <b>Flagged Posts</b>
                             </div>
                             <div class="card-header bg-white border-bottom-0 ml-2">
+                                <?php // Get unique student IDs
+                                    $sql_students = "SELECT student_id FROM events WHERE counselor_id=$login_id AND student_id != '' GROUP BY student_id";
+                                    $result_students = $conn->query($sql_students);
+
+                                    $student_ids = [];
+                                    if ($result_students->num_rows > 0) {
+                                        while ($row_student = $result_students->fetch_assoc()) {
+                                            $student_ids[] = $row_student['student_id'];
+                                        }
+                                    }
+                                ?>
                                 <ul class="nav nav-tabs card-header-tabs" id="postTabs" role="tablist">
                                     <li class="nav-item">
                                         <a class="tabs active" id="flagged-posts-tab" data-toggle="tab" href="#flagged-posts" role="tab" aria-controls="flagged-posts" aria-selected="true">Clients</a>
@@ -297,22 +308,17 @@
                                                 $tags[$row['id']] = $row['name'];
                                             }
 
-                                            // Get unique student IDs
-                                            $sql_students = "SELECT student_id FROM events WHERE counselor_id=$login_id AND student_id != '' GROUP BY student_id";
-                                            $result_students = $conn->query($sql_students);
-
-                                            if ($result_students->num_rows > 0) {
-                                                while ($row_student = $result_students->fetch_assoc()) {
-                                                    $student_id = $row_student['student_id'];
-
+                                            $k = 0;
+                                            if (!empty($student_ids)) {
+                                                foreach ($student_ids as $student_id) {
                                                     // Get topics for each student_id
                                                     $sql_topics = "SELECT t.*, u.name 
-                                                                FROM topics t 
-                                                                INNER JOIN users u ON u.id = t.user_id 
-                                                                WHERE t.user_id = $student_id 
-                                                                ORDER BY unix_timestamp(date_created) DESC";
+                                                                    FROM topics t 
+                                                                    INNER JOIN users u ON u.id = t.user_id 
+                                                                    WHERE t.user_id = $student_id 
+                                                                    ORDER BY unix_timestamp(date_created) DESC";
                                                     $topic = $conn->query($sql_topics);
-
+                                            
                                                     while ($row = $topic->fetch_assoc()) {
                                                         $trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
                                                         unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
@@ -321,25 +327,26 @@
                                                         $view = $conn->query("SELECT * FROM forum_views WHERE topic_id=" . $row['id'])->num_rows;
                                                         $comments = $conn->query("SELECT * FROM comments WHERE topic_id=" . $row['id'])->num_rows;
                                                         $replies = $conn->query("SELECT * FROM replies WHERE comment_id IN (SELECT id FROM comments WHERE topic_id=" . $row['id'] . ")")->num_rows;
-
+                                            
                                                         // Check for detected words
                                                         $wordsToDetect = [];
                                                         $stmt = $conn->query("SELECT word FROM word_bank WHERE type='Mental Health'");
                                                         while ($word_row = $stmt->fetch_assoc()) {
                                                             $wordsToDetect[] = $word_row['word'];
                                                         }
-
+                                            
                                                         $text = strip_tags($desc);
                                                         $detected = false;
-
+                                            
                                                         foreach ($wordsToDetect as $word) {
                                                             if (stripos($text, $word) !== false) {
                                                                 $detected = true;
                                                                 break;
                                                             }
                                                         }
-
+                                            
                                                         if ($detected) {
+                                                            $k++;
                                                             ?>
                                                             <li class="list-group-item mb-4">
                                                                 <div>
@@ -371,7 +378,7 @@
                                                                             $i++;
                                                                         }
                                                                     }
-
+                                            
                                                                     if ($i == 0) {
                                                                         echo "None detected.";
                                                                     }
@@ -382,10 +389,12 @@
                                                         }
                                                     }
                                                 }
+                                                if($i == 0){
+                                                    echo "<li class='list-group-item'>No flagged posts from clients.</li>";
+                                                }
                                             } else {
-                                                echo "<li class='list-group-item'>No students found for the specified counselor.</li>";
+                                                echo "<li class='list-group-item'>No flagged posts from clients.</li>";
                                             }
-
                                             ?>
                                         </ul>
                                     </div>
@@ -400,93 +409,101 @@
                                                 $tags[$row['id']] = $row['name'];
                                             }
 
-                                            // Get unique student IDs
+                                            // Get unique student IDs for the new query
                                             $sql_students = "SELECT student_id FROM events WHERE counselor_id !=$login_id AND student_id != '' GROUP BY student_id";
                                             $result_students = $conn->query($sql_students);
 
+                                            $i = 0;
                                             if ($result_students->num_rows > 0) {
                                                 while ($row_student = $result_students->fetch_assoc()) {
                                                     $student_id = $row_student['student_id'];
 
-                                                    // Get topics for each student_id
-                                                    $sql_topics = "SELECT t.*, u.name 
-                                                                FROM topics t 
-                                                                INNER JOIN users u ON u.id = t.user_id 
-                                                                WHERE t.user_id = $student_id 
-                                                                ORDER BY unix_timestamp(date_created) DESC";
-                                                    $topic = $conn->query($sql_topics);
+                                                    // Check if the student_id is in the previous array
+                                                    if (!in_array($student_id, $student_ids)) {
+                                                        // Get topics for each student_id
+                                                        $sql_topics = "SELECT t.*, u.name 
+                                                                    FROM topics t 
+                                                                    INNER JOIN users u ON u.id = t.user_id 
+                                                                    WHERE t.user_id = $student_id 
+                                                                    ORDER BY unix_timestamp(date_created) DESC";
+                                                        $topic = $conn->query($sql_topics);
 
-                                                    while ($row = $topic->fetch_assoc()) {
-                                                        $trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
-                                                        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
-                                                        $desc = strtr(html_entity_decode($row['content']), $trans);
-                                                        $desc = str_replace(array("<li>", "</li>"), array("", ","), $desc);
-                                                        $view = $conn->query("SELECT * FROM forum_views WHERE topic_id=" . $row['id'])->num_rows;
-                                                        $comments = $conn->query("SELECT * FROM comments WHERE topic_id=" . $row['id'])->num_rows;
-                                                        $replies = $conn->query("SELECT * FROM replies WHERE comment_id IN (SELECT id FROM comments WHERE topic_id=" . $row['id'] . ")")->num_rows;
+                                                        while ($row = $topic->fetch_assoc()) {
+                                                            $trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+                                                            unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
+                                                            $desc = strtr(html_entity_decode($row['content']), $trans);
+                                                            $desc = str_replace(array("<li>", "</li>"), array("", ","), $desc);
+                                                            $view = $conn->query("SELECT * FROM forum_views WHERE topic_id=" . $row['id'])->num_rows;
+                                                            $comments = $conn->query("SELECT * FROM comments WHERE topic_id=" . $row['id'])->num_rows;
+                                                            $replies = $conn->query("SELECT * FROM replies WHERE comment_id IN (SELECT id FROM comments WHERE topic_id=" . $row['id'] . ")")->num_rows;
 
-                                                        // Check for detected words
-                                                        $wordsToDetect = [];
-                                                        $stmt = $conn->query("SELECT word FROM word_bank WHERE type='Mental Health'");
-                                                        while ($word_row = $stmt->fetch_assoc()) {
-                                                            $wordsToDetect[] = $word_row['word'];
-                                                        }
-
-                                                        $text = strip_tags($desc);
-                                                        $detected = false;
-
-                                                        foreach ($wordsToDetect as $word) {
-                                                            if (stripos($text, $word) !== false) {
-                                                                $detected = true;
-                                                                break;
+                                                            // Check for detected words
+                                                            $wordsToDetect = [];
+                                                            $stmt = $conn->query("SELECT word FROM word_bank WHERE type='Mental Health'");
+                                                            while ($word_row = $stmt->fetch_assoc()) {
+                                                                $wordsToDetect[] = $word_row['word'];
                                                             }
-                                                        }
 
-                                                        if ($detected) {
-                                                            ?>
-                                                            <li class="list-group-item mb-4">
-                                                                <div>
-                                                                    <a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
-                                                                </div>
-                                                                <div>
-                                                                    <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>
-                                                                    <?php foreach (explode(",", $row['category_ids']) as $cat): ?>
-                                                                        <span class="badge badge-info text-white ml-2"><?php echo $tags[$cat] ?></span>
-                                                                    <?php endforeach; ?>
-                                                                </div>
-                                                                <hr>
-                                                                <p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>
-                                                                <?php if ($row['isAnonymous'] == 1): ?>
-                                                                    <p class="row justify-content-left mr-1"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
-                                                                <?php else: ?>    
-                                                                    <p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
-                                                                    <br>
-                                                                <?php endif; ?>
-                                                                <hr>
-                                                                <span class="float-left"><strong>Words Detected: </strong></span>
-                                                                <br>
-                                                                <span class="float-left mr-1"><small><i>
-                                                                <?php
-                                                                    $i = 0;
-                                                                    foreach ($wordsToDetect as $word) {
-                                                                        if (stripos($text, $word) !== false) {
-                                                                            echo $word . " ";
-                                                                            $i++;
-                                                                        }
-                                                                    }
+                                                            $text = strip_tags($desc);
+                                                            $detected = false;
 
-                                                                    if ($i == 0) {
-                                                                        echo "None detected.";
-                                                                    }
+                                                            foreach ($wordsToDetect as $word) {
+                                                                if (stripos($text, $word) !== false) {
+                                                                    $detected = true;
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if ($detected) {
+                                                                $i++;
                                                                 ?>
-                                                                </i></small>
-                                                            </li>
-                                                            <?php
+                                                                <li class="list-group-item mb-4">
+                                                                    <div>
+                                                                        <a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>
+                                                                        <?php foreach (explode(",", $row['category_ids']) as $cat): ?>
+                                                                            <span class="badge badge-info text-white ml-2"><?php echo $tags[$cat] ?></span>
+                                                                        <?php endforeach; ?>
+                                                                    </div>
+                                                                    <hr>
+                                                                    <p class="truncate filter-text"><?php echo strip_tags($desc) ?></p>
+                                                                    <?php if ($row['isAnonymous'] == 1): ?>
+                                                                        <p class="row justify-content-left mr-1"><span class="badge badge-success text-white"><i>Posted anonymously</i></span></p>
+                                                                    <?php else: ?>    
+                                                                        <p class="row float-right mr-1"><span class="badge badge-success text-white"><i>Posted By: <?php echo $row['name'] ?></i></span></p>
+                                                                        <br>
+                                                                    <?php endif; ?>
+                                                                    <hr>
+                                                                    <span class="float-left"><strong>Words Detected: </strong></span>
+                                                                    <br>
+                                                                    <span class="float-left mr-1"><small><i>
+                                                                    <?php
+                                                                        $i = 0;
+                                                                        foreach ($wordsToDetect as $word) {
+                                                                            if (stripos($text, $word) !== false) {
+                                                                                echo $word . " ";
+                                                                                $i++;
+                                                                            }
+                                                                        }
+
+                                                                        if ($i == 0) {
+                                                                            echo "None detected.";
+                                                                        }
+                                                                    ?>
+                                                                    </i></small>
+                                                                </li>
+                                                                <?php
+                                                            }
                                                         }
                                                     }
                                                 }
+                                                if($i == 0){
+                                                    echo "<li class='list-group-item'>No flagged posts from non-clients.</li>";
+                                                }
                                             } else {
-                                                echo "<li class='list-group-item'>No students found for the specified counselor.</li>";
+                                                echo "<li class='list-group-item'No flagged posts from non-clients.</li>";
                                             }
 
                                             ?>
