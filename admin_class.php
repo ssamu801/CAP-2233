@@ -269,12 +269,12 @@ Class Action {
 				$row = $result->fetch_assoc();
 				$title = $row['title'];
 				
-				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, topic_id) VALUES (?, NOW(), ?, ?)");
 				$message = "We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
 				$heading = "[DISCUSSION FORUM] Your post $title has been approved";
 				$type = 1;
 				
-				$notifStmt->bind_param("issii", $poster_id, $heading, $message, $type, $id);
+				$notifStmt->bind_param("iii", $poster_id, $type, $id);
 				
 				if ($notifStmt->execute()) {
 					return 1;
@@ -314,7 +314,7 @@ Class Action {
 				$poster_id = $row['user_id']; 
 	
 				// Insert notification into the notifications table
-				$decline_notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, topic_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your post $title has been rejected', 'We are regret to inform you that your recent post titled $title on our discussion forum has been rejected by our moderators.',NOW(), 2, $post_id)");
+				$decline_notif = $this->db->query("INSERT INTO notifications (posterID, time, type, topic_id) VALUES ('$poster_id',NOW(), 2, $post_id)");
 	
 				if ($decline_notif) {
 					return 1; // Return success code
@@ -606,19 +606,19 @@ Class Action {
 				$name = $row['name'];
 	
 				// Prepare notification insert statements
-				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES (?, ?, ?, NOW(), ?, ?)");
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, comment_id) VALUES (?, NOW(), ?, ?)");
 				$heading1 = "[DISCUSSION FORUM] Your comment for $title has been approved";
 				$message1 = "We are pleased to inform you that your comment on the post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
 				$type1 = 3;
 	
-				$notifStmt->bind_param("issii", $poster_id, $heading1, $message1, $type1, $id);
+				$notifStmt->bind_param("iii", $poster_id, $type1, $id);
 	
 				if ($notifStmt->execute()) {
-					$notifStmt2 = $this->db->prepare("INSERT INTO notifications (posterID, heading, message, time, type, topic_id, comment_id) VALUES (?, ?, ?, NOW(), ?, ?, ?)");
+					$notifStmt2 = $this->db->prepare("INSERT INTO notifications (posterID, time, type, topic_id, comment_id) VALUES (?, NOW(), ?, ?, ?)");
 					$heading2 = "[DISCUSSION FORUM] $name commented on your post $title";
 					$type2 = 5;
 	
-					$notifStmt2->bind_param("issiii", $OP, $heading2, $comment, $type2, $topic_id, $id);
+					$notifStmt2->bind_param("iiii", $OP, $type2, $topic_id, $id);
 	
 					if ($notifStmt2->execute()) {
 						return 1;
@@ -653,7 +653,7 @@ Class Action {
 				$poster_id = $row['user_id']; 
 
 	
-				$dec_notif = $this->db->query("INSERT INTO notifications (posterID, heading, message, time, type, comment_id) VALUES ('$poster_id', '[DISCUSSION FORUM] Your comment for $title has been rejected', 'We regret to inform you that your comment on the post titled $title on our discussion forum has been rejected by our moderators.' , NOW(), 4, $post_id)");
+				$dec_notif = $this->db->query("INSERT INTO notifications (posterID, time, type, comment_id) VALUES ('$poster_id', NOW(), 4, $post_id)");
 	
 				if($dec_notif){
 					return 1; 
@@ -769,10 +769,13 @@ Class Action {
 					
 				if($event_notif){
 					if($mode == 'Face-To-Face'){
-						return $id;
+						echo json_encode(['status' => 'success', 'id' => $id]);
+            			exit();
 					}
 					else{
-						return -1;
+						$_SESSION['tempid'] = $id;
+						echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
+						exit();
 					}
 				
 				}

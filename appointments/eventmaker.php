@@ -312,20 +312,20 @@ $('#addEventToDB').submit(function(e) {
         method: 'POST',
         data: $(this).serialize(),
         success: function(resp) {
-            if (resp == -1) {
+            var response = JSON.parse(resp);
+
+            if (response.id == -1) {
                 alert_toast("Request submitted.", 'success');
                 setTimeout(function() {
-                    window.location.href = 'index.php?page=appointments/addevent';
+                    window.location.href = 'index.php?page=appointments/pending_modal&fhdhdghdf=' + encodeURIComponent(response.tempid);
                 }, 1000);
-            }
-            else{
+            } else {
                 alert_toast("Request submitted.", 'success');
                 setTimeout(function() {
-                    console.log(resp);
-                    window.location.href = 'index.php?page=appointments/add_loc_f2f&resp=' + encodeURIComponent(resp);
+                    console.log(response.id);
+                    window.location.href = 'index.php?page=appointments/add_loc_f2f&resp=' + encodeURIComponent(response.id);
                 }, 1000);
             }
-            
         }
     });
 });
