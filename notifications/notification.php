@@ -69,14 +69,22 @@
                 // echo $key." ".$val."<br/>";
 
 
-                include "db_connect.php";
+                include "./db_connect.php";
+                $id = $_SESSION['login_id'];
+                $id = '12067890';
                 // SQL query to select data based on ID
-                $sql = "SELECT id, description, user_email, counselor_name, time, event_start, location,
-                               event_end, event_date FROM event_notifications WHERE id=?;";
+                $sql = "SELECT n.id, n.posterID, n.time, n.type, n.topic_id, n.comment_id, n.event_id, 
+                               e.title, e.description, e.mode, e.location, e.date, e.time_from, e.time_to,
+                               e.created, e.user_name, e.user_email, e.status, e.student_id, e.isPreferred,
+                               e.preferredCounselor, e.counselor_name, e.counselor_email
+                        FROM notifications n
+                        JOIN events e ON n.event_id = e.id
+                        WHERE posterID = $id;";
+
                 $stmt = $conn->prepare($sql);
 
-                $id = $_SESSION['login_id'];
-                $stmt->bind_param("i", $id); // "i" indicates the type (integer)
+                // $id = $_SESSION['login_id'];
+                // $stmt->bind_param("i", $id); // "i" indicates the type (integer)
                 
                 // Execute the query
                 $stmt->execute();
@@ -90,18 +98,59 @@
                     // while ($row = $result->fetch_assoc()) {
                     //     echo "id: " . $row["id"] . " - Name: " . $row["firstname"] . " " . $row["lastname"] . "<br>";
                     // }
+
+                    function getNotificationTitle($type) {
+                        switch ($type) {
+                            case 1:
+                                return "Post Approved";
+                            case 2:
+                                return "Post Declined";
+                            case 3:
+                                return "Comment Approved";
+                            case 4:
+                                return "Comment Declined";
+                            case 5:
+                                return "New Comment on Your Post";
+                            case 6:
+                                return "Appointment Submission Confirmed";
+                            case 7:
+                                return "Appointment Cancelled";
+                            case 8:
+                                return "Counselor Requested to Reschedule";
+                            case 9:
+                                return "Reschedule Notification";
+                            case 10:
+                                return "Zoom Meeting Scheduled";
+                            case 11:
+                                return "Student Booked an Appointment (Counselor)";
+                            default:
+                                return "Notification";
+                        }
+                    }
+                    
+                    // function truncateString($string, $length) {
+                    //     if (strlen($string) <= $length) {
+                    //         return $string;
+                    //     }
+                    //     return substr($string, 0, $length) . '...';
+                    // }
+
                     while ($row = $result->fetch_assoc()) {
                     ?>
                         <div class="p-3 d-flex align-items-center bg-light border-bottom osahan-post-header">
                             <div class="dropdown-list-image mr-3">
                                 <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" />
                             </div>
-                            <div class="font-weight-bold mr-3">
-                                <div class="text-truncate"><?php echo truncateString($row['description'], 100)?></div>
-                                <div class="small"><?php echo truncateString($row["message"], 100)?></div>
+                            <div class="font-weight-bold mr-3 notification_record" data-id="<?php echo $row['id'];?>">
+                                <?php 
+                                    $title = getNotificationTitle($row['type']);
+                                    $description = truncateString($row['description'], 100);
+                                ?>
+                                <div class="text-truncate"><?php echo $title?></div>
+                                <div class="small"><?php echo $description?></div>
                             </div>
                             <span class="ml-auto mb-auto">
-                                <div class="btn-group">
+                                <!-- <div class="btn-group">
                                     <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="mdi mdi-dots-vertical"></i>
                                     </button>
@@ -109,7 +158,7 @@
                                         <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
                                         <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
                                     </div>
-                                </div>
+                                </div> -->
                                 <br />
                                 <div class="text-right text-muted pt-1"><?php echo daysFromCurrentDate($row['time']) ?>d</div>
                             </span>
@@ -126,231 +175,39 @@
                 $conn->close();
 
                 ?>
-                <div class="p-3 d-flex align-items-center bg-light border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="text-truncate">DAILY RUNDOWN: WEDNESDAY</div>
-                        <div class="small">Income tax sops on the cards, The bias in VC funding, and other top news for you</div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">3d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="mb-2">We found a job at askbootstrap Ltd that you may be interested in Vivamus imperdiet venenatis est...</div>
-                        <button type="button" class="btn btn-outline-success btn-sm">View Jobs</button>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">4d</div>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="box shadow-sm rounded bg-white mb-3">
-            <div class="box-title border-bottom p-3">
-                <h6 class="m-0">Earlier</h6>
-            </div>
-            <div class="box-body p-0">
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3 d-flex align-items-center bg-danger justify-content-center rounded-circle text-white">DRM</div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="text-truncate">DAILY RUNDOWN: MONDAY</div>
-                        <div class="small">Nunc purus metus, aliquam vitae venenatis sit amet, porta non est.</div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" style="">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">3d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" /></div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="text-truncate">DAILY RUNDOWN: SATURDAY</div>
-                        <div class="small">Pellentesque semper ex diam, at tristique ipsum varius sed. Pellentesque non metus ullamcorper</div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">3d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="mb-2"><span class="font-weight-normal">Congratulate Gurdeep Singh Osahan (iamgurdeeposahan)</span> for 5 years at Askbootsrap Pvt.</div>
-                        <button type="button" class="btn btn-outline-success btn-sm">Say congrats</button>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">4d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div>
-                            <span class="font-weight-normal">Congratulate Mnadeep singh (iamgurdeeposahan)</span> for 4 years at Askbootsrap Pvt.
-                            <div class="small text-success"><i class="fa fa-check-circle"></i> You sent Mandeep a message</div>
-                        </div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">4d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3 d-flex align-items-center bg-success justify-content-center rounded-circle text-white">M</div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="text-truncate">DAILY RUNDOWN: MONDAY</div>
-                        <div class="small">Nunc purus metus, aliquam vitae venenatis sit amet, porta non est.</div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">3d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" /></div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="text-truncate">DAILY RUNDOWN: SATURDAY</div>
-                        <div class="small">Pellentesque semper ex diam, at tristique ipsum varius sed. Pellentesque non metus ullamcorper</div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">3d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div class="mb-2"><span class="font-weight-normal">Congratulate Gurdeep Singh Osahan (iamgurdeeposahan)</span> for 5 years at Askbootsrap Pvt.</div>
-                        <button type="button" class="btn btn-outline-success btn-sm">Say congrats</button>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">4d</div>
-                    </span>
-                </div>
-                <div class="p-3 d-flex align-items-center osahan-post-header">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" />
-                    </div>
-                    <div class="font-weight-bold mr-3">
-                        <div>
-                            <span class="font-weight-normal">Congratulate Mnadeep singh (iamgurdeeposahan)</span> for 4 years at Askbootsrap Pvt.
-                            <div class="small text-success"><i class="fa fa-check-circle"></i> You sent Mandeep a message</div>
-                        </div>
-                    </div>
-                    <span class="ml-auto mb-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="text-right text-muted pt-1">4d</div>
-                    </span>
-                </div>
-            </div>
         </div>
     </div>
     <!-- </div> -->
 </div>
+
+<script>
+
+// function view_modal(heading, url, size) {
+//         // Get the modal element
+//         var modal = $('#dateModal');
+
+//         // Set the modal title
+//         modal.find('.modal-title').text(heading);
+
+//         // Load the content of cal.php into the modal body
+//         modal.find('.modal-body').load(url, function() {
+//             // Adjust the modal size based on the 'size' parameter
+//             if (size === 'mid-large') {
+//                 modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-lg');
+//             } else if (size === 'small') {
+//                 modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
+//             } else {
+//                 modal.find('.modal-dialog').removeClass('modal-sm modal-lg');
+//             }
+//         });
+
+//         // Show the modal
+//         modal.modal('show');
+// }
+
+$('.notification_record').click(function(){
+    var dataId = $(this).attr('data-id');
+    view_modal("Notification (ID: " + dataId + ")", "./notifications/notification_modal.php?id="+dataId, 'large');	
+});
+
+</script>
