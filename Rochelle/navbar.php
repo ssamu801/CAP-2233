@@ -130,7 +130,7 @@
                                 <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/home"><i class="fs-5 bi-house-door"></i> Home</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/articles"><i class="fs-5 bi-newspaper"></i> Articles</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Rresources</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Resources</a></li>
                             </ul>
                             </div>  
                         </div>
