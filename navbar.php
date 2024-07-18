@@ -199,7 +199,7 @@
                         <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion5">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/post_reports"><i class="fs-5 bi-flag"></i> Post Reports</a></li>
+                           <!--     <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/post_reports"><i class="fs-5 bi-flag"></i> Post Reports</a></li> -->
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=social_interaction/users"><i class="fs-5 bi-people"></i> Users</a></li>
                             </ul>
                             </div>  

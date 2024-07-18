@@ -36,7 +36,7 @@ if(isset($_GET['id'])){
 			data:$(this).serialize(),
 			success:function(resp){
 				if(resp == 1){
-					alert_toast("Data successfully saved.",'success')
+					alert_toast("Comment submitted. Kindly wait for approval of comment.",'success')
 					setTimeout(function(){
 						location.reload()
 					},1000)

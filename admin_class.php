@@ -256,7 +256,7 @@ Class Action {
 		$approveStmt = $this->db->prepare("UPDATE topics SET status='Approved', date_approved=NOW(), reviewed_by=?, reason='Approved' WHERE id=?");
 		$approveStmt->bind_param("si", $login_name, $id);
 		
-		$sql = "SELECT title FROM topics WHERE id=? LIMIT 1";
+		$sql = "SELECT title, user_id FROM topics WHERE id=? LIMIT 1";
 		$resultStmt = $this->db->prepare($sql);
 		$resultStmt->bind_param("i", $id);
 		
@@ -268,6 +268,7 @@ Class Action {
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
 				$title = $row['title'];
+				$poster_id = $row['user_id'];
 				
 				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, topic_id) VALUES (?, NOW(), ?, ?)");
 				$message = "We are pleased to inform you that your recent post titled $title on our discussion forum has been approved by our moderators. Your contribution to the community is greatly appreciated. Thank you for adhering to our community guidelines and policies. We encourage you to continue engaging with our platform and sharing your insights.";
@@ -277,7 +278,12 @@ Class Action {
 				$notifStmt->bind_param("iii", $poster_id, $type, $id);
 				
 				if ($notifStmt->execute()) {
-					return 1;
+					$notice = $this->notify_cat_followers($id);
+
+					if($notice){
+						return 1;
+					}
+					
 				} else {
 					// Notification insert failed
 					error_log("Notification insert failed: " . $notifStmt->error);
@@ -292,6 +298,49 @@ Class Action {
 		}
 		
 		return 0;
+	}
+	
+	function notify_cat_followers($topic_id){
+		$cat_ids = '';
+		$user_ids_array = array();
+		$cat_name = '';
+
+		$sql = "SELECT category_ids FROM topics WHERE id=$topic_id LIMIT 1";
+			$result = $this->db->query($sql);
+	
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$cat_ids = $row['category_ids']; 
+			}
+			$cat_ids_array = array_map('trim', explode(',', $cat_ids));
+
+			foreach ($cat_ids_array as $cat_id) {
+				$sql3 = "SELECT name FROM categories WHERE id=$cat_id";
+				$category_name = $this->db->query($sql3);
+				if ($category_name->num_rows > 0) {
+        			while ($row = $category_name->fetch_assoc()) {
+            		$cat_name = $row['name']; // Store user ID in the array
+        			}
+    			}
+	
+
+				$user_ids_array = array(); 
+				$sql2 = "SELECT user_id FROM categories_follow WHERE category_id=$cat_id";
+				$res = $this->db->query($sql2);
+			
+				if ($res->num_rows > 0) {
+					while ($row = $res->fetch_assoc()) {
+						$user_ids_array[] = $row['user_id']; // Store user ID in the array
+					}
+				}
+			
+				foreach ($user_ids_array as $user_id) {
+
+					$newpost_notif = $this->db->query("INSERT INTO notifications (posterID, time, type, topic_id, content) VALUES ('$user_id',NOW(), 11, $topic_id, 'New post from $cat_name, a category you follow')");
+				}
+			}
+
+		return 1;	
 	}
 	
 	

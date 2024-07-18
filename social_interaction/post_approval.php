@@ -54,8 +54,8 @@
 								<div>
 									
 				                    <span class="float-right mr-1"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small>
-                                        <button class="btn btn-success btn-sm ml-2" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
-                                        <button class="btn btn-secondary btn-sm ml-2" id="decline" data-id="<?php echo $row['id'] ?>">Decline</button>
+                                        <button class="btn btn-success btn-sm ml-2 accept" id="accept" data-id="<?php echo $row['id'] ?>">Accept</button>
+                                        <button class="btn btn-secondary btn-sm ml-2 decline" id="decline" data-id="<?php echo $row['id'] ?>">Decline</button>
                                     </span>
 									<a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>"
 									 class=" filter-text"><?php echo $row['title'] ?></a>
@@ -134,11 +134,11 @@
     $('table').dataTable();
     
 
-    $('#accept').click(function(){
+    $('.accept').click(function(){
         _conf("Approve this post?","approve_topic",[$(this).attr('data-id')],'mid-large'); 
     });
 
-	$('#decline').click(function(){
+	$('.decline').click(function(){
 		uni_modal("Decline Post","social_interaction/decline_topic.php?id="+$(this).attr('data-id'),'mid-large')
 	})
 });
