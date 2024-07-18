@@ -72,7 +72,17 @@ date_default_timezone_set('Asia/Manila');?>
       <?php $page = isset($_GET['page']) ? $_GET['page'] :'home'; ?>
   	<?php include $page.'.php' ?>
   	
-
+    <?php
+    $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+    $file = $page . '.php';
+    if (file_exists($file)) {
+        include $file;
+    } elseif (file_exists('information_resources/' . $file)) {
+        include 'information_resources/' . $file;
+    } else {
+        echo "Page not found.";
+    }
+  ?>
 
 
   <div id="preloader"></div>

@@ -1,7 +1,11 @@
 <?php
-include('db_connect.php');
+    include('admin_class.php');
+    $action = new Action();
+    $data = $action->search_resources();
+   
+    include('db_connect.php');
 
-    // Fetch categories from the database
+	// Fetch categories from the database
     $query = "SELECT id, name FROM crisis_resources_tags";
     $result = $conn->query($query);
 
@@ -75,7 +79,7 @@ include('db_connect.php');
     }
 </style>
 <body>
-    <div id="wrapper-container" class="wrapper-container">
+<div id="wrapper-container" class="wrapper-container">
         <div class="container-pusher">
             <div class="content-pusher">
                 <header id="head" class="site-header">
@@ -138,7 +142,6 @@ include('db_connect.php');
                                                                                             </div>
                                                                                         </div>
                                                                                     </form>
-                                                                                    
                                                                                     <div class="form-group">
                                                                                         <!-- Display category names from db -->
                                                                                         <?php foreach ($crisis_tags as $tags): ?>
@@ -155,64 +158,18 @@ include('db_connect.php');
                                                     </div>
                                                     <div class="resource_elements">
                                                         <div class="headings">
-                                                            <h2 style="color: white; background: green; font-size: 25px; font-weight: bold; padding: 15px;">
-                                                                Resources
-                                                                <!-- make this change depending on the tags selected -->
+                                                            <h2 id="resource-heading" style="color: white; background: green; font-size: 25px; font-weight: bold; padding: 15px;">
+                                                                
                                                             </h2>
                                                         </div>
                                                         <div class="elements_container">
                                                             <div class="elements_row">
-
-                                                                    <!-- Fetch and display resources from db -->                                                                        
-                                                                    <div class="card" style="margin-bottom: 10px;">
-                                                                        <div class="card-body">
-                                                                            <ul class="w-100 list-group" id="topic-list">
-                                                                                <?php foreach ($resources as $resource): ?>
-                                                                                    <li class="list-group-item mb-4">
-                                                                                        <div>
-                                                                                            <h3 class="filter-text name"><?php echo $resource['name'] ?></h3>
-                                                                                        </div>
-                                                                                        
-                                                                                        <div class="badge badge-default"><i class="fa fa-tags"></i> Tags: 
-                                                                                            <?php
-                                                                                                $resource_tags = explode(',', $resource['tags']);
-                                                                                                foreach ($resource_tags as $tag_id) {
-                                                                                                    foreach ($crisis_tags as $tag) {
-                                                                                                        if ($tag['id'] == $tag_id) {
-                                                                                                            echo '<span class="badge badge-info text-white">' . htmlspecialchars($tag['name']) . '</span>';
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            ?>
-                                                                                        </div>
-                                                                                        <hr>
-                                                                                        <div class="card-classification"><strong> Classification: </strong> <?php echo $resource['classification'];?></div>
-                                                                                        <div class="card-services"><span class="material-icons md-14">info</span><strong>  Services: </strong> <?php echo $resource['services']; ?></div>
-                                                                                        <div class="card-setup" style="color: green;"><strong><?php echo $resource['setup']; ?></strong></div>
-                                                                                        <div class="card-expense"><span class="material-icons md-14">attach_money</span><strong>Expense: </strong> <?php echo $resource['expense']; ?></div>
-                                                                                        <?php if (!empty($resource['number'])) : ?>
-                                                                                            <div class="card-number">
-                                                                                                <span class="material-icons md-14">phone</span><strong> Number: </strong> <?php echo $resource['number'] ?>
-                                                                                            </div>
-                                                                                        <?php endif; ?>
-                                                                                        <?php if (!empty($resource['email'])) : ?>
-                                                                                            <div class="card-email">
-                                                                                                <span class="material-icons md-14">email</span><strong>  Email: </strong> <?php echo $resource['email']; ?>
-                                                                                            </div>
-                                                                                        <?php endif; ?>
-                                                                                        <?php if (!empty($resource['ref'])) : ?>
-                                                                                            <span class="material-icons md-14">link</span> <strong> Link: </strong>
-                                                                                            <a class="card-ref" href="<?php echo $resource['ref'];?>" target="_blank"> <?php echo $resource['ref']; ?></a>
-                                                                                        <?php endif; ?>
-                                                                                        <?php if (!empty($resource['location'])) : ?>
-                                                                                            <div class="card-location"><span class="material-icons md-14">place</span><strong>  Location: </strong> <?php echo $resource['location']; ?></div>
-                                                                                        <?php endif; ?>
-                                                                                    </li>
-                                                                                <?php endforeach; ?>
-                                                                            </ul>
-                                                                        </div>
+                                                                <!-- Fetch and display resources from db -->
+                                                                <div class="card" style="margin-bottom: 10px;">
+                                                                    <div class="card-body" id="search_result">
+                                                                        <div id="preloader3"></div>
                                                                     </div>
-
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -220,7 +177,6 @@ include('db_connect.php');
                                             </section>
                                         </div>
                                     </section>
-                                    <hr>
                                 </div>
                             </main>
                         </div>
@@ -229,20 +185,41 @@ include('db_connect.php');
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function(){
-            $('table').dataTable();
-        });
+    <ul id="clone-ul" style="display: none">
+        <li class="list-group-item mb-4">
+            <div>
+                <h3 class="filter-text name"> </h3>
+            </div>
+            <div class="badge badge-default"><i class="fa fa-tags"></i> Tags:</div>
+            <hr>
+            <div class="card-classification"> <strong> Classification: </strong> </div>
+            <div class="card-services"><span class="material-icons md-14">info</span><strong> Services: </strong></div>
+            <div class="card-setup" style="color: green; font-weight: bold;"></div>
+            <div class="card-expense"><span class="material-icons md-14">attach_money</span><strong> Expense: </strong></div>
+            <div class="card-number"><span class="material-icons md-14">phone</span><strong> Number: </strong></div>
+            <div class="card-email"><span class="material-icons md-14">email</span><strong> Email: </strong></div>
+            <span class="material-icons md-14 link">link</span> <strong> Link: </strong>
+                <a class="card-ref" href="" target="_blank"> </a>
+            <div class="card-location"><span class="material-icons md-14">place</span><strong> Location: </strong></div>
+        </li>
+    </ul>
 
-        $('#topic-list').JPaging({
-            pageSize: 15,
-            visiblePageSize: 10
+<script>
+    $(document).ready(function () {
+        load_search();
+
+        updateHeading();
+
+        $('#manage-search').submit(function (e) {
+            e.preventDefault();
+            var keyword = $('#searchBtn').val();
+            location.href = "index.php?page=crisis_support/search_resources&keyword=" + keyword;
         });
 
         $('#searchBtn').keypress(function(e){
-            if(e.which == 13){
-                $('#manage-search').submit();
-            }
+		if(e.which == 13){
+			$('#manage-search').submit();
+		}
         });
 
         $('#tagsInput').keypress(function(e){
@@ -251,20 +228,99 @@ include('db_connect.php');
             }
         });
 
-        $('#manage-search').submit(function(e){
-            e.preventDefault();
-            location.href = "index.php?page=crisis_support/search_resources&keyword=" + $('#searchBtn').val();
-        });
-
         $('#manage-search1').submit(function(e){
             e.preventDefault();
             location.href = "index.php?page=crisis_support/search_resources&tag=" + $('#tagsInput').val();
         });
 
-        $('.tag-btn').click(function(){
+
+        $('.tag-btn').click(function () {
             var tag = $(this).data('tag');
             location.href = "index.php?page=crisis_support/search_resources&tag=" + tag;
         });
-    </script>
-</body>
-</html>
+    
+    });
+
+    function load_search() {
+        $.ajax({
+            url: 'ajax.php?action=search_resources',
+            method: 'POST',
+            data: {
+                keyword: '<?php echo isset($_GET['keyword']) ? $_GET['keyword'] : '' ?>',
+                tag: '<?php echo isset($_GET['tag']) ? $_GET['tag'] : '' ?>'
+            },
+            success: function (resp) {
+                $('#preloader3').hide();
+                if (resp) {
+                    resp = JSON.parse(resp);
+                    if (resp.length > 0) {
+                        var ul = $('<ul class="w-100 list-group" id="topic-list"></ul>');
+                        resp.forEach(item => {
+                            var li = $('#clone-ul li').clone();
+                            li.find('.name').text(item.name);
+                            li.find('.card-classification').html('<strong> Classification: </strong>' + item.classification);
+                            li.find('.card-services').html('<span class="material-icons md-14">info</span><strong> Services: </strong>' + item.services);
+                            li.find('.card-setup').text(item.setup);
+                            li.find('.card-expense').html('<span class="material-icons md-14">attach_money</span><strong> Expense: </strong>' + item.expense);
+                            
+                            if (item.number) {
+                                li.find('.card-number').html('<span class="material-icons md-14">phone</span><strong> Number: </strong>' + item.number);
+                            } else {
+                                li.find('.card-number').remove();
+                            }
+
+                            if (item.email) {
+                                li.find('.card-email').html('<span class="material-icons md-14">email</span><strong> Email: </strong>' + item.email);
+                            } else {
+                                li.find('.card-email').remove();
+                            }
+
+                            if (item.ref) {
+                                li.find('.card-ref').attr('href', item.ref).text(item.ref);
+                            } else {
+                                li.find('.link').remove();
+                                li.find('.card-ref').prev().remove();
+                                li.find('.card-ref').remove();
+                            }
+
+                            if (item.location) {
+                                li.find('.card-location').html('<span class="material-icons md-14">place</span><strong> Location: </strong>' + item.location);
+                            } else {
+                                li.find('.card-location').remove();
+                            }
+
+                            if (item.resource_tags && item.resource_tags.length > 0) {
+                                item.resource_tags.forEach(tag => {
+                                    var tagBadge = $('<span class="badge badge-info text-white"></span>').text(tag);
+                                    li.find('.badge-default').after(tagBadge);
+                                });
+                            }
+
+                            ul.append(li);
+                        });
+                        $('#search_result').html(ul);
+                    } else {
+                        $('#search_result').html('<h4><b>No search results for the given keyword or tag.</b></h4>');
+                    }
+                } else {
+                    $('#search_result').html('<h4><b>Error fetching search results.</b></h4>');
+                }
+            },
+            error: function () {
+                $('#preloader3').hide();
+                $('#search_result').html('<h4><b>Error fetching search results.</b></h4>');
+            }
+        });
+    }
+
+    function updateHeading() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var tag = urlParams.get('tag');
+        if (tag) {
+            $('#resource-heading').text(tag + ' Resources');
+        } else {
+            $('#resource-heading').text('Resources');
+        }
+    }
+
+</script>

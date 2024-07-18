@@ -876,6 +876,200 @@ Class Action {
 		}
 	}
 
+	function search() {
+		if (isset($_POST['keyword']) || isset($_POST['tag'])) {
+			$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+			$tag = isset($_POST['tag']) ? $_POST['tag'] : '';
+	
+			$tags = array();
+			$data = array();
+	
+			$tag_query = $this->db->query("SELECT * FROM categories ORDER BY name ASC");
+			if (!$tag_query) {
+				die("Error fetching categories: " . $this->db->error);
+			}
+			while ($row = $tag_query->fetch_assoc()) {
+				$tags[$row['id']] = $row['name'];
+			}
+	
+			$tsearch = '';
+			if ($tag) {
+				$tagResult = $this->db->query("SELECT id FROM categories WHERE name='$tag'");
+				if ($tagResult && $tagResult->num_rows > 0) {
+					$tagRow = $tagResult->fetch_assoc();
+					$tagId = $tagRow['id'];
+					$tsearch = " CONCAT('[', REPLACE(category_ids, ',', '],['), ']') LIKE '%[$tagId]%' ";
+				}
+			}
+	
+			$data = array();
+	
+			$mediaQuery = "SELECT upload_id AS file_id, MAX(title) AS name, MAX(category_ids) AS category_ids, 'File' AS type
+						   FROM media_files 
+						   WHERE title LIKE '%$keyword%'
+						   " . ($tsearch ? "AND $tsearch " : "") . "
+						   GROUP BY file_id
+						   UNION 
+						   SELECT video_id AS file_id, MAX(title) AS name, MAX(category_ids) AS category_ids, 'Video' AS type
+						   FROM embed_videos 
+						   WHERE title LIKE '%$keyword%'
+						   " . ($tsearch ? "AND $tsearch " : "") . "
+						   GROUP BY video_id
+						   ORDER BY name ASC";
+	
+			$media = $this->db->query($mediaQuery);
+	
+			if (!$media) {
+				die("Error fetching media: " . $this->db->error);
+			}
+	
+			while ($row = $media->fetch_assoc()) {
+				$view = $this->db->query("SELECT * FROM resources_views WHERE article_id=" . $row['file_id']);
+				$view_count = ($view) ? $view->num_rows : 0;
+	
+				$comments = $this->db->query("SELECT * FROM embed_comments WHERE embed_id=" . $row['file_id']);
+				$comments_count = ($comments) ? $comments->num_rows : 0;
+	
+				$row['views'] = $view_count;
+				$row['comments'] = $comments_count;
+	
+				$media_tags = array();
+				if (!empty($row['category_ids'])) {
+					$category_ids = explode(',', $row['category_ids']);
+					foreach ($category_ids as $cat_id) {
+						if (isset($tags[$cat_id])) {
+							$media_tags[] = $tags[$cat_id];
+						}
+					}
+				}
+	
+				$row['media_tags'] = $media_tags;
+				$data[] = $row;
+			}
+			return json_encode($data);
+		} else {
+			return json_encode(array());
+		}
+	}
+
+	function search2() {
+		if (isset($_POST['keyword']) || isset($_POST['tag'])) {
+			$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+			$tag = isset($_POST['tag']) ? $_POST['tag'] : '';
+	
+			$tags = array();
+			$data = array();
+	
+			$tag_query = $this->db->query("SELECT * FROM categories ORDER BY name ASC");
+			if (!$tag_query) {
+				die("Error fetching categories: " . $this->db->error);
+			}
+			while ($row = $tag_query->fetch_assoc()) {
+				$tags[$row['id']] = $row['name'];
+			}
+	
+			$tsearch = '';
+			if ($tag) {
+				$tagResult = $this->db->query("SELECT id FROM categories WHERE name='$tag'");
+				if ($tagResult && $tagResult->num_rows > 0) {
+					$tagRow = $tagResult->fetch_assoc();
+					$tagId = $tagRow['id'];
+					$tsearch = " CONCAT('[', REPLACE(category_ids, ',', '],['), ']') LIKE '%[$tagId]%' ";
+				}
+			}
+	
+			$articleQuery = "SELECT * 
+							 FROM articles 
+							 WHERE title LIKE '%$keyword%' 
+							 " . ($tsearch ? "AND $tsearch " : "") . " 
+							 ORDER BY title ASC";
+	
+			$article = $this->db->query($articleQuery);
+			if (!$article) {
+				die("Error fetching article: " . $this->db->error);
+			}
+	
+			while ($row = $article->fetch_assoc()) {
+				$comments = $this->db->query("SELECT * FROM article_comments WHERE article_id=" . $row['article_id'])->num_rows;
+				$row['comments'] = $comments;
+	
+				$article_tags = array();
+				if (!empty($row['category_ids'])) {
+					$category_ids = explode(',', $row['category_ids']);
+					foreach ($category_ids as $cat_id) {
+						if (isset($tags[$cat_id])) {
+							$article_tags[] = $tags[$cat_id];
+						}
+					}
+				}
+	
+				$row['article_tags'] = $article_tags;
+				$data[] = $row;
+			}
+			return json_encode($data);
+		} else {
+			return json_encode(array());
+		}
+	}	
+
+	function search_resources() {
+        if (isset($_POST['keyword']) || isset($_POST['tag'])) {
+            $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+            $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
+
+            $data = [];
+
+            // Fetch crisis resource tags
+            $rtags_query = $this->db->query("SELECT id, name FROM crisis_resources_tags ORDER BY name ASC");
+            if (!$rtags_query) {
+                die("Error fetching resource categories: " . $this->db->error);
+            }
+            $crisis_tags = [];
+            while ($row = $rtags_query->fetch_assoc()) {
+                $crisis_tags[$row['id']] = $row['name'];
+            }
+
+            // Build the query based on keyword and tag
+            $tsearch = '';
+            if ($tag) {
+                $tagResult = $this->db->query("SELECT id FROM crisis_resources_tags WHERE name='$tag'");
+                if ($tagResult && $tagResult->num_rows > 0) {
+                    $tagRow = $tagResult->fetch_assoc();
+                    $tagId = $tagRow['id'];
+                    $tsearch = " CONCAT('[', REPLACE(tags, ',', '],['), ']') LIKE '%[$tagId]%' ";
+                }
+            }
+
+            $resourcesQuery = "SELECT * FROM crisis_resources 
+                              WHERE name LIKE '%$keyword%' 
+                              " . ($tsearch ? "AND $tsearch " : "") . " 
+                              ORDER BY name ASC";
+
+            $resource_result = $this->db->query($resourcesQuery);
+            if (!$resource_result) {
+                die("Error fetching crisis resources: " . $this->db->error);
+            }
+
+            while ($row = $resource_result->fetch_assoc()) {
+                $resource_tags = [];
+                if (!empty($row['tags'])) {
+                    $tags = explode(',', $row['tags']);
+                    foreach ($tags as $tag_id) {
+                        if (isset($crisis_tags[$tag_id])) {
+                            $resource_tags[] = $crisis_tags[$tag_id];
+                        }
+                    }
+                }
+                $row['resource_tags'] = $resource_tags;
+                $data[] = $row;
+            }
+            return json_encode($data);
+        } else {
+            return json_encode([]);
+        }
+    }
+
+	/*
 	function search(){
 		extract($_POST);
 		$data = array();
@@ -907,7 +1101,7 @@ Class Action {
 	        $data[]= $row;
 		endwhile;
 		return json_encode($data);
-	}
+	} */
 }
 
 /*

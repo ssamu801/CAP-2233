@@ -251,7 +251,25 @@ if($action == "delete_event"){
 	$save = $crud->delete_event();
 	if($save)
 		echo $save;
-}	
+}
+
+if($action == 'search2'){
+	$search = $crud->search2();
+	echo $search;
+	exit();
+}
+
+if($action == 'search_resources'){
+	$search = $crud->search_resources();
+	echo $search;
+	exit();
+}
+if($action == "search"){
+	$get = $crud->search();
+	if($get)
+		echo $get;
+}
+
 if($action == "participate"){
 	$save = $crud->participate();
 	if($save)

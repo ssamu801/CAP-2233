@@ -21,11 +21,12 @@ if(isset($_GET['id'])){
 
     $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Article' ")->num_rows;
 
+    $tags = array();
     if(!empty($category_ids)){
         $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order by name asc");
-        while($row= $tag->fetch_assoc()):
-            $tags[$row['id']] = $row['name'];
-        endwhile;
+            while($row= $tag->fetch_assoc()):
+                $tags[$row['id']] = $row['name'];
+            endwhile;
     }
 }
 ?>
@@ -101,6 +102,15 @@ if(isset($_GET['id'])){
                 <div class="col-md-8">
                     <h4><b><?php echo $title ?></b></h4>
                 </div>
+                <?php if(count($tags) > 0): ?>
+                    <div>
+                        <span class="badge badge-default"><i class="fa fa-tags"></i> Tags: </span>
+                    <?php foreach(explode(',',$category_ids) as $t): ?>
+                        <span class="badge badge-info text-white"><?php echo $tags[$t] ?></span>
+                    <?php endforeach; ?>
+
+                    </div>
+                    <?php endif; ?>
                 <?php 
                     $user_id = $_SESSION['login_id'];
                     $rating_query = $conn->query("SELECT * from resources_ratings WHERE article_id = $article_id AND voter_id = $user_id AND type = 'Article'");
@@ -111,7 +121,7 @@ if(isset($_GET['id'])){
                     if($rating_query_rows == 0) {
                         ?>
                 
-                <span class="badge badge-default float-right mr-4 mt-1"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
+                    <span class="badge badge-default float-right mr-4 mt-1"> Average: <?php echo $average ?> / 5 (<?php echo $rating_query_rows ?> Reviews)</span>
                         <div class="rating-wrapper float-right" id="test" data-id="<?php echo $article_id ?>">
                             <div class="star-wrapper">
                                 <i class="bi bi-star"></i> 
@@ -119,7 +129,7 @@ if(isset($_GET['id'])){
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
                                 <i class="bi bi-star"></i> 
-                                
+
                             </div>
                         </div>
                     <?php } else { ?>
@@ -160,7 +170,7 @@ if(isset($_GET['id'])){
                 <div class="w-100">
                     <!-- Additional content goes here -->
                 </div>
-            </div>
+                </div>
         </div>
         <div class="card">
 			<div class="card-body">
@@ -206,7 +216,8 @@ if(isset($_GET['id'])){
     					<button class="btn btn-primary">Save Comment</button>
     				</form>
     			</div>
-    	</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -294,13 +305,4 @@ if(isset($_GET['id'])){
 		uni_modal("Edit Comment","information_resources/manage_article_comment.php?id="+$(this).attr('data-id'),'mid-large')
 		
 	})
-
 </script>
-
-<?php 
-    /* 
-        9-14
-        67-69
-        106-107
-    */
-?>
