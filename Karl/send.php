@@ -3,9 +3,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+require '../phpmailer/src/Exception.php';
+require '../phpmailer/src/PHPMailer.php';
+require '../phpmailer/src/SMTP.php';
 
 include '../db_connect.php';
 
@@ -79,7 +79,7 @@ if (isset($_POST['action'])) {
 
         $notif_desc = "Your appointment needs to be rescheduled. Please reschedule your appointment by clicking this link: <a href='/index.php?page=appointments/eventmaker&counselor_name=" . urlencode($counselor_name) . "&counselor_id=". urlencode($counselor_id) ."'>Reschedule</a>";        
         
-        $event_status = "Pending";
+        $event_status = "Rescheduled";
 
         $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
         $stmtFetchEmail = $conn->prepare($sqlFetchEmail);

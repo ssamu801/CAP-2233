@@ -1,14 +1,11 @@
 <?php     
-
+error_reporting(E_ERROR | E_PARSE);
 // Include database configuration file 
 require_once './db_connect.php'; 
  
 $postData = $statusMsg = $valErr = ''; 
 $status = 'danger'; 
- 
 // If the form is submitted 
-if(isset($_POST['Accept'])){ 
-     
     // Get event info 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
@@ -21,22 +18,23 @@ if(isset($_POST['Accept'])){
     $time_from = !empty($_POST['time_from'])?trim($_POST['time_from']):''; 
     $time_to = !empty($_POST['time_to'])?trim($_POST['time_to']):''; 
     $date = !empty($_POST['date'])?trim($_POST['date']):''; 
-     
+    
+    // echo '<script>alert("EVENT DATE1:  ' . $_POST['date'] . '")</script>';
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
-        
+        // echo '<script>alert("EVENT DATE2:  ' . $_POST['selectedDate'] . '")</script>';
         $sqlQ = "INSERT INTO event_notifications (id, description, user_email, counselor_name, time, event_start, location, event_end, event_date, event_status, user_name) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sqlQ);
         $stmt->bind_param("isssssssss", $student_id, $notif_desc, $user_email, $counselor_name, $time_from, $location, $time_to, $date, $event_status, $user_name);
-        $notif_desc = "Your appointment has been confirmed";
-        $event_status = "Pending";
+        $notif_desc = "Appointment has been confirmed";
+        $event_status = "Scheduled";
         $insert = $stmt->execute();
 
         // Insert data into the database 
         $sqlQ = "UPDATE events SET location=?, counselor_name=?, counselor_email=?, status=? WHERE id=?";
         $stmt = $conn->prepare($sqlQ);
         $stmt->bind_param("ssssi", $location, $counselor_name, $counselor_email, $db_status, $db_userID);
-        $db_status = "Accepted";
+        $db_status = "Scheduled";
         $db_userID = $userID;
         $insert = $stmt->execute();
         if($insert){ 
@@ -59,25 +57,7 @@ if(isset($_POST['Accept'])){
     }else{ 
         $statusMsg = '<p>Please fill all the mandatory fields:</p>'.trim($valErr, '<br/>'); 
     } 
-}else if(isset($_POST['Reject'])){ 
-    $_SESSION['postData'] = $_POST; 
-    $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
-
-    $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
-    $stmt = $conn->prepare($sqlQ); 
-    $stmt->bind_param("si", $db_status, $db_userID); 
-    $db_status = "Rejected";
-    $db_userID = $userID; 
-    $insert = $stmt->execute();
-
-    if($insert){
-        echo '<script type="text/javascript">
-                        setTimeout(function() {
-                            window.location.href = "$googleOauthURL";
-                        }, 0000); 
-                </script>';
-    }
-} 
+ 
  
 $_SESSION['status_response'] = array('status' => $status, 'status_msg' => $statusMsg); 
  

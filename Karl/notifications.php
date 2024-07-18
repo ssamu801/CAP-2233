@@ -14,35 +14,50 @@
                     <div class="card-body">
                         <table class="table">
 
-                            <?php
-                   
+                            <?php            
                                 include './db_connect.php';
-                                $requests = $conn->query("SELECT * FROM event_notifications"); // fix yung condition to idnum or email
+                                $session_id = $_SESSION['login_id'];
+                                $requests = $conn->query("SELECT * FROM event_notifications WHERE id = '$session_id' OR counselor_id = '$session_id' ORDER BY time DESC;"); // fix yung condition to idnum or email
                                 $total = mysqli_num_rows($requests);
-                                if($total > 0):
-                                    while($row= $requests->fetch_assoc()):
+                                if($total > 0){
+                                    while($row= $requests->fetch_assoc()){
                             ?>
-                                    <?php if($_SESSION['login_id'] == $row['id']): ?>
+                                    <?php if(($_SESSION['login_id'] == $row['id'] || $_SESSION['login_id'] == $row['counselor_id']) && $row['event_status'] == 'Scheduled'){ ?>
                                     <tr>
 				 	                    <td class="text-center">
-                                          <?php echo $row['description'] ?> by <?php echo $row['counselor_name'] ?> <br> 
+                                          <?php echo $row['description'] ?> <br> 
+                                          Counselor: <?php echo $row['counselor_name'] ?> <br> 
+                                          Requested by: <?php echo $row['user_name'] ?> <br> 
                                           When:  <?php echo date('F j, Y',strtotime($row['event_date'])); ?> ,
                                                  <?php echo date("h:i A", strtotime($row['event_start'])); ?> - 
                                                  <?php echo date("h:i A", strtotime($row['event_end'])); ?><br>
-                                          Where: <?php echo $row['location'] ?>
+                                          Location/Link: <?php echo $row['location'];?> 
 				 	                    </td>
                                          <td class="text-center">
-				 		                    <?php echo $row['time'] ?>
+				 		                    <?php echo $row['time']; ?>
 				 	                    </td>
                                     </tr>
-                                    <?php endif; ?>
-                            <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan='6' style='text-align:center;'>There are currently no pending requests</td>
-                                </tr>
-                            <?php endif; ?>
-
+                                    <?php } elseif($_SESSION['login_id'] == $row['id'] && $row['event_status'] == 'Rescheduled'){ ?>
+                                        <tr>
+				 	                    <td class="text-center">
+                                          <?php echo $row['description'] ?> by <?php echo $row['counselor_name'] ?> <br> 
+				 	                    </td>
+                                         <td class="text-center">
+				 		                    <?php echo $row['time']; ?>
+				 	                    </td>
+                                    </tr>
+                                        <?php } elseif($_SESSION['login_id'] == $row['id'] && $row['event_status'] == 'Cancelled'){ ?>
+                                            <tr>
+				 	                    <td class="text-center">
+                                          <?php echo $row['description'] ?> by <?php echo $row['counselor_name'] ?> <br> 
+				 	                    </td>
+                                         <td class="text-center">
+				 		                    <?php echo $row['time']; ?>
+				 	                    </td>
+                                        </tr>
+                                        <?php } ?>
+                                <?php } ?>
+                            <?php } ?> 
                         </table>
                     </div>    
                 </div>         
@@ -54,5 +69,3 @@
 <script>
 $('table').dataTable();
 </script>
-
-
