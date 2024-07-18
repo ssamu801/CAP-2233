@@ -116,8 +116,8 @@
 
 <div class="container-fluid overflow-hidden">
     <div class="row overflow-auto">
-        <div class="col-12 col-sm-3 vh-100 col-xl-2 px-sm-2 navbar-color px-0 d-flex sticky-top ">
-            <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
+        <div class="col-12 col-sm-3 col-xl-2 px-sm-2 navbar-color px-0 d-flex sticky-top ">
+            <div class="d-flex flex-sm-column vh-100  flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
 
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-sm-start" id="menu">
                     <li class="accordion accordion-dropdown" id="accordion1">
