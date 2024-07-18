@@ -107,7 +107,7 @@ if (isset($_POST['action'])) {
         $sqlQ2 = "UPDATE events SET status=? WHERE id=?";
         $stmt = $conn->prepare($sqlQ2);
         $stmt->bind_param("si", $db_status, $db_userID);
-        $db_status = "No Show";
+        $db_status = "Reschedule";
         $db_userID = $userID;
         $insert2 = $stmt->execute();
 
