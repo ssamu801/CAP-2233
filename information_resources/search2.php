@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
     include('admin_class.php');
     $action = new Action();
     $data = $action->search2();

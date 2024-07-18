@@ -69,9 +69,6 @@ date_default_timezone_set('Asia/Manila');?>
     </div>
   </div>
  
-      <?php $page = isset($_GET['page']) ? $_GET['page'] :'home'; ?>
-  	<?php include $page.'.php' ?>
-  	
     <?php
     $page = isset($_GET['page']) ? $_GET['page'] : 'home';
     $file = $page . '.php';

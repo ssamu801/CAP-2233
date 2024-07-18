@@ -116,8 +116,8 @@
 
 <div class="container-fluid overflow-hidden">
     <div class="row overflow-auto">
-        <div class="col-12 col-sm-3 col-xl-2 px-sm-2 navbar-color px-0 d-flex sticky-top ">
-            <div class="d-flex vh-100 flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
+        <div class="col-12 col-sm-3 vh-100 col-xl-2 px-sm-2 navbar-color px-0 d-flex sticky-top ">
+            <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
 
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-sm-start" id="menu">
                     <li class="accordion accordion-dropdown" id="accordion1">
@@ -130,7 +130,7 @@
                                 <ul class="nav">   
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/home"><i class="fs-5 bi-house-door"></i> Home</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/articles"><i class="fs-5 bi-newspaper"></i> Articles</a></li>
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Rresources</a></li>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Resources</a></li>
                             </ul>
                             </div>  
                         </div>
@@ -168,7 +168,7 @@
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
                                 <?php endif; ?>
                                 <?php if( $_SESSION['login_type'] == 3): ?>
-                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingappointments"><i class="bi bi-file-earmark-check"></i> Appointments</a></li>
+                                <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/pendingappointments"><i class="fs-5 bi-file-earmark-check"></i> Appointments</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/client_records"><i class="fs-5 bi-archive"></i> Client Records</a></li>
                                 <?php endif; ?>
                             </ul>
@@ -206,6 +206,14 @@
                         </div>
                     </li>
                     <?php endif; ?>
+                    
+                    <!-- FAQs page -->
+                    <li class="submenu">
+                        <a href="index.php?page=faqs" class="nav-link px-sm-3 px-2">
+                            <i class="fs-5 bi-question-circle"></i><span class="ms-1 d-none d-sm-inline"> FAQs</span>
+                        </a>
+                    </li>
+
 <!--
                     <li class="nav-item submenu">
                         <a href="index.php?page=home" class="nav-link px-sm-3 px-2">
@@ -256,11 +264,3 @@
         });
     });
 </script>
-
-<?php
-    /* 
-        118
-        120
-        148 additional tab for followed categories
-    */
-?>

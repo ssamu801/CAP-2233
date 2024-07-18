@@ -154,11 +154,7 @@ if($action == "update_alumni_acc"){
 	if($save)
 		echo $save;
 }
-if($action == "search"){
-	$get = $crud->search();
-	if($get)
-		echo $get;
-}
+
 if($action == "delete_gallery"){
 	$save = $crud->delete_gallery();
 	if($save)
