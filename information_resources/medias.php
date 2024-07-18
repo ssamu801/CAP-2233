@@ -62,8 +62,8 @@
 					                        <span class="fa fa-ellipsis-v"></span>
 					                      </a>
 					                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					                        <a class="dropdown-item edit_topic" data-id="<?php echo $row['article_id'] ?>" href="javascript:void(0)">Edit</a>
-					                        <a class="dropdown-item delete_topic" data-id="<?php echo $row['article_id'] ?>" href="javascript:void(0)">Delete</a>
+					                        <a class="dropdown-item edit_topic" data-id="<?php echo $row['file_id'] ?>" href="javascript:void(0)">Edit</a>
+					                        <a class="dropdown-item delete_topic" data-id="<?php echo $row['file_id'] ?>" href="javascript:void(0)">Delete</a>
 					                      </div>
 					                    </div> 	
 									<?php else: ?>	

@@ -208,12 +208,22 @@
         position: relative;
         top: 0;
         left: 0;
-        width: 100%;
+        width: fit-content;;
         z-index: 1000;
     }
 
     .dashboard-content {
         margin-top: 80px;
         padding: 20px;
+    }
+    .fc-content{
+        background-color:#107A32;
+        color:white;
+    }
+
+    .fc-center h2{
+        color: #444444;
+        font-family: "Open Sans", sans-serif;
+        font-weight:bold;
     }
 </style>

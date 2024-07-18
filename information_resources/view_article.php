@@ -2,6 +2,7 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 if(isset($_GET['id'])){
+    $art_id = $_GET['id'];
     $qry = $conn->query("SELECT * FROM articles where article_id= ".$_GET['id']);
     foreach($qry->fetch_array() as $k => $val){
         $$k=$val;
@@ -11,6 +12,13 @@ if(isset($_GET['id'])){
     if($chk <= 0){
         $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'Article')");
     }
+
+    $comments = $conn->query("SELECT c.*,u.name,u.username FROM article_comments c inner join users u on u.id = c.user_id where c.article_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+    $com_arr= array();
+    while($row= $comments->fetch_assoc()){
+	    $com_arr[] = $row;
+    }
+
     $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Article' ")->num_rows;
 
     if(!empty($category_ids)){
@@ -154,6 +162,51 @@ if(isset($_GET['id'])){
                 </div>
             </div>
         </div>
+        <div class="card">
+			<div class="card-body">
+    		<div class="col-lg-12">
+    			<div class="row">
+    				<h3><b> <i class="fa fa-comments"></i> Comment/s</b></h3>
+    			</div>
+    			<?php 
+    			foreach($com_arr as $row):
+    			?>
+    			<div class="form-group comment">
+                    <?php if($_SESSION['login_id'] == $row['user_id']): ?>
+                    <div class="dropleft float-right">
+                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-ellipsis-v"></span>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item edit_comment" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Edit</a>
+                        <a class="dropdown-item delete_comment" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Delete</a>
+                      </div>
+                    </div>
+                    <?php endif; ?>
+	                <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
+
+    				<p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
+    				
+    				<br>
+    				<?php echo html_entity_decode($row['comment']) ?>
+    				<div>
+
+    				</div>
+    				<hr>
+    			</div>
+    		<?php endforeach; ?>
+    		</div>
+    			<div class="col-lg-12">
+    				<form action="" id="manage-article-comment">
+    					<div class="form-group">
+    						<input type="hidden" name="id" value="">
+    						<input type="hidden" name="article_id" value="<?php echo $art_id?>">
+    						<textarea class="form-control jqte" id="comment-txt" name="comment" cols="30" rows="5" placeholder="New Comment"></textarea>
+    					</div>
+    					<button class="btn btn-primary">Save Comment</button>
+    				</form>
+    			</div>
+    	</div>
     </div>
 </div>
 
@@ -163,129 +216,6 @@ if(isset($_GET['id'])){
 		uni_modal("Edit Topic","manage_topic.php?id="+$(this).attr('data-id'),'mid-large')
 		
 	})
-
-	// function _compact(){
-		$('.replies').each(function(){
-			if ($(this).find('.ty-compact-list').length > 4) {
-				var i = $(this).find('.ty-compact-list').length - 5;
-				for(i; i >= 0 ; i--){
-				$(this).find('.ty-compact-list:nth("'+i+'")').hide()
-				}
-			  $(this).find('.show_all').show();
-			}
-
-		})
-				$('.replies .show_all').click(function(){
-			var i = $(this).siblings('.ty-compact-list').length - 5;
-			for(i; i >= 0 ; i--){
-			$(this).siblings('.ty-compact-list:nth("'+i+'")').toggle()
-			}
-			if($(this).text() == 'Show all replies')
-				$(this).text('Show less')
-			else
-				$(this).text('Show all replies')
-		})
-	// }
-	$('.c_reply').click(function(){
-		if($('.reply-field[data-id="'+$(this).attr('data-id')+'"]').length >0){
-			return false;
-		}else{
-			$('.comment .reply-field').remove()
-		}
-		var rtf= $('#reply_clone .reply-field').clone()
-		rtf.find('form').attr('id','manage-reply')
-		rtf.find('[name="comment_id"]').val($(this).attr('data-id'))
-		rtf.find('textarea').attr({'name':"reply",'id':"reply-txt"}).jqte()
-		rtf.attr('data-id',$(this).attr('data-id'))
-		if($(this).parent().parent().find('.replies').length > 0)
-		$(this).parent().parent().find('.replies').parent().after(rtf)
-		else
-		$(this).parent().append(rtf)
-		submit_reply_func()
-	})
-	$('.delete_topic').click(function(){
-		_conf("Are you sure to delete this topic?","delete_topic",[$(this).attr('data-id')],'mid-large')
-	})
-	function delete_topic($id){
-		start_load()
-		$.ajax({
-			url:'ajax.php?action=delete_topic',
-			method:'POST',
-			data:{id:$id},
-			success:function(resp){
-				if(resp==1){
-					alert_toast("Data successfully deleted",'success')
-					setTimeout(function(){
-						location.reload()
-					},1500)
-
-				}
-			}
-		})
-	}
-
-    $('.delete_topic').click(function(){
-        _conf("Are you sure to delete this topic?","delete_topic",[$(this).attr('data-id')],'mid-large')
-    })
-
-    function delete_topic($id){
-        start_load()
-        $.ajax({
-            url:'ajax.php?action=delete_topic',
-            method:'POST',
-            data:{id:$id},
-            success:function(resp){
-                if(resp==1){
-                    alert_toast("Data successfully deleted",'success')
-                    setTimeout(function(){
-                        location.reload()
-                    },1500)
-
-                }
-            }
-        })
-    }
-
-    /*
-    $("div.star-wrapper i").on("mouseover", function () {
-    if ($(this).siblings("i.vote-recorded").length == 0) {
-        $(this).prevAll().addBack().addClass("bi-star-fill").removeClass("bi-star");  
-        $(this).nextAll().removeClass("bi-star-fill yellow").addClass("bi-star");
-    }
-});
-
-
-
-    $("div.star-wrapper i").on("click", function () {
-        let rating = $(this).prevAll().length + 1;
-        let article_id = $(this).closest("div.rating-wrapper").data("id");
-        var title = <?php echo json_encode($title); ?>; // Ensure title is properly encoded
-        var login_id = '<?php echo $_SESSION['login_id']; ?>';
-        var type = "Article";
-
-    if ($(this).siblings("i.vote-recorded").length == 0) {
-
-        $(this).prevAll().addBack().addClass("vote-recorded");
-        $.post("ajax.php?action=save_user_rating", { article_id: article_id, 
-                    user_rating: rating,
-                    title: title,
-                    login_id: login_id,
-                    type: type})
-            .done(function (resp) {
-                if (resp == 1) {
-                    alert_toast("Data successfully saved.", 'success');
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1000);
-                }
-            })
-            .fail(function () {
-                alert_toast("Error saving data.", 'error');
-            });
-
-    }
-});
-*/
 
     $("div.star-wrapper i").on("mouseover", function () {
         if ($(this).siblings("i.vote-recorded").length == 0) {
@@ -319,29 +249,17 @@ if(isset($_GET['id'])){
         }
     });
 
-
-
-    $('#manage-topic').submit(function(e){
+    $('#manage-article-comment').submit(function(e){
 		e.preventDefault()
-
-		
-		var title = $('input[name="title"]').val();
- 		var link = $('textarea[name="link"]').val();
-		var publisher = $('textarea[name="publisher"]').val();
-
-		if (title === '' || link === '' || publisher === '') {
-    		alert("Please fill out all fields");
-    		return;
-  		}
-		
 		start_load()
+		
 		$.ajax({
-			url:'ajax.php?action=save_article',
+			url:'ajax.php?action=save_article_comment',
 			method:'POST',
 			data:$(this).serialize(),
 			success:function(resp){
 				if(resp == 1){
-					alert_toast("Data successfully saved.",'success')
+					alert_toast("Comment submitted.",'success')
 					setTimeout(function(){
 						location.reload()
 					},1000)
@@ -349,6 +267,34 @@ if(isset($_GET['id'])){
 			}
 		})
 	})
+
+    $('.delete_comment').click(function(){
+        _conf("Are you sure to delete this comment?","delete_comment",[$(this).attr('data-id')],'mid-large')
+    })
+
+    function delete_comment($id){
+        start_load()
+        $.ajax({
+            url:'ajax.php?action=delete_article_comment',
+            method:'POST',
+            data:{id:$id},
+            success:function(resp){
+                if(resp==1){
+                    alert_toast("Data successfully deleted",'success')
+                    setTimeout(function(){
+                        location.reload()
+                    },1500)
+
+                }
+            }
+        })
+    }
+
+    $('.edit_comment').click(function(){
+		uni_modal("Edit Comment","information_resources/manage_article_comment.php?id="+$(this).attr('data-id'),'mid-large')
+		
+	})
+
 </script>
 
 <?php 

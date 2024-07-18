@@ -31,6 +31,12 @@ if(isset($_GET['id'])){
         }
 
         $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Video' ")->num_rows;
+
+        $comments = $conn->query("SELECT c.*,u.name,u.username FROM embed_comments c inner join users u on u.id = c.user_id where c.embed_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+        $com_arr= array();
+        while($row= $comments->fetch_assoc()){
+	        $com_arr[] = $row;
+        }
     }
     else{
         $qry = $conn->query("SELECT * FROM media_files where upload_id= ".$_GET['id']);
@@ -43,7 +49,13 @@ if(isset($_GET['id'])){
             $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'File')");
         }
 
-        $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='Video' ")->num_rows;
+        $view = $conn->query("SELECT * FROM resources_views where article_id={$_GET['id']} and type='File' ")->num_rows;
+
+        $comments = $conn->query("SELECT c.*,u.name,u.username FROM media_comments c inner join users u on u.id = c.user_id where c.upload_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+        $com_arr= array();
+        while($row= $comments->fetch_assoc()){
+	        $com_arr[] = $row;
+        }
     }
         
     }
@@ -166,7 +178,51 @@ if(isset($_GET['id'])){
                 <div class="embed-responsive embed-responsive-16by9">
                     <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/<?php echo $vid_id ?>" allowfullscreen></iframe>
                 </div>
-                
+                <div class="card">
+			<div class="card-body">
+    		<div class="col-lg-12">
+    			<div class="row">
+    				<h3><b> <i class="fa fa-comments"></i> Comment/s</b></h3>
+    			</div>
+    			<?php 
+    			foreach($com_arr as $row):
+    			?>
+    			<div class="form-group comment">
+                    <?php if($_SESSION['login_id'] == $row['user_id']): ?>
+                    <div class="dropleft float-right">
+                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-ellipsis-v"></span>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item edit_embed_comment" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Edit</a>
+                        <a class="dropdown-item delete_embed_comment" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Delete</a>
+                      </div>
+                    </div>
+                    <?php endif; ?>
+	                <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
+
+    				<p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
+    				
+    				<br>
+    				<?php echo html_entity_decode($row['comment']) ?>
+    				<div>
+
+    				</div>
+    				<hr>
+    			</div>
+    		<?php endforeach; ?>
+    		</div>
+    			<div class="col-lg-12">
+    				<form action="" id="manage-embed-comment">
+    					<div class="form-group">
+    						<input type="hidden" name="id" value="">
+    						<input type="hidden" name="embed_id" value="<?php echo $_GET['id']?>">
+    						<textarea class="form-control jqte" id="comment-txt" name="comment" cols="30" rows="5" placeholder="New Comment"></textarea>
+    					</div>
+    					<button class="btn btn-primary">Save Comment</button>
+    				</form>
+    			</div>
+    	</div>
                 <?php endif; ?>
 
                 <!-- Display images -->
@@ -227,6 +283,51 @@ if(isset($_GET['id'])){
                         echo '<img src="information_resources/medias/' . $image_row['file_name'] . '" class="img-fluid mb-2" alt="Image">';
                     }
                     ?>
+                     <div class="card">
+			<div class="card-body">
+    		<div class="col-lg-12">
+    			<div class="row">
+    				<h3><b> <i class="fa fa-comments"></i> Comment/s</b></h3>
+    			</div>
+    			<?php 
+    			foreach($com_arr as $row):
+    			?>
+    			<div class="form-group comment">
+                    <?php if($_SESSION['login_id'] == $row['user_id']): ?>
+                    <div class="dropleft float-right">
+                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-ellipsis-v"></span>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item edit_media_comment" data-id="<?php echo $_GET['id'] ?>" href="javascript:void(0)">Edit</a>
+                        <a class="dropdown-item delete_media_comment" data-id="<?php echo $_GET['id'] ?>" href="javascript:void(0)">Delete</a>
+                      </div>
+                    </div>
+                    <?php endif; ?>
+	                <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
+
+    				<p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
+    				
+    				<br>
+    				<?php echo html_entity_decode($row['comment']) ?>
+    				<div>
+
+    				</div>
+    				<hr>
+    			</div>
+    		<?php endforeach; ?>
+    		</div>
+    			<div class="col-lg-12">
+    				<form action="" id="manage-media-comment">
+    					<div class="form-group">
+    						<input type="hidden" name="id" value="">
+    						<input type="hidden" name="media_id" value="<?php echo $_GET['id']?>">
+    						<textarea class="form-control jqte" id="comment-txt" name="comment" cols="30" rows="5" placeholder="New Comment"></textarea>
+    					</div>
+    					<button class="btn btn-primary">Save Comment</button>
+    				</form>
+    			</div>
+    	</div>
                 <?php endif; ?>
                 <!-- <img src="medias/e057d201-ddec-4a4d-acbf-a512f2aeb274.jpeg" alt="Image Description"> -->
                 <hr>
@@ -239,66 +340,98 @@ if(isset($_GET['id'])){
 </div>
 <script>
 	$('.jqte').jqte()
-	$('.edit_topic').click(function(){
-		uni_modal("Edit Topic","manage_topic.php?id="+$(this).attr('data-id'),'mid-large')
+
+    $('#manage-embed-comment').submit(function(e){
+		e.preventDefault()
+		start_load()
 		
-	})
-	$('.edit_comment').click(function(){
-		uni_modal("Edit Comment","manage_comment.php?id="+$(this).attr('data-id'),'mid-large')
-		
-	})
-	$('.edit_reply').click(function(){
-		uni_modal("Edit Reply","manage_reply.php?id="+$(this).attr('data-id'),'mid-large')
-		
-	})
-	// function _compact(){
-		$('.replies').each(function(){
-			if ($(this).find('.ty-compact-list').length > 4) {
-				var i = $(this).find('.ty-compact-list').length - 5;
-				for(i; i >= 0 ; i--){
-				$(this).find('.ty-compact-list:nth("'+i+'")').hide()
+		$.ajax({
+			url:'ajax.php?action=save_embed_comment',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					alert_toast("Comment submitted.",'success')
+					setTimeout(function(){
+						location.reload()
+					},1000)
 				}
-			  $(this).find('.show_all').show();
 			}
-
 		})
-				$('.replies .show_all').click(function(){
-			var i = $(this).siblings('.ty-compact-list').length - 5;
-			for(i; i >= 0 ; i--){
-			$(this).siblings('.ty-compact-list:nth("'+i+'")').toggle()
-			}
-			if($(this).text() == 'Show all replies')
-				$(this).text('Show less')
-			else
-				$(this).text('Show all replies')
-		})
-	// }
-	$('.c_reply').click(function(){
-		if($('.reply-field[data-id="'+$(this).attr('data-id')+'"]').length >0){
-			return false;
-		}else{
-			$('.comment .reply-field').remove()
-		}
-		var rtf= $('#reply_clone .reply-field').clone()
-		rtf.find('form').attr('id','manage-reply')
-		rtf.find('[name="comment_id"]').val($(this).attr('data-id'))
-		rtf.find('textarea').attr({'name':"reply",'id':"reply-txt"}).jqte()
-		rtf.attr('data-id',$(this).attr('data-id'))
-		if($(this).parent().parent().find('.replies').length > 0)
-		$(this).parent().parent().find('.replies').parent().after(rtf)
-		else
-		$(this).parent().append(rtf)
-		submit_reply_func()
-	})
-	$('.delete_topic').click(function(){
-		_conf("Are you sure to delete this topic?","delete_topic",[$(this).attr('data-id')],'mid-large')
 	})
 
+	$('.edit_embed_comment').click(function(){
+		uni_modal("Edit Comment","information_resources/manage_embed_comment.php?id="+$(this).attr('data-id'),'mid-large')
+		
+	})
 
-    $('.delete_topic').click(function(){
-        _conf("Are you sure to delete this topic?","delete_topic",[$(this).attr('data-id')],'mid-large')
+    $('.delete_embed_comment').click(function(){
+        _conf("Are you sure to delete this comment?","delete_embed_comment",[$(this).attr('data-id')],'mid-large')
     })
 
+    function delete_embed_comment($id){
+        start_load()
+        $.ajax({
+            url:'ajax.php?action=delete_embed_comment',
+            method:'POST',
+            data:{id:$id},
+            success:function(resp){
+                if(resp==1){
+                    alert_toast("Comment successfully deleted",'success')
+                    setTimeout(function(){
+                        location.reload()
+                    },1500)
+
+                }
+            }
+        })
+    }
+
+    $('#manage-media-comment').submit(function(e){
+		e.preventDefault()
+		start_load()
+		
+		$.ajax({
+			url:'ajax.php?action=save_media_comment',
+			method:'POST',
+			data:$(this).serialize(),
+			success:function(resp){
+				if(resp == 1){
+					alert_toast("Comment submitted.",'success')
+					setTimeout(function(){
+						location.reload()
+					},1000)
+				}
+			}
+		})
+	})
+
+    $('.edit_media_comment').click(function(){
+		uni_modal("Edit Comment","information_resources/manage_media_comment.php?id="+$(this).attr('data-id'),'mid-large')
+		
+	})
+
+    $('.delete_media_comment').click(function(){
+        _conf("Are you sure to delete this comment?","delete_media_comment",[$(this).attr('data-id')],'mid-large')
+    })
+
+    function delete_media_comment($id){
+        start_load()
+        $.ajax({
+            url:'ajax.php?action=delete_media_comment',
+            method:'POST',
+            data:{id:$id},
+            success:function(resp){
+                if(resp==1){
+                    alert_toast("Comment successfully deleted",'success')
+                    setTimeout(function(){
+                        location.reload()
+                    },1500)
+
+                }
+            }
+        })
+    }
 
     $("div.star-wrapper i").on("mouseover", function () {
         if ($(this).siblings("i.vote-recorded").length == 0) {
