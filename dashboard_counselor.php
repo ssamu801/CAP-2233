@@ -350,7 +350,7 @@
                                                             ?>
                                                             <li class="list-group-item mb-4">
                                                                 <div>
-                                                                    <a href="index.php?page=social_interaction/view_pending_post&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
+                                                                    <a href="index.php?page=social_interaction/view_forum&id=<?php echo $row['id'] ?>" class="filter-text"><?php echo $row['title'] ?></a>
                                                                 </div>
                                                                 <div>
                                                                     <span style="font-size: smaller;"> <i class="bi bi-tags-fill"></i> Tags: </span>

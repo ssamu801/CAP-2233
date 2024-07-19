@@ -137,6 +137,46 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
     	color: #333;
     	font-size: 14px;
 	}
+	.helpbtns {
+            display: flex;
+            gap: 10px;
+        }
+	.helpbtns .bi-hand-thumbs-up{
+		color: white;
+	}
+	.helpbtns .bi-hand-thumbs-down{
+		color: black;
+	}	
+	
+    .helpful-btn, .unhelpful-btn {
+        display: flex;
+        align-items: center;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    .helpful-btn {
+        background-color: #28a745;
+        color: #fff;
+    }
+	.helpful-btn:hover{
+		background-color: #107a32
+	}
+    .unhelpful-btn {
+        background-color: #e0e0e0;
+        color: #000;
+    }
+	.unhelpful-btn:hover .bi-hand-thumbs-down {
+        color: white;
+    }
+    .helpful-btn svg, .unhelpful-btn svg {
+        margin-right: 10px;
+    }
+    .helpbtns .active-btn {
+        background-color: #107a32;
+    }
 </style>
 <div class="container-field">
 <div class="row mb-4 mt-4">
@@ -186,13 +226,14 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 					<?php echo html_entity_decode($content) ?>
 				</div>
 				<?php 
-					$like = $conn->query("SELECT * FROM post_likes WHERE post_id=$id AND user_id=$user_id");
+				$login_id = $_SESSION['login_id'];
+					$like = $conn->query("SELECT * FROM post_likes WHERE post_id=$id AND user_id=$login_id");
 					$isLiked = mysqli_num_rows($like);
 					if($isLiked == 0):
 				?>
 				<form action="" id="like-post" class="like-button mt-4 ml-2">
 					<input type="hidden" name="id" value="<?php echo $id ?>" class="form-control">
-					<input type="hidden" name="user_id" value="<?php echo $user_id ?>" class="form-control">
+					<input type="hidden" name="user_id" value="<?php echo $login_id ?>" class="form-control">
     				<button type="submit" class="like-text">
         				<i class="bi bi-hand-thumbs-up"></i><span class="ml-1">Like</span>
     				</button>
@@ -209,7 +250,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 				<?php else: ?>
 					<form action="" id="unlike-post" class="unlike-button mt-4 ml-2">
 						<input type="hidden" name="id" value="<?php echo $id ?>" class="form-control">
-						<input type="hidden" name="user_id" value="<?php echo $user_id ?>" class="form-control">
+						<input type="hidden" name="user_id" value="<?php echo $login_id ?>" class="form-control">
     					<button type="submit" class="unlike-text">
         					<i class="bi bi-hand-thumbs-up-fill"></i><span class="ml-1">Liked</span>
     					</button>
@@ -249,13 +290,57 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
                     <?php endif; ?>
 	                <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
 
-    				<p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
+    				<p class="mb-3"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
     				
-    				<br>
     				<?php echo html_entity_decode($row['comment']) ?>
     				<div>
-    					<span><button class="btn btn-default btn-sm c_reply" data-id='<?php echo $row['id'] ?>'><i class="fa fa-reply"></i></button></span>
-    					<span class="text-primary ml-4"><?php echo isset($rep_arr[$row['id']]) ? count($rep_arr[$row['id']]).(count($rep_arr[$row['id']]) > 1? ' Replies':' Replied') : '' ?></span>
+    				<!--	<span><button class="float-right btn btn-default btn-sm c_reply" data-id='<?php echo $row['id'] ?>'><i class="fa fa-reply"></i></button></span> -->
+					<?php 
+						$comment_id = $row['id'];
+						$helpful = $row['helpful'];
+						$unhelpful = $row['unhelpful'];
+						$result = $conn->query("SELECT id, rating_type FROM comment_ratings WHERE user_id = " . $_SESSION['login_id'] . " AND comment_id = " . $row['id']);
+						 if ($result->num_rows > 0) {
+							 $row = $result->fetch_assoc();
+							 if ($row['rating_type'] === 'helpful') {
+					?>			
+								<div class="helpbtns mt-2" data-comment-id="<?php echo $comment_id ?>">
+									<button class="btn btn-primary helpful-btn active-btn">
+										<i class="bi bi-hand-thumbs-up-fill mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo $helpful ?></span>
+									</button>
+									<button class="btn btn-secondary unhelpful-btn">
+										<i class="bi bi-hand-thumbs-down mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo $unhelpful ?></span>
+									</button>
+								</div>
+					<?php			 
+							 } else {
+					?>			
+								 <div class="helpbtns mt-2" data-comment-id="<?php echo $comment_id ?>">
+									<button class="btn btn-primary helpful-btn">
+										<i class="bi bi-hand-thumbs-up mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo $helpful ?></span>
+									</button>
+									<button class="btn btn-secondary unhelpful-btn active">
+										<i class="bi bi-hand-thumbs-down-fill mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo $unhelpful ?></span>
+									</button>
+								</div>
+					<?php
+							 }
+						}
+						else{
+					?>
+							<div class="helpbtns mt-2" data-comment-id="<?php echo ($row['id']) ?>">
+								<button class="btn btn-primary helpful-btn">
+									<i class="bi bi-hand-thumbs-up mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo ($row['helpful']) ?></span>
+								</button>
+								<button class="btn btn-secondary unhelpful-btn">
+									<i class="bi bi-hand-thumbs-down mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo ($row['unhelpful']) ?></span>
+								</button>
+							</div>
+					<?php
+						}
+								
+					?>
+    				<!--	<span class="text-primary ml-4"><?php echo isset($rep_arr[$row['id']]) ? count($rep_arr[$row['id']]).(count($rep_arr[$row['id']]) > 1? ' Replies':' Replied') : '' ?></span> -->
 
     					<?php if(isset($rep_arr[$row['id']])): ?>
     						<hr>
@@ -301,7 +386,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
     						<input type="hidden" name="topic_id" value="<?php echo isset($id) ? $id : '' ?>">
     						<textarea class="form-control jqte" id="comment-txt" name="comment" cols="30" rows="5" placeholder="New Comment"></textarea>
     					</div>
-    					<button class="btn btn-primary">Save Comment</button>
+    					<button class="btn btn-success">Save Comment</button>
     				</form>
     			</div>
     	</div>
@@ -532,6 +617,40 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			}
 		})
 	})
+
+	$(document).ready(function() {
+            $('.helpful-btn').on('click', function() {
+                var commentId = $(this).closest('.helpbtns').data('comment-id');
+                $.post('./social_interaction/rate_comment.php', {
+                    action: 'helpful',
+                    comment_id: commentId
+                }, function(response) {
+                    if (response.success) {
+                        var helpfulCount = response.helpful_count;
+                        var unhelpfulCount = response.unhelpful_count;
+                        $('div[data-id="'+commentId+'"] .helpful-count').text(helpfulCount);
+                        $('div[data-id="'+commentId+'"] .unhelpful-count').text(unhelpfulCount);
+                    }
+                }, 'json');
+				location.reload()
+            });
+
+            $('.unhelpful-btn').on('click', function() {
+                var commentId = $(this).closest('.helpbtns').data('comment-id');
+                $.post('./social_interaction/rate_comment.php', {
+                    action: 'unhelpful',
+                    comment_id: commentId
+                }, function(response) {
+                    if (response.success) {
+                        var helpfulCount = response.helpful_count;
+                        var unhelpfulCount = response.unhelpful_count;
+                        $('div[data-id="'+commentId+'"] .helpful-count').text(helpfulCount);
+                        $('div[data-id="'+commentId+'"] .unhelpful-count').text(unhelpfulCount);
+                    }
+                }, 'json');
+				location.reload()
+            });
+        });
 </script>
 
 <?php
