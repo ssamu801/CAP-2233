@@ -69,7 +69,7 @@ if(isset($_POST['Accept'])){
 }else if(isset($_POST['Reschedule'])){ 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
-    echo '<script>alert("Rescheduling: '.$_POST['userID'].'.")</script>'; 
+    echo '<script>alert("Rescheduling Event: '.$userID.'")</script>'; 
 
     $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
     $stmt = $conn->prepare($sqlQ); 
@@ -162,7 +162,7 @@ if(isset($_POST['Accept'])){
 } else { 
     // $appointment_id = !empty($_POST['appointment_id']) ? trim($_POST['appointment_id']) : ''; 
     $userID = !empty($_POST['userID']) ? trim($_POST['userID']) : ''; 
-    echo '<script>alert("Cancelling: '.$_POST['userID'].'.")</script>'; 
+    echo '<script>alert("Cancelling Event: '.$userID.'")</script>'; 
     
     // Fetch the user email associated with the appointment
     $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
@@ -174,8 +174,10 @@ if(isset($_POST['Accept'])){
     if ($resultFetchEmail->num_rows > 0) {
         $userEmailRow = $resultFetchEmail->fetch_assoc();
         $userEmail = $userEmailRow['user_email'];
+        echo '<script>alert("1")</script>'; 
     } else {
         // Handle case where no email is found for the appointment
+        echo '<script>alert("2")</script>'; 
         echo "<script>
             alert('No email found for the specified appointment.');
             document.location.href = '/index.php?page=appointments/pendingappointments';

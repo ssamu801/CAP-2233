@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                     <tbody>
                                     <form class="" action="appointments/addevent.php" method="post">
                                     <?php
- use PHPMailer\PHPMailer\PHPMailer;
+                                     use PHPMailer\PHPMailer\PHPMailer;
                                      use PHPMailer\PHPMailer\SMTP;
                                      use PHPMailer\PHPMailer\Exception;
                                      
@@ -258,6 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                 <td class="text-center"><?php echo $row['user_name'] ?></td>
                                                 <td class="text-center"><?php echo $row['user_email'] ?></td>
                                                 <td class="text-center"><?php echo $row['date'] ?></td>
+                                                <input type="hidden" name="userID" value="<?php echo $row['id']; ?>">
                                                 <td class="text-center"> 
                                                     <?php 
                                                     $time_from = $row['time_from'];
