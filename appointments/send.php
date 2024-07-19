@@ -3,11 +3,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require '../phpmailer/src/Exception.php';
-require '../phpmailer/src/PHPMailer.php';
-require '../phpmailer/src/SMTP.php';
+require 'phpmailer/src/Exception.php';
+require 'phpmailer/src/PHPMailer.php';
+require 'phpmailer/src/SMTP.php';
 
-include '../db_connect.php';
+require_once 'db_connect.php'; 
 
 // Check if action is set and process accordingly
 if (isset($_POST['action'])) {
@@ -76,10 +76,11 @@ if (isset($_POST['action'])) {
         $time_from = !empty($_POST['time_from']) ? trim($_POST['time_from']) : ''; 
         $time_to = !empty($_POST['time_to']) ? trim($_POST['time_to']) : ''; 
         $date = !empty($_POST['date']) ? trim($_POST['date']) : ''; 
+        $user_type = !empty($_POST['user_type']) ? trim($_POST['user_type']) : ''; 
 
         $notif_desc = "Your appointment needs to be rescheduled. Please reschedule your appointment by clicking this link: <a href='/index.php?page=appointments/eventmaker&counselor_name=" . urlencode($counselor_name) . "&counselor_id=". urlencode($counselor_id) ."'>Reschedule</a>";        
         
-        $event_status = "Pending";
+        $event_status = "Rescheduled";
 
         $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
         $stmtFetchEmail = $conn->prepare($sqlFetchEmail);
@@ -130,7 +131,7 @@ if (isset($_POST['action'])) {
         echo "
         <script>
             alert('User has been notified of the need for rescheduling.');
-            window.location.href = '../index.php?page=appointments/pendingappointments';
+            document.location.href = '/index.php?page=appointments/pendingappointments';
         </script>
         ";
     }
