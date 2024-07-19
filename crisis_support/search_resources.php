@@ -87,7 +87,7 @@
                         <div class="waspchat-contianer">
                             <a href="" title="OCCS - WASP" target="_blank">
                                 <span class="waspchat-text" style="text-decoration: underline;">
-                                    WASP Real-Time Chat Support
+                                   Wellness Assistance and Support Platform
                                 </span>
                             </a>
                         </div>
