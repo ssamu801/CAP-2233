@@ -344,6 +344,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('accept-btn')) {
+            event.preventDefault();
+            var appointmentId = event.target.getAttribute('data-id');
+            uni_modal2("Accept Appointment Request", "appointments/pending_modal.php?id=" + appointmentId, 'mid-large');
+        }
+    });
+
     // Add event listeners to all reschedule buttons with class 'reschedule-btn'
     var rescheduleButtons = document.querySelectorAll('.reschedule-btn');
     

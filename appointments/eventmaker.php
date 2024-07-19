@@ -317,7 +317,7 @@ $('#addEventToDB').submit(function(e) {
             if (response.id == -1) {
                 alert_toast("Request submitted.", 'success');
                 setTimeout(function() {
-                    window.location.href = 'index.php?page=appointments/pending_modal&fhdhdghdf=' + encodeURIComponent(response.tempid);
+                    window.location.href = './index.php?page=home'
                 }, 1000);
             } else {
                 alert_toast("Request submitted.", 'success');

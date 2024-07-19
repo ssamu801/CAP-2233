@@ -389,7 +389,7 @@
                                                         }
                                                     }
                                                 }
-                                                if($i == 0){
+                                                if($k == 0){
                                                     echo "<li class='list-group-item'>No flagged posts from clients.</li>";
                                                 }
                                             } else {
@@ -599,7 +599,7 @@
         $('#calendar').fullCalendar({
             events: [
                 <?php
-                $events = $conn->query("SELECT user_name AS title, date, time_from AS start, time_to AS end FROM events WHERE status='Scheduled';");
+                $events = $conn->query("SELECT user_name AS title, date, time_from AS start, time_to AS end FROM events WHERE status='Scheduled' AND counselor_id = $login_id;");
                 while ($event = $events->fetch_assoc()):
                 ?>
                 {

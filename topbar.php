@@ -29,7 +29,7 @@
         <div class=" dropdown mr-4">
             <a href="#" class="text-white dropdown-toggle"  id="account_settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $_SESSION['login_name'] ?> </a>
               <div class="dropdown-menu" aria-labelledby="account_settings" style="left: -4em;">
-                <a class="dropdown-item" href="index.php?page=user_management/profile" id="manage_my_account"><i class="fa fa-cog"></i> Profile</a>
+                <a class="dropdown-item" href="index.php?page=user_management/profile"><i class="fa fa-cog"></i> Profile</a>
                 <a class="dropdown-item" href="ajax.php?action=logout"><i class="fa fa-power-off"></i> Logout</a>
               </div>
         </div>
@@ -40,7 +40,7 @@
 
 <script>
   $('#manage_my_account').click(function(){
-    uni_modal("Manage Account","manage_user.php?id=<?php echo $_SESSION['login_id'] ?>&mtype=own")
+    uni_modal("Manage Account","profile.php?id=<?php echo $_SESSION['login_id'] ?>&mtype=own")
   })
   $('#find').keypress(function(e){
     if(e.which == 13){
