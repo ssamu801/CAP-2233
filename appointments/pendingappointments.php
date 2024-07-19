@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                              endwhile;
                                          endif;
          
-                                         $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND mode = 'Face-to-Face';");
+                                         $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face';");
                                          $total = mysqli_num_rows($requests);
                                          if($total > 0):
                                              while($row= $requests->fetch_assoc()):
@@ -266,7 +266,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                         }
                                     }
 
-                                    $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND mode = 'Online';");
+                                    $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Online';");
                                     $total = mysqli_num_rows($requests);
                                     if ($total > 0) {
                                         while ($row = $requests->fetch_assoc()) {

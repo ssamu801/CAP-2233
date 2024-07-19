@@ -146,7 +146,7 @@
                                                 <h4 class="num">
                                                     <b>
                                                         <?php 
-                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id";
+                                                            $sql = "SELECT COUNT(*) AS total_rows FROM events WHERE counselor_id = $login_id AND status!= 'Reschedule'";
 
                                                             // Execute the query
                                                             $result = $conn->query($sql);
