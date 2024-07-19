@@ -71,14 +71,10 @@
 
                 include "./db_connect.php";
                 $id = $_SESSION['login_id'];
-                $id = '12067890';
+                $id = '11212345';
                 // SQL query to select data based on ID
-                $sql = "SELECT n.id, n.posterID, n.time, n.type, n.topic_id, n.comment_id, n.event_id, 
-                               e.title, e.description, e.mode, e.location, e.date, e.time_from, e.time_to,
-                               e.created, e.user_name, e.user_email, e.status, e.student_id, e.isPreferred,
-                               e.preferredCounselor, e.counselor_name, e.counselor_email
-                        FROM notifications n
-                        JOIN events e ON n.event_id = e.id
+                $sql = "SELECT id, posterID, time, type, topic_id, comment_id, event_id, content
+                        FROM notifications
                         WHERE posterID = $id;";
 
                 $stmt = $conn->prepare($sql);
@@ -127,13 +123,6 @@
                                 return "Notification";
                         }
                     }
-                    
-                    // function truncateString($string, $length) {
-                    //     if (strlen($string) <= $length) {
-                    //         return $string;
-                    //     }
-                    //     return substr($string, 0, $length) . '...';
-                    // }
 
                     while ($row = $result->fetch_assoc()) {
                     ?>
@@ -141,24 +130,20 @@
                             <div class="dropdown-list-image mr-3">
                                 <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" />
                             </div>
-                            <div class="font-weight-bold mr-3 notification_record" data-id="<?php echo $row['id'];?>">
+                            <div class="font-weight-bold mr-3 notification_record" 
+                                    data-id="<?php echo $row['id'];?>"
+                                    data-event-id="<?php echo $row['event_id'];?>"
+                                    data-topic-id="<?php echo $row['topic_id'];?>"
+                                    data-comment-id="<?php echo $row['comment_id'];?>"
+                                    data-type="<?php echo $row['type'];?>">
                                 <?php 
                                     $title = getNotificationTitle($row['type']);
-                                    $description = truncateString($row['description'], 100);
+                                    $description = truncateString($row['content'], 100);
                                 ?>
                                 <div class="text-truncate"><?php echo $title?></div>
                                 <div class="small"><?php echo $description?></div>
                             </div>
                             <span class="ml-auto mb-auto">
-                                <!-- <div class="btn-group">
-                                    <button type="button" class="btn btn-light btn-sm rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="mdi mdi-dots-vertical"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <button class="dropdown-item" type="button"><i class="mdi mdi-delete"></i> Delete</button>
-                                        <button class="dropdown-item" type="button"><i class="mdi mdi-close"></i> Turn Off</button>
-                                    </div>
-                                </div> -->
                                 <br />
                                 <div class="text-right text-muted pt-1"><?php echo daysFromCurrentDate($row['time']) ?>d</div>
                             </span>
@@ -182,32 +167,23 @@
 
 <script>
 
-// function view_modal(heading, url, size) {
-//         // Get the modal element
-//         var modal = $('#dateModal');
-
-//         // Set the modal title
-//         modal.find('.modal-title').text(heading);
-
-//         // Load the content of cal.php into the modal body
-//         modal.find('.modal-body').load(url, function() {
-//             // Adjust the modal size based on the 'size' parameter
-//             if (size === 'mid-large') {
-//                 modal.find('.modal-dialog').removeClass('modal-sm').addClass('modal-lg');
-//             } else if (size === 'small') {
-//                 modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
-//             } else {
-//                 modal.find('.modal-dialog').removeClass('modal-sm modal-lg');
-//             }
-//         });
-
-//         // Show the modal
-//         modal.modal('show');
-// }
+// $('.notification_record').click(function(){
+//     // alert("HELLO");
+//     var id = $(this).attr('data-id');
+//     var topic_id = $(this).attr('data-topic_id');
+//     var event_id = $(this).attr('data-event_id');
+//     var comment_id = $(this).attr('data-comment_id');
+//     var type = $(this).attr('data-type');
+//     view_modal("Notification (ID: " + dataId + ")", "./notifications/notification_modal.php?id="+id+"&topic_id="+topic_id+"&event_id="+event_id+"&comment-id="+comment_id+"&type="+type, 'large');	
+// });
 
 $('.notification_record').click(function(){
-    var dataId = $(this).attr('data-id');
-    view_modal("Notification (ID: " + dataId + ")", "./notifications/notification_modal.php?id="+dataId, 'large');	
+    var id = $(this).attr('data-id');
+    var topic_id = $(this).attr('data-topic-id');  // Corrected to 'data-topic-id'
+    var event_id = $(this).attr('data-event-id');  // Corrected to 'data-event-id'
+    var comment_id = $(this).attr('data-comment-id');  // Corrected to 'data-comment-id'
+    var type = $(this).attr('data-type');
+    view_modal("Notification (ID: " + id + ")", "./notifications/notification_modal.php?id="+id+"&topic_id="+topic_id+"&event_id="+event_id+"&comment_id="+comment_id+"&type="+type, 'large');	
 });
 
 </script>
