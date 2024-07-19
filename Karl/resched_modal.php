@@ -6,9 +6,9 @@ session_start();
  $requests = $conn->query("SELECT *
                              FROM events 
                              WHERE id = $id LIMIT 1;");
-    while($row= $requests->fetch_assoc()):
+    while($row = $requests->fetch_assoc()):
 ?>
-<form method='post' action='appointments/send.php'> 
+<form method='post' action='appointments/addevent.php'> 
     <input type='hidden' id='counselor_email' name='counselor_email' value='<?php echo $_SESSION['login_email']; ?>'>
     <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
     <input type='hidden' id='student_id' name='student_id' value='<?php echo $row['student_id']; ?>'>
@@ -23,10 +23,20 @@ session_start();
     <input type='hidden' value='<?php echo $row['counselor_id']; ?>' name='counselor_id'>
     <input type='hidden' value='Reschedule' name='action'>
 
+    <?php 
+    $requests2 = $conn->query("SELECT *
+                              FROM users 
+                              WHERE id =  $login_id LIMIT 1;");
+
+    $row2 = $requests2->fetch_assoc();   
+    // echo  $login_id;
+    // echo $row2['type'];                
+    ?>
+    <input type='hidden' value='<?php echo $row['type']; ?>' name='user_type'>
     <label>Are you sure you want to reschedule this event?</label>
     <br>
     <span class="float-right mr-1">
-        <input class="btn btn-success ml-2 text-white" type='submit' name='Accept' value='Yes'/>
+        <input class="btn btn-success ml-2 text-white" type='submit' name='Reschedule' value='Reschedule'/>
         <button type="button" class="btn ml-2 btn-secondary" data-dismiss="modal">Exit</button>
     </span>
 </form>    
