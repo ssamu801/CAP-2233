@@ -98,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th class="text-center">#</th>
                                             <th class="text-center">Name</th>
                                             <th class="text-center">Email</th>
                                             <th class="text-center">Date</th>
@@ -111,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                     <tbody>
                                     <form class="" action="appointments/addevent.php" method="post">
                                     <?php
-                                     use PHPMailer\PHPMailer\PHPMailer;
+ use PHPMailer\PHPMailer\PHPMailer;
                                      use PHPMailer\PHPMailer\SMTP;
                                      use PHPMailer\PHPMailer\Exception;
                                      
@@ -155,52 +156,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                              endwhile;
                                          endif;
          
-                                         $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face';");
-                                         $total = mysqli_num_rows($requests);
-                                         if($total > 0):
-                                             while($row= $requests->fetch_assoc()):
-                                    ?>
-                                    <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
-                                        <td class="text-center"><?php echo $row['user_name'] ?></td>
-                                        <td class="text-center"><?php echo $row['user_email'] ?></td>
-                                        <td class="text-center"><?php echo $row['date'] ?></td>
-                                        <td class="text-center"> 
-                                            <?php 
-                                             $time_from = $row['time_from'];
-                                             $formatted_time1 = date("h:i A", strtotime($time_from));
-                                             echo $formatted_time1;
-                                             ?>
-                                        </td>
-                                        <td class="text-center">
-                                        <?php 
-                                             $time_to = $row['time_to'];
-                                             $formatted_time2 = date("h:i A", strtotime($time_to));
-                                             echo $formatted_time2;
-                                             ?>
-                                        </td>
-                                        <td class="text-center"><?php echo $row['location'] ?></td>
-                                        <td class="text-center">
-                                            <?php if ($row['status'] == 'Cancelled'): ?>
-                                                <?php echo "Cancelled"; ?>
-                                            <?php else: ?>    
-                                            <select name="status" class="form-control status-dropdown" data-id="<?php echo $row['id'] ?>">
-                                                <option value="Scheduled" <?php if ($row['status'] == 'Scheduled') echo 'selected'; ?>>Scheduled</option>
-                                                <option value="Completed" <?php if ($row['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
-                                                <option value="No Show" <?php if ($row['status'] == 'No Show') echo 'selected'; ?>>No Show</option>
-                                            </select>
-                                            <?php endif; ?> 
-                                        </td>
-                                        <td class="text-center">  
-                                            <input type="submit" class="btn btn-danger text-white" id="cancel" name="action" value="Cancel" data-id="<?php echo $row['id'] ?>"></input>
-                                            <button type="button" class="btn btn-warning reschedule-btn" data-id="<?php echo $row['id'] ?>">Reschedule</button>
-                                        </td>
-                                    </tr>
-                                    <?php endwhile; ?>
-                                    <?php else: ?>
-                                    <tr>
-                                        <td colspan='8' style='text-align:center;'>There are currently no pending appointments</td>
-                                    </tr>
-                                    <?php endif; ?>
+                                        $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face';");
+                                        $total = mysqli_num_rows($requests);
+                                        if($total > 0):
+                                            while($row = $requests->fetch_assoc()):
+                                        ?>
+                                        <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
+                                            <form action="appointments/addevent.php" method="post">
+                                                <td class="text-center"><?php echo $row['id'] ?></td>
+                                                <td class="text-center"><?php echo $row['user_name'] ?></td>
+                                                <td class="text-center"><?php echo $row['user_email'] ?></td>
+                                                <td class="text-center"><?php echo $row['date'] ?></td>
+                                                <input type="hidden" name="userID" value="<?php echo $row['id']; ?>">
+                                                <td class="text-center">
+                                                    <?php 
+                                                    $time_from = $row['time_from'];
+                                                    $formatted_time1 = date("h:i A", strtotime($time_from));
+                                                    echo $formatted_time1;
+                                                    ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <?php 
+                                                    $time_to = $row['time_to'];
+                                                    $formatted_time2 = date("h:i A", strtotime($time_to));
+                                                    echo $formatted_time2;
+                                                    ?>
+                                                </td>
+                                                <td class="text-center"><?php echo $row['location'] ?></td>
+                                                <td class="text-center">
+                                                    <?php if ($row['status'] == 'Cancelled'): ?>
+                                                        <?php echo "Cancelled"; ?>
+                                                    <?php else: ?>    
+                                                    <select name="status" class="form-control status-dropdown" data-id="<?php echo $row['id'] ?>">
+                                                        <option value="Scheduled" <?php if ($row['status'] == 'Scheduled') echo 'selected'; ?>>Scheduled</option>
+                                                        <option value="Completed" <?php if ($row['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
+                                                        <option value="No Show" <?php if ($row['status'] == 'No Show') echo 'selected'; ?>>No Show</option>
+                                                    </select>
+                                                    <?php endif; ?> 
+                                                </td>
+                                                <td class="text-center">
+                                                <?php if ($row['status'] == 'Completed'): ?>
+                                                    <?php echo "Completed"; ?>
+                                                    <?php elseif ($row['status'] == 'Scheduled'): ?>  
+                                                    <input type="submit" class="btn btn-danger text-white" name="action" value="Cancel">
+                                                    <button type="button" class="btn btn-warning reschedule-btn" data-id="<?php echo $row['id'] ?>">Reschedule</button>
+                                                    <?php else: ?>  
+                                                        <?php echo "No actions"; ?>  
+                                                    <?php endif; ?>    
+                                                </td>
+                                            </form>
+                                        </tr>
+                                        <?php endwhile; ?>
+                                        <?php else: ?>
+                                        <tr>
+                                            <td colspan="8" style="text-align:center;">There are currently no pending appointments</td>
+                                        </tr>
+                                        <?php endif; ?>
                                     </form>
                                     </tbody>
                                 </table>
@@ -223,6 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th class="text-center">#</th>
                                             <th class="text-center">Name</th>
                                             <th class="text-center">Email</th>
                                             <th class="text-center">Date</th>
@@ -236,42 +248,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                     <tbody>
                                     <form class="" action="appointments/addevent.php" method="post">
                                     <?php
-
-                                    // For AUTO-MAIL
-                                    $results = $conn->query("SELECT *, TIMESTAMPDIFF(day, event_date, NOW()) FROM event_notifications WHERE TIMESTAMPDIFF(day, event_date, NOW()) > 2 AND event_status = 'Pending';");
-                                    $automail = mysqli_num_rows($results);
-                                    if ($automail > 0) {
-                                        while ($row = $results->fetch_assoc()) {
-                                            $sqlQ = "UPDATE event_notifications SET event_status=? WHERE notif_id=?";
-                                            $stmt = $conn->prepare($sqlQ);
-                                            $stmt->bind_param("si", $db_status, $db_userID);
-                                            $db_status = "No Show";
-                                            $db_userID = $row['notif_id'];
-                                            $insert = $stmt->execute();
-
-                                            $mail = new PHPMailer(true);
-                                            $mail->Host = 'smtp.gmail.com';
-                                            $mail->SMTPAuth = true;
-                                            $mail->Username = 'karl_casingal@dlsu.edu.ph';
-                                            $mail->Password = 'yedqigenkuorqaie';
-                                            $mail->SMTPSecure = 'ssl';
-                                            $mail->Port = 465;
-
-                                            $mail->setFrom('karl_casingal@dlsu.edu.ph');
-                                            $mail->addAddress($row['user_email']);
-                                            $mail->isSMTP(true);
-                                            $mail->Subject = "Missed Appointment from OCCS";
-                                            $mail->Body = "We would like to inform you that you have missed your scheduled appointment with the OCCS on {$row['event_date']}, {$row['event_start']} - {$row['event_end']}.";
-                                            $mail->send();
-                                        }
-                                    }
-
                                     $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Online';");
                                     $total = mysqli_num_rows($requests);
                                     if ($total > 0) {
                                         while ($row = $requests->fetch_assoc()) {
                                             ?>
                                             <tr class="client_record record_row" data-id="<?php echo $row['id'] ?>">
+                                                <td class="text-center"><?php echo $row['id'] ?></td>
                                                 <td class="text-center"><?php echo $row['user_name'] ?></td>
                                                 <td class="text-center"><?php echo $row['user_email'] ?></td>
                                                 <td class="text-center"><?php echo $row['date'] ?></td>
@@ -290,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                     ?>
                                                 </td>
                                                 <td class="text-center"><?php 
-                                                                            if(!empty($row['location'] )){
+                                                                            if(!empty($row['location']) || $row['status'] == 'Cancelled'){
                                                                                 echo $row['location']; 
                                                                             } else {
                                                                                 ?><button id="ACCEPTBTN" class="btn btn-success text-white accept-btn" name="action" id="accept" data-id="<?php echo $row['id'] ?>">Add Link</button><?php

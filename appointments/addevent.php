@@ -15,7 +15,7 @@ $status = 'danger';
 // If the form is submitted 
 if(isset($_POST['Accept'])){ 
     // Get event info 
-    echo '<script>alert("ACCEPT")</script>'; 
+    echo '<script>alert("Event Confirmed")</script>'; 
 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
@@ -69,6 +69,7 @@ if(isset($_POST['Accept'])){
 }else if(isset($_POST['Reschedule'])){ 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
+    echo '<script>alert("Rescheduling: '.$_POST['userID'].'.")</script>'; 
 
     $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
     $stmt = $conn->prepare($sqlQ); 
@@ -159,12 +160,14 @@ if(isset($_POST['Accept'])){
     } 
 
 } else { 
-    $appointment_id = !empty($_POST['appointment_id']) ? trim($_POST['appointment_id']) : ''; 
-        
+    // $appointment_id = !empty($_POST['appointment_id']) ? trim($_POST['appointment_id']) : ''; 
+    $userID = !empty($_POST['userID']) ? trim($_POST['userID']) : ''; 
+    echo '<script>alert("Cancelling: '.$_POST['userID'].'.")</script>'; 
+    
     // Fetch the user email associated with the appointment
     $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
     $stmtFetchEmail = $conn->prepare($sqlFetchEmail);
-    $stmtFetchEmail->bind_param("i", $appointment_id);
+    $stmtFetchEmail->bind_param("i", $userID );
     $stmtFetchEmail->execute();
     $resultFetchEmail = $stmtFetchEmail->get_result();
     
@@ -185,7 +188,7 @@ if(isset($_POST['Accept'])){
     $stmt = $conn->prepare($sqlQ2);
     $stmt->bind_param("si", $db_status, $db_userID);
     $db_status = "Cancelled";
-    $db_userID = $appointment_id;
+    $db_userID = $userID;
     $insert3 = $stmt->execute();
 
     $mail = new PHPMailer(true);
