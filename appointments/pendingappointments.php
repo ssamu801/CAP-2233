@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <form class="" action="appointments/send.php" method="post">
+                                    <form class="" action="appointments/addevent.php" method="post">
                                     <?php
                                      use PHPMailer\PHPMailer\PHPMailer;
                                      use PHPMailer\PHPMailer\SMTP;
@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <form class="" action="appointments/send.php" method="post">
+                                    <form class="" action="appointments/addevent.php" method="post">
                                     <?php
 
                                     // For AUTO-MAIL
