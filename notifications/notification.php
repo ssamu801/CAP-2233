@@ -117,7 +117,7 @@
                             case 10:
                                 return "Google Calendar Event for Online Appointment";
                             case 11:
-                                return "Student Booked an Appointment (Counselor)";
+                                return "Student Booked an Appointment";
                             case 12: 
                                 return "New post from category followed";    
                             default:

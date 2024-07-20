@@ -815,6 +815,7 @@ Class Action {
     			$id = $row["max_value"];
 			}
 				$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($stud_id, 6, $id)");
+
 					
 				if($event_notif){
 					if($mode == 'Face-To-Face'){
@@ -822,9 +823,13 @@ Class Action {
             			exit();
 					}
 					else{
-						$_SESSION['tempid'] = $id;
-						echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
-						exit();
+						$content_stmt = $user_name . ' booked an appointment';
+						$coun_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id, content) VALUES ($coun_id, 11, $id, '$content_stmt')");
+						if($coun_notif){
+							$_SESSION['tempid'] = $id;
+							echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
+							exit();
+						}
 					}
 				
 				}

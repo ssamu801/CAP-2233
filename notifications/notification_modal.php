@@ -144,9 +144,17 @@
                     <li><strong>Date:</strong> <?php echo htmlspecialchars($row['date']); ?></li>
                     <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
                     <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
+                    <?php if(!empty($row['location'])):?>
                     <li><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></li>
+                    <?php else:?>
+                    <li><strong>Location:</strong> Zoom link for session will be provided by the counselor.</li>
+                    <?php endif;?>
                 </ul>
+                <?php if(!empty($row['location'])):?>
                 <p>Please ensure to arrive at the location at least 10 minutes before your scheduled time. If you need to reschedule or cancel your appointment, please contact us at [Contact Information].</p>
+                <?php else:?>
+                <p>You will be notified once counselor has provided the Zoom Link. If you need to reschedule or cancel your appointment, please contact us at [Contact Information].</p>
+                <?php endif;?>
                 <p>Thank you for choosing our services. We look forward to seeing you.</p>
             </div>
         </div>
@@ -203,7 +211,11 @@
                     <li><strong>Date:</strong> <?php echo htmlspecialchars($row['date']); ?></li>
                     <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
                     <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
+                    <?php if(!empty($row['location'])):?>
                     <li><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></li>
+                    <?php else:?>
+                    <li><strong>Location:</strong> Please provide a Zoom link in the <a href="./index.php?page=appointments/pendingappointments">Appointments page</a></li>
+                    <?php endif;?>
                 </ul>
             </div>
         </div>

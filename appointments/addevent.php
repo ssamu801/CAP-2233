@@ -34,30 +34,32 @@ if(isset($_POST['Accept'])){
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
 
-        if ($counselor_id && $sessionID) {
-            $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
+        if ($counselor_id && $sessionID && $user_name) {
+            $sql1 = "INSERT INTO notifications (posterID, type, event_id, content) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql1);
-    
+        
             if ($stmt === false) {
                 die('Prepare failed: ' . htmlspecialchars($conn->error));
             }
-    
+        
             $type = 11; // Use a variable for the literal value
             error_log('Counselor ID: ' . $counselor_id);
             error_log('Session ID: ' . $sessionID);
-    
+        
+            $content_stmt = $user_name . ' booked an appointment';
+        
             // Bind parameters
-            if (!$stmt->bind_param("iii", $counselor_id, $type, $sessionID)) {
+            if (!$stmt->bind_param("iiis", $counselor_id, $type, $sessionID, $content_stmt)) {
                 die('Bind param failed: ' . htmlspecialchars($stmt->error));
             }
-    
+        
             // Execute statement
             if ($stmt->execute()) {
                 echo "Notification inserted successfully.";
             } else {
                 echo "Error: " . htmlspecialchars($stmt->error);
             }
-    
+        
             // Close statement
             $stmt->close();
         }
