@@ -198,6 +198,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                 <?php if ($row['status'] == 'Completed'): ?>
                                                     <?php echo "Completed"; ?>
                                                     <?php elseif ($row['status'] == 'Scheduled'): ?>  
+                                                    <input type="hidden" name="cancel_type" value="counselor">
+                                                    <input type="hidden" name="posterID" value="<?php echo $row['student_id'] ?>">
                                                     <input type="submit" class="btn btn-danger text-white" name="action" value="Cancel">
                                                     <button type="button" class="btn btn-warning reschedule-btn" data-id="<?php echo $row['id'] ?>">Reschedule</button>
                                                     <?php else: ?>  
@@ -327,6 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
     </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    $('table').dataTable();
 
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('accept-btn')) {

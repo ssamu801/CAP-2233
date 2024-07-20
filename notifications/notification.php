@@ -119,7 +119,9 @@
                             case 11:
                                 return "Student Booked an Appointment";
                             case 12: 
-                                return "New post from category followed";    
+                                return "New post from category followed";   
+                            case 13:
+                                return "Appointment Cancelled"; 
                             default:
                                 return "Notification";
                         }

@@ -124,7 +124,8 @@
     } else if ($type == 6) {
         $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
                        created, e.user_name, user_email, status, student_id, isPreferred,
-                       preferredCounselor, counselor_name, counselor_email
+                       preferredCounselor, counselor_name, counselor_email, status, 
+                       counselor_id
                 FROM events e
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
@@ -132,6 +133,11 @@
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
+
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
 
         $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
         $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
@@ -141,7 +147,7 @@
                 <p>Your appointment has been successfully submitted and confirmed. Here are the details of your appointment:</p>
                 <ul>
                     <li><strong>Counselor Name:</strong> <?php echo htmlspecialchars($row['counselor_name']); ?> </li>
-                    <li><strong>Date:</strong> <?php echo htmlspecialchars($row['date']); ?></li>
+                    <li><strong>Date:</strong> <?php echo $formattedDate; ?></li>
                     <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
                     <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
                     <?php if(!empty($row['location'])):?>
@@ -150,15 +156,80 @@
                     <li><strong>Location:</strong> Zoom link for session will be provided by the counselor.</li>
                     <?php endif;?>
                 </ul>
-                <?php if(!empty($row['location'])):?>
-                <p>Please ensure to arrive at the location at least 10 minutes before your scheduled time. If you need to reschedule or cancel your appointment, please contact us at [Contact Information].</p>
+                <?php if(!empty($row['location'])):?>  
+                <p>Please ensure to arrive at the location at least 10 minutes before your scheduled time. If you need cancel your appointment, please press the cancel button below.</p>
                 <?php else:?>
-                <p>You will be notified once counselor has provided the Zoom Link. If you need to reschedule or cancel your appointment, please contact us at [Contact Information].</p>
+                <p>You will be notified once counselor has provided the Zoom Link. If you need to cancel your appointment, please press the cancel button below.</p>
                 <?php endif;?>
                 <p>Thank you for choosing our services. We look forward to seeing you.</p>
+
+                <?php if($row['status'] != 'Cancelled'):?>
+                <form class="" action="appointments/addevent.php" method="post">
+                        <li> 
+                            <input type="hidden" name="cancel_type" value="student">
+                            <input type="hidden" name="posterID" value="<?php echo $row['counselor_id'] ?>">
+                            <input type='hidden' id='userID' name='userID' value='<?php echo $event_id ?>'>
+                            <input type="submit" class="btn btn-danger text-white" id="cancel" name="action" value="Cancel" data-id="<?php echo $event_id ?>"></input> 
+                        </li>
+                </form>
+                <?php else:?>
+                <p><strong><i>This session has been cancelled.</i></strong></p>
+                <?php endif;?>
             </div>
         </div>
     <?php } 
+    else if($type == 7){
+        $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
+                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       preferredCounselor, counselor_name, counselor_email, status
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your appointment at <?php echo $formattedDate; ?>,  <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?> has 
+                    been cancelled by <?php echo htmlspecialchars($row['counselor_name']); ?>.</p>
+            </div>
+        </div>
+    <?php }
+    else if($type == 8){
+        $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
+                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       preferredCounselor, counselor_name, counselor_email, status
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your appointment at <?php echo $formattedDate; ?>,  <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?> has 
+                    been cancelled by <?php echo htmlspecialchars($row['counselor_name']); ?>.</p>
+            </div>
+        </div>
+    <?php }
     else if ($type == 12) {
         $sql = "SELECT n.topic_id, t.title, t.content, t.isAnonymous, u.name, n.content AS notif_content
         FROM notifications n 
@@ -191,7 +262,7 @@
     else if($type == 11){
         $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
                        created, e.user_name, user_email, status, student_id, isPreferred,
-                       preferredCounselor, counselor_name, counselor_email
+                       preferredCounselor, counselor_name, counselor_email, status
                 FROM events e
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
@@ -199,6 +270,10 @@
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
 
         $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
         $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); 
@@ -208,7 +283,46 @@
             <div class="email-body">
                 <p><?php echo htmlspecialchars($row['user_name']); ?> Booked for an appointment.  Here are the details of the appointment:</p>
                 <ul>
-                    <li><strong>Date:</strong> <?php echo htmlspecialchars($row['date']); ?></li>
+                    <li><strong>Counselor Name:</strong> <?php echo htmlspecialchars($row['counselor_name']); ?> </li>
+                    <li><strong>Date:</strong> <?php echo $formattedDate; ?></li>
+                    <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
+                    <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
+                    <li><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></li>
+                </ul>
+
+                <?php if($row['status'] == 'Cancelled'):?>
+                <p><strong><i>This session has been cancelled.</i></strong></p>
+                <?php endif;?>
+            </div>
+        </div>
+    <?php    
+    } 
+    else if($type == 10){
+        $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
+                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       preferredCounselor, counselor_name, counselor_email
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); 
+        ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Zoom link has been added by the counselor.  Here are the details of the appointment:</p>
+                <ul>
+                 <li><strong>Counselor Name:</strong> <?php echo htmlspecialchars($row['counselor_name']); ?> </li>
+                    <li><strong>Date:</strong> <?php echo $formattedDate; ?></li>
                     <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
                     <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
                     <?php if(!empty($row['location'])):?>
@@ -217,6 +331,33 @@
                     <li><strong>Location:</strong> Please provide a Zoom link in the <a href="./index.php?page=appointments/pendingappointments">Appointments page</a></li>
                     <?php endif;?>
                 </ul>
+            </div>
+        </div>
+    <?php    
+    } 
+    else if($type == 13){
+        $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
+                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       preferredCounselor, counselor_name, counselor_email, status
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your appointment with <?php echo htmlspecialchars($row['user_name']); ?> at <?php echo $formattedDate; ?>,  <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?> has 
+                    been cancelled by the student.</p>
             </div>
         </div>
     <?php    

@@ -34,7 +34,6 @@ session_start();
     // echo  $login_id;
     // echo $row2['type'];                
     ?>
-    <input type='hidden' value='<?php echo $row['type']; ?>' name='user_type'>
     <label>Are you sure you want to reschedule this event?</label>
     <br>
     <span class="float-right mr-1">

@@ -34,7 +34,7 @@ if(isset($_POST['Accept'])){
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
 
-        if ($counselor_id && $sessionID && $user_name) {
+        if ($counselor_id && $sessionID && $user_name && $location == 'OCCS Office') {
             $sql1 = "INSERT INTO notifications (posterID, type, event_id, content) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql1);
         
@@ -43,8 +43,6 @@ if(isset($_POST['Accept'])){
             }
         
             $type = 11; // Use a variable for the literal value
-            error_log('Counselor ID: ' . $counselor_id);
-            error_log('Session ID: ' . $sessionID);
         
             $content_stmt = $user_name . ' booked an appointment';
         
@@ -54,14 +52,33 @@ if(isset($_POST['Accept'])){
             }
         
             // Execute statement
+            $stmt->execute();
+        
+            // Close statement
+            $stmt->close();
+        }
+        else{
+            $sql1 = "INSERT INTO notifications (posterID, type, event_id, content) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql1);
+        
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
+            }
+        
+            $type = 10; // Use a variable for the literal value
+            $content_stmt = 'Zoom link has been added by the counselor.';
+        
+            // Bind parameters
+            if (!$stmt->bind_param("iiis", $student_id, $type, $sessionID, $content_stmt)) {
+                die('Bind param failed: ' . htmlspecialchars($stmt->error));
+            }
+        
+            // Execute statement
             if ($stmt->execute()) {
                 echo "Notification inserted successfully.";
             } else {
                 echo "Error: " . htmlspecialchars($stmt->error);
             }
-        
-            // Close statement
-            $stmt->close();
         }
 
         $sqlQ = "INSERT INTO event_notifications (id, description, user_email, counselor_name, time, event_start, location, event_end, event_date, event_status, user_name) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
@@ -122,6 +139,7 @@ if(isset($_POST['Accept'])){
     $time_to = !empty($_POST['time_to']) ? trim($_POST['time_to']) : ''; 
     $date = !empty($_POST['date']) ? trim($_POST['date']) : ''; 
     $user_type = !empty($_POST['user_type']) ? trim($_POST['user_type']) : ''; 
+    $posterID= !empty($_POST['posterID']) ? trim($_POST['posterID']) : '';
 
     $notif_desc = "Your appointment needs to be rescheduled. Please reschedule your appointment by clicking this link: <a href='/index.php?page=appointments/eventmaker&counselor_name=" . urlencode($counselor_name) . "&counselor_id=". urlencode($counselor_id) ."'>Reschedule</a>";        
     
@@ -143,6 +161,28 @@ if(isset($_POST['Accept'])){
             document.location.href = '/index.php?page=appointments/pendingappointments';
             </script>";
         exit;
+    }
+
+    if($posterID){
+        $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql1);
+        
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
+            }
+        
+            $type = 8; // Use a variable for the literal value
+        
+            // Bind parameters
+            if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+                die('Bind param failed: ' . htmlspecialchars($stmt->error));
+            }
+        
+            // Execute statement
+            $stmt->execute();
+        
+            // Close statement
+            $stmt->close();
     }
 
     $sqlQ = "INSERT INTO event_notifications (id, description, user_email, counselor_name, time, event_start, location, event_end, event_date, event_status, user_name) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
@@ -194,6 +234,8 @@ if(isset($_POST['Accept'])){
 } else { 
     // $appointment_id = !empty($_POST['appointment_id']) ? trim($_POST['appointment_id']) : ''; 
     $userID = !empty($_POST['userID']) ? trim($_POST['userID']) : ''; 
+    $cancel_type = !empty($_POST['cancel_type']) ? trim($_POST['cancel_type']) : ''; 
+    $posterID= !empty($_POST['posterID']) ? trim($_POST['posterID']) : '';
     echo '<script>alert("Cancelling Event: '.$userID.'")</script>'; 
     
     // Fetch the user email associated with the appointment
@@ -215,6 +257,49 @@ if(isset($_POST['Accept'])){
             document.location.href = '/index.php?page=appointments/pendingappointments';
             </script>";
         exit;
+    }
+
+    if($posterID && $cancel_type == 'counselor'){
+        $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql1);
+        
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
+            }
+        
+            $type = 7; // Use a variable for the literal value
+        
+            // Bind parameters
+            if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+                die('Bind param failed: ' . htmlspecialchars($stmt->error));
+            }
+        
+            // Execute statement
+            $stmt->execute();
+        
+            // Close statement
+            $stmt->close();
+    }
+    else if($posterID && $cancel_type == 'student'){
+        $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql1);
+    
+        if ($stmt === false) {
+            die('Prepare failed: ' . htmlspecialchars($conn->error));
+        }
+    
+        $type = 13; // Use a variable for the literal value
+    
+        // Bind parameters
+        if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+            die('Bind param failed: ' . htmlspecialchars($stmt->error));
+        }
+    
+        // Execute statement
+        $stmt->execute();
+    
+        // Close statement
+        $stmt->close();
     }
 
     // Handle cancellation logic
