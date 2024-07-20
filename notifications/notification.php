@@ -71,7 +71,6 @@
 
                 include "./db_connect.php";
                 $id = $_SESSION['login_id'];
-                $id = '11212345';
                 // SQL query to select data based on ID
                 $sql = "SELECT id, posterID, time, type, topic_id, comment_id, event_id, content
                         FROM notifications
@@ -116,9 +115,11 @@
                             case 9:
                                 return "Reschedule Notification";
                             case 10:
-                                return "Zoom Meeting Scheduled";
+                                return "Google Calendar Event for Online Appointment";
                             case 11:
                                 return "Student Booked an Appointment (Counselor)";
+                            case 12: 
+                                return "New post from category followed";    
                             default:
                                 return "Notification";
                         }
@@ -152,7 +153,7 @@
                     <?php
                     }
                 } else {
-                    echo "0 results";
+                    echo "You currently have no notifications";
                 }
 
                 // Close the statement and connection

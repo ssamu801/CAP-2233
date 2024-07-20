@@ -152,7 +152,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
         display: flex;
         align-items: center;
         border: none;
-        padding: 5px 10px;
+        
         border-radius: 5px;
         font-size: 15px;
         cursor: pointer;
@@ -305,10 +305,10 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 							 if ($row['rating_type'] === 'helpful') {
 					?>			
 								<div class="helpbtns mt-2" data-comment-id="<?php echo $comment_id ?>">
-									<button class="btn btn-primary helpful-btn active-btn">
+									<button class="btn-primary helpful-btn active-btn">
 										<i class="bi bi-hand-thumbs-up-fill mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo $helpful ?></span>
 									</button>
-									<button class="btn btn-secondary unhelpful-btn">
+									<button class="btn-secondary unhelpful-btn">
 										<i class="bi bi-hand-thumbs-down mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo $unhelpful ?></span>
 									</button>
 								</div>
@@ -316,10 +316,10 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 							 } else {
 					?>			
 								 <div class="helpbtns mt-2" data-comment-id="<?php echo $comment_id ?>">
-									<button class="btn btn-primary helpful-btn">
+									<button class=" btn-primary helpful-btn">
 										<i class="bi bi-hand-thumbs-up mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo $helpful ?></span>
 									</button>
-									<button class="btn btn-secondary unhelpful-btn active">
+									<button class=" btn-secondary unhelpful-btn active">
 										<i class="bi bi-hand-thumbs-down-fill mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo $unhelpful ?></span>
 									</button>
 								</div>
@@ -329,10 +329,10 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 						else{
 					?>
 							<div class="helpbtns mt-2" data-comment-id="<?php echo ($row['id']) ?>">
-								<button class="btn btn-primary helpful-btn">
+								<button class="btn-primary helpful-btn">
 									<i class="bi bi-hand-thumbs-up mr-2"></i> Helpful <span class="helpful-count ml-2"> <?php echo ($row['helpful']) ?></span>
 								</button>
-								<button class="btn btn-secondary unhelpful-btn">
+								<button class=" btn-secondary unhelpful-btn">
 									<i class="bi bi-hand-thumbs-down mr-2"></i> Unhelpful <span class="unhelpful-count ml-2"> <?php echo ($row['unhelpful']) ?></span>
 								</button>
 							</div>
@@ -471,7 +471,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			data:{id:$id},
 			success:function(resp){
 				if(resp==1){
-					alert_toast("Data successfully deleted",'success')
+					alert_toast("Post successfully deleted",'success')
 					setTimeout(function(){
 						location.reload()
 					},1500)
@@ -510,7 +510,7 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			data:$(this).serialize(),
 			success:function(resp){
 				if(resp == 1){
-					alert_toast("Data successfully saved.",'success')
+					alert_toast("Comment submitted. Kindly wait for approval of comment.",'success')
 					setTimeout(function(){
 						location.reload()
 					},1000)

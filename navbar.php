@@ -120,6 +120,11 @@
             <div class="d-flex flex-sm-column vh-100  flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white">
 
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-sm-start" id="menu">
+                    <li class="submenu">
+                        <a href="index.php?page=notifications/notification" class="nav-link px-sm-3 px-2">
+                            <i class="fs-5 bi-bell"></i><span class="ms-1 d-none d-sm-inline"> Notifications</span>
+                        </a>
+                    </li>
                     <li class="accordion accordion-dropdown" id="accordion1">
                         <a href="index.php?page=" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                             <i class="fs-5 bi-info-circle"></i><span class="ms-1 d-none d-sm-inline"> Resources and Information</span> </a>

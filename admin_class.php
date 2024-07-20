@@ -336,7 +336,7 @@ Class Action {
 			
 				foreach ($user_ids_array as $user_id) {
 
-					$newpost_notif = $this->db->query("INSERT INTO notifications (posterID, time, type, topic_id, content) VALUES ('$user_id',NOW(), 11, $topic_id, 'New post from $cat_name, a category you follow')");
+					$newpost_notif = $this->db->query("INSERT INTO notifications (posterID, time, type, topic_id, content) VALUES ('$user_id',NOW(), 12, $topic_id, 'New post from $cat_name, a category you follow')");
 				}
 			}
 
@@ -849,8 +849,7 @@ Class Action {
 			$row = $result->fetch_assoc();
 			$totalCounselors = $row['totalCounselors'];
 		} 
-	
-		error_log($date);	
+		
 			if ($totalCounselors == 1) {
 				// If there is exactly one counselor available, return their details directly
 				$sql = "SELECT a.counselorID, u.name, u.email 
@@ -865,7 +864,6 @@ Class Action {
 	
 				if ($res && $res->num_rows > 0) {
 					$row = $res->fetch_assoc();
-					error_log($row['counselorID']);
 					return [
 						'id' => $row['counselorID'],
 						'name' => $row['name'],

@@ -18,10 +18,12 @@ if(isset($_POST['Accept'])){
     echo '<script>alert("Event Confirmed")</script>'; 
 
     $_SESSION['postData'] = $_POST; 
+    $sessionID = !empty($_POST['event_id'])?trim($_POST['event_id']):''; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
     $student_id = !empty($_POST['student_id'])?trim($_POST['student_id']):''; 
     $counselor_email = !empty($_POST['counselor_email'])?trim($_POST['counselor_email']):''; 
     $counselor_name = !empty($_POST['counselor_name'])?trim($_POST['counselor_name']):''; 
+    $counselor_id = !empty($_POST['counselor_id'])?trim($_POST['counselor_id']):'';
     $user_email = !empty($_POST['user_email'])?trim($_POST['user_email']):''; 
     $user_name = !empty($_POST['user_name'])?trim($_POST['user_name']):''; 
     $location = !empty($_POST['location'])?trim($_POST['location']):''; 
@@ -31,7 +33,35 @@ if(isset($_POST['Accept'])){
      
     // Check whether user inputs are empty 
     if(empty($valErr)){ 
-        
+
+        if ($counselor_id && $sessionID) {
+            $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql1);
+    
+            if ($stmt === false) {
+                die('Prepare failed: ' . htmlspecialchars($conn->error));
+            }
+    
+            $type = 11; // Use a variable for the literal value
+            error_log('Counselor ID: ' . $counselor_id);
+            error_log('Session ID: ' . $sessionID);
+    
+            // Bind parameters
+            if (!$stmt->bind_param("iii", $counselor_id, $type, $sessionID)) {
+                die('Bind param failed: ' . htmlspecialchars($stmt->error));
+            }
+    
+            // Execute statement
+            if ($stmt->execute()) {
+                echo "Notification inserted successfully.";
+            } else {
+                echo "Error: " . htmlspecialchars($stmt->error);
+            }
+    
+            // Close statement
+            $stmt->close();
+        }
+
         $sqlQ = "INSERT INTO event_notifications (id, description, user_email, counselor_name, time, event_start, location, event_end, event_date, event_status, user_name) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sqlQ);
         $stmt->bind_param("isssssssss", $student_id, $notif_desc, $user_email, $counselor_name, $time_from, $location, $time_to, $date, $event_status, $user_name);

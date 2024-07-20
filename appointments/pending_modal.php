@@ -9,8 +9,10 @@ session_start();
     while($row= $requests->fetch_assoc()):
 ?>
 <form method='post' action='index.php?page=appointments/addevent'> 
+    <input type='hidden' id='event_id' name='event_id' value='<?php echo $id; ?>'>
     <input type='hidden' id='counselor_email' name='counselor_email' value='<?php echo $_SESSION['login_email']; ?>'>
     <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
+    <input type='hidden' id='counselor_id' name='counselor_id' value='<?php echo $row['counselor_id']; ?>'>
     <input type='hidden' id='student_id' name='student_id' value='<?php echo $row['student_id']; ?>'>
     <input type='hidden' id='userID' name='userID' value='<?php echo $row['id']; ?>'>
     <input type='hidden' value='<?php echo $row['user_email']; ?>' name='user_email'>
