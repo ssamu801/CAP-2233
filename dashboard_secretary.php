@@ -1,3 +1,12 @@
+<?php
+if( $_SESSION['login_type'] != 2){
+    echo '<script type="text/javascript">
+    setTimeout(function() {
+        window.location.href = "index.php?page=home";
+    }, 0000); 
+    </script>';
+}
+?>
 <div class="container-fluid px-2">
     <div class="dashboard-header">
         Secretary Dashboard

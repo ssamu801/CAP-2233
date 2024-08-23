@@ -26,23 +26,7 @@ Class Action {
 						$_SESSION['login_'.$key] = $value;
 				}
 
-				if( $_SESSION['login_type'] == 1){
-					return 1;
-				}
-				else if( $_SESSION['login_type'] == 2){
-					return 2;
-				}
-				else if( $_SESSION['login_type'] == 3){
-					return 3;
-				}
-				else if( $_SESSION['login_type'] == 4){
-					return 4;
-				}
-				else if( $_SESSION['login_type'] == 5){
-					return 5;
-				}
-
-				// return 1;
+				return 1;
 					
 			}else{
 				return 9;
@@ -798,6 +782,10 @@ Class Action {
 
 		$data .= ", notes = '$notes' ";
 		$data .= ", urgency = '$urgency' ";
+
+		if(isset($_SESSION['isCounselor'])){
+			$data .= ", isFirst = 'No' ";
+		}
 		
 		$appointment = $this->db->query("INSERT INTO events set ".$data);
 

@@ -1,4 +1,13 @@
 <?php include 'db_connect.php' ?>
+<?php
+    if( $_SESSION['login_type'] != 3){
+        echo '<script type="text/javascript">
+        setTimeout(function() {
+            window.location.href = "index.php?page=home";
+        }, 0000); 
+        </script>';
+    }
+?>
 <?php $login_id = $_SESSION['login_id']; ?>
 
 <style>
@@ -542,9 +551,10 @@
                                         <tr style="background-color: #84b894;">
                                         <?php
                                             // SQL query to select records from today
-                                            $sql = "SELECT user_name, date, time_from, time_to, mode
+                                            $sql = "SELECT user_name, date, time_from, time_to, mode, isFirst
                                                     FROM events
                                                     WHERE DATE(date) = CURDATE()
+                                                    AND status = 'Scheduled'
                                                     ORDER BY time_from, time_to";
                                             
                                             // Execute the query
@@ -553,13 +563,26 @@
                                             if ($result->num_rows > 0) {
                                                 // Output data of each row
                                                 while($row = $result->fetch_assoc()) {
-                                                    echo "<tr>";
-                                                    echo "<td class='text-center'>" . $row["user_name"] . "</td>";
-                                                    echo "<td class='text-center'>" . $row["date"] . "</td>";
-                                                    echo "<td class='text-center'>" . $row["time_from"] . "</td>";
-                                                    echo "<td class='text-center'>" . $row["time_to"] . "</td>";
-                                                    echo "<td class='text-center'>" . $row["mode"] . "</td>";
-                                                    echo "</tr>";
+
+                                                    if($row["isFirst"] == 'No'){
+                                                        echo "<tr style='background-color: #84b894;'>";
+                                                        echo "<td class='text-center'>" . $row["user_name"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["date"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["time_from"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["time_to"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["mode"] . "</td>";
+                                                        echo "</tr>";
+                                                    }
+                                                    else{
+                                                        echo "<tr>";
+                                                        echo "<td class='text-center'>" . $row["user_name"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["date"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["time_from"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["time_to"] . "</td>";
+                                                        echo "<td class='text-center'>" . $row["mode"] . "</td>";
+                                                        echo "</tr>";
+                                                    }
+                                                    
                                                 }
                                             } else {
                                                 echo "<tr><td colspan='5' class='text-center'>No appointments scheduled for today</td></tr>";

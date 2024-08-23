@@ -7,6 +7,9 @@
 		background-color: red;
 		border-color: red;
 	}
+	.categories-list a{
+		color:black;
+	}
 </style>
 <div class="container-fluid">
 <div class="row mb-4 mt-4">
@@ -80,7 +83,8 @@
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
-									<td class="">
+									<td class="categories-list">
+										<a href="index.php?page=social_interaction/posts&id=<?php echo $row['id'] ?>">
 										<p>Name: <b><?php echo $row['name'] ?></b></p>
 										<p>Description</p>
 										<p class="truncate"><?php echo $row['description'] ?></p>

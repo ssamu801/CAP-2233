@@ -15,7 +15,6 @@ $status = 'danger';
 // If the form is submitted 
 if(isset($_POST['Accept'])){ 
     // Get event info 
-    echo '<script>alert("Event Confirmed")</script>'; 
 
     $_SESSION['postData'] = $_POST; 
     $sessionID = !empty($_POST['event_id'])?trim($_POST['event_id']):''; 
@@ -118,8 +117,7 @@ if(isset($_POST['Accept'])){
 }else if(isset($_POST['Reschedule'])){ 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
-    echo '<script>alert("Rescheduling Event: '.$userID.'")</script>'; 
-
+ 
     $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
     $stmt = $conn->prepare($sqlQ); 
     $stmt->bind_param("si", $db_status, $db_userID); 
@@ -138,8 +136,11 @@ if(isset($_POST['Accept'])){
     $time_from = !empty($_POST['time_from']) ? trim($_POST['time_from']) : ''; 
     $time_to = !empty($_POST['time_to']) ? trim($_POST['time_to']) : ''; 
     $date = !empty($_POST['date']) ? trim($_POST['date']) : ''; 
-    $user_type = !empty($_POST['user_type']) ? trim($_POST['user_type']) : ''; 
-    $posterID= !empty($_POST['posterID']) ? trim($_POST['posterID']) : '';
+    $posterID = 0;
+    if(isset( $_SESSION['stud_id'])){
+        $posterID=  $_SESSION['stud_id'];
+    }
+    
 
     $notif_desc = "Your appointment needs to be rescheduled. Please reschedule your appointment by clicking this link: <a href='/index.php?page=appointments/eventmaker&counselor_name=" . urlencode($counselor_name) . "&counselor_id=". urlencode($counselor_id) ."'>Reschedule</a>";        
     
@@ -163,6 +164,7 @@ if(isset($_POST['Accept'])){
         exit;
     }
 
+    error_log($posterID);
     if($posterID){
         $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
             $stmt = $conn->prepare($sql1);
@@ -236,7 +238,6 @@ if(isset($_POST['Accept'])){
     $userID = !empty($_POST['userID']) ? trim($_POST['userID']) : ''; 
     $cancel_type = !empty($_POST['cancel_type']) ? trim($_POST['cancel_type']) : ''; 
     $posterID= !empty($_POST['posterID']) ? trim($_POST['posterID']) : '';
-    echo '<script>alert("Cancelling Event: '.$userID.'")</script>'; 
     
     // Fetch the user email associated with the appointment
     $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
@@ -248,10 +249,10 @@ if(isset($_POST['Accept'])){
     if ($resultFetchEmail->num_rows > 0) {
         $userEmailRow = $resultFetchEmail->fetch_assoc();
         $userEmail = $userEmailRow['user_email'];
-        echo '<script>alert("1")</script>'; 
+       
     } else {
         // Handle case where no email is found for the appointment
-        echo '<script>alert("2")</script>'; 
+       
         echo "<script>
             alert('No email found for the specified appointment.');
             document.location.href = '/index.php?page=appointments/pendingappointments';

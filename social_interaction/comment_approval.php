@@ -1,5 +1,13 @@
 <?php include('db_connect.php');?>
-
+<?php
+if(  $_SESSION['login_type'] != 4){
+	echo '<script type="text/javascript">
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
+?>
 <div class="container-fluid">
 <style>
 	input[type=checkbox]

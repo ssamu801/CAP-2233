@@ -27,7 +27,14 @@
 include_once 'config.php'; 
 include './db_connect.php';
 
- 
+if(  $_SESSION['login_type'] != 3){
+	echo '<script type="text/javascript">
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
+
 $postData = ''; 
 if(!empty($_SESSION['postData'])){ 
     $postData = $_SESSION['postData']; 
@@ -71,7 +78,6 @@ if ($result && $result->num_rows > 0) {
     $_SESSION['counselorEmail'] = $row['email']; // Store counselor email in session
 } 
 
-
 $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
 ?>
 
@@ -84,7 +90,6 @@ $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
   <!--  <form method="post"  action="index.php?page=appointments/addeventtodb" class="form" onsubmit="return validateForm()"> -->
         <form action="" id="addEventToDB" class="form">
         <?php
-            include './db_connect.php';
             $id = $_GET['user_id'];
             $counselorID = $_SESSION['login_id'];
 
@@ -128,7 +133,7 @@ $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
             <select id="counselorDropdown" name="counselor" class="form-control">
                 <option value="">Select Counselor</option> <!-- Added default option -->
                 <?php if (isset($counselorID)) { ?>
-                    <option selected="selected" value="<?php echo  $counselorID; ?>"><?php echo $counselorID; ?></option>
+                    <option selected="selected" value="<?php echo  $counselorID; ?>"><?php echo $_SESSION['login_name'];; ?></option>
                 <?php } else { ?>
                     <?php if ($counselors->num_rows > 0) { ?>
                         <?php while($row = $counselors->fetch_assoc()) { ?>

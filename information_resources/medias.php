@@ -121,7 +121,7 @@ while ($row = $tag->fetch_assoc()) {
                     <b>Media Resources</b>
                     <?php if ($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 2 || $_SESSION['login_type'] == 3): ?>
                         <span>
-                            <button class="btn navbar-color btn-sm" type="button" id="new_media">
+                            <button class="btn navbar-color text-white btn-sm" type="button" id="new_media">
                                 <i class="fa fa-plus"></i> Add Photos/Videos
                             </button>
                         </span>
@@ -199,6 +199,7 @@ while ($row = $tag->fetch_assoc()) {
                                     <span class="float-right badge badge-success">Rating: <?php echo number_format($media['avg_rating'], 2) ?></span>
                                 </div>
                                 <hr>
+                                <span class="float-left badge badge-secondary text-white mr-2"><?php echo number_format($view) ?> view/s</span>
                                 <span class="float-left badge badge-primary text-white"><i class="fa fa-comments"></i> <?php echo number_format($comments_count) ?> comment/s </span>
                                 <span class="float-right">
                                     <span class="badge badge-default"><i class="fa fa-tags"></i> Tags: </span>

@@ -70,7 +70,9 @@
                                 <hr>
                                 <div class="button-group">
                                     <button type='submit' class="btn mr-2 btn-profile">Edit profile</button>
+                                    <?php if($_SESSION['login_type'] == 3):?>
                                     <button type='button' class="btn btn-profile view_notif">Update Availability</button>
+                                    <?php endif;?>
                                 </div>
                             </div> 
                         </div>

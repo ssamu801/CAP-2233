@@ -125,18 +125,6 @@ header("location:index.php?page=home");
                     console.log(resp);
 					location.href ='index.php?page=home';
 				}
-                else if(resp == 2){
-                    location.href ='index.php?page=dashboard_counselor';
-                }
-                else if(resp == 3){
-                    location.href ='index.php?page=dashboard_counselor';
-                }
-                else if(resp == 4){
-                    location.href ='index.php?page=dashboard_counselor';
-                }
-                else if(resp == 5){
-                    location.href ='index.php?page=dashboard_counselor';
-                }
                 else{
 					$('#login-form').prepend('<div class="alert alert-danger">Username or password is incorrect.</div>')
 					$('#login-form button[type="button"]').removeAttr('disabled').html('Login');

@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <?php
+
+if(  $_SESSION['login_type'] != 3){
+	echo '<script type="text/javascript">
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
 // Include configuration and calendar API class files
 include './db_connect.php';
 require_once 'config.php';
@@ -198,9 +206,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                 <?php if ($row['status'] == 'Completed'): ?>
                                                     <?php echo "Completed"; ?>
                                                     <?php elseif ($row['status'] == 'Scheduled'): ?>  
+                                                    <input type="submit" class="btn btn-danger text-white" name="action" value="Cancel">
                                                     <input type="hidden" name="cancel_type" value="counselor">
                                                     <input type="hidden" name="posterID" value="<?php echo $row['student_id'] ?>">
-                                                    <input type="submit" class="btn btn-danger text-white" name="action" value="Cancel">
                                                     <button type="button" class="btn btn-warning reschedule-btn" data-id="<?php echo $row['id'] ?>">Reschedule</button>
                                                     <?php else: ?>  
                                                         <?php echo "No actions"; ?>  
@@ -329,7 +337,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
     </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    $('table').dataTable();
 
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('accept-btn')) {

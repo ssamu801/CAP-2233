@@ -57,7 +57,7 @@
 							?>
 							<li class="list-group-item mb-4">
 								<div>
-									<?php if($_SESSION['login_id'] == $row['user_id'] || $_SESSION['login_type'] == 1): ?>
+									<?php if($_SESSION['login_id'] == $row['user_id'] || $_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 4): ?>
 					                    <div class="dropleft float-right mr-4">
 					                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					                        <span class="fa fa-ellipsis-v"></span>
@@ -67,15 +67,7 @@
 					                        <a class="dropdown-item delete_topic" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Delete</a>
 					                      </div>
 					                    </div> 	
-									<?php else: ?>	
-										<div class="dropleft float-right mr-4">
-					                      <a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					                        <span class="fa fa-ellipsis-v"></span>
-					                      </a>
-					                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					                        <a class="dropdown-item report_topic" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Report Post</a>
-					                      </div>
-					                    </div> 	
+
 				                    <?php endif; ?>
 				                    <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
 									<a href="index.php?page=social_interaction/view_forum&id=<?php echo $row['id'] ?>"

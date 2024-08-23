@@ -121,10 +121,17 @@
 
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-sm-start" id="menu">
                     <li class="submenu">
+                        <a href="index.php?page=home" class="nav-link px-sm-3 px-2">
+                            <i class="fs-5 bi-house"></i><span class="ms-1 d-none d-sm-inline"> Home</span>
+                        </a>
+                    </li>
+                    <?php if($_SESSION['login_type'] != 4): ?>
+                    <li class="submenu">
                         <a href="index.php?page=notifications/notification" class="nav-link px-sm-3 px-2">
                             <i class="fs-5 bi-bell"></i><span class="ms-1 d-none d-sm-inline"> Notifications</span>
                         </a>
                     </li>
+                    <?php endif; ?>
                     <li class="accordion accordion-dropdown" id="accordion1">
                         <a href="index.php?page=" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                             <i class="fs-5 bi-info-circle"></i><span class="ms-1 d-none d-sm-inline"> Resources and Information</span> </a>
@@ -133,7 +140,7 @@
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion1">
                             <div>
                                 <ul class="nav">   
-                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/home"><i class="fs-5 bi-house-door"></i> Home</a></li>
+                               <!-- <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/home"><i class="fs-5 bi-house-door"></i> Home</a></li> -->
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/articles"><i class="fs-5 bi-newspaper"></i> Articles</a></li>
                                 <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=information_resources/medias"><i class="fs-5 bi-image"></i> Media Resources</a></li>
                             </ul>
@@ -160,7 +167,7 @@
                             </div>  
                         </div>
                     </li>
-
+                    <?php if($_SESSION['login_type'] != 4): ?>               
                     <li class="accordion accordion-dropdown" id="accordion3">
                         <a href="index.php?page=" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                             <i class="fs-5 bi-calendar-check"></i><span class="ms-1 d-none d-sm-inline"> Counseling Appointment</span> </a>
@@ -169,7 +176,7 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
-                                <?php if($_SESSION['login_type'] == 1 || $_SESSION['login_type'] == 5): ?>
+                                <?php if($_SESSION['login_type'] == 5): ?>
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
                                 <?php endif; ?>
                                 <?php if( $_SESSION['login_type'] == 3): ?>
@@ -180,6 +187,7 @@
                             </div>  
                         </div>
                     </li>
+                    <?php endif; ?>
 
                     <li class="accordion accordion-dropdown" id="accordion4">
                         <a href="index.php?page=" class="collapsed nav-link px-sm-3 px-2 smenu" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">

@@ -21,7 +21,7 @@ if (isset($_POST['counselorID'])) {
         $row = $result->fetch_assoc();
         $_SESSION['counselorName'] = $row['name']; // Store counselor name in session
         $_SESSION['counselorEmail'] = $row['email']; // Store counselor email in session
-        echo 'Counselor ID session variable updated successfully.';
+        
     } else {
         echo 'Error: Unable to fetch counselor details.';
     }

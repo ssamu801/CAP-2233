@@ -1,4 +1,15 @@
 <?php  include('./db_connect.php'); ?>
+<?php
+
+if(  $_SESSION['login_type'] != 3){
+	echo '<script type="text/javascript">
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
+$login_id = $_SESSION['login_id'];
+?>
 <style>
 	.record_row:hover{
 		cursor: pointer;
@@ -33,7 +44,7 @@
  					                include './db_connect.php';
 									$counselor_email = $_SESSION['login_email'];
  					                $type = array("","Admin","Staff","Subscriber");
- 					                $users = $conn->query("SELECT u.id, u.name, u.email FROM users u JOIN events e ON u.email=e.user_email WHERE e.counselor_email ='$counselor_email' GROUP BY u.id ORDER BY u.name ASC");
+ 					                $users = $conn->query("SELECT u.id, u.name, u.email FROM users u JOIN events e ON u.email=e.user_email WHERE e.counselor_id = $login_id GROUP BY u.id ORDER BY u.name ASC");
  					                $i = 1;
  					                while($row= $users->fetch_assoc()):
 				                ?>

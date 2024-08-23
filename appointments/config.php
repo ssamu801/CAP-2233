@@ -7,10 +7,10 @@ define('DB_PASSWORD', 'AVNS_ZQTc4dKbpYkzHCia2nZ');
 define('DB_NAME', 'cap2233'); 
  
 // Google API configuration 
-define('GOOGLE_CLIENT_ID', '472089813729-248s67smlbbus4r3jl488hdjh0pe77ck.apps.googleusercontent.com'); 
-define('GOOGLE_CLIENT_SECRET', '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'); 
+define('GOOGLE_CLIENT_ID', '96495206225-nrkdgli2pu259k6fclc647ntorprf0qj.apps.googleusercontent.com'); 
+define('GOOGLE_CLIENT_SECRET', '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'); 
 define('GOOGLE_OAUTH_SCOPE', 'https://www.googleapis.com/auth/calendar'); 
-define('REDIRECT_URI', 'http://localhost:3000/index.php?page=appointments/calendarsync'); 
+define('REDIRECT_URI', 'http://localhost/cap-2233/index.php?page=appointments/calendarsync'); 
  
 // Start session 
 if(!session_id()) session_start(); 

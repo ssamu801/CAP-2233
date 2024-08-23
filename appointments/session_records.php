@@ -1,3 +1,13 @@
+<?php session_start()?>
+<?php
+if(  $_SESSION['login_type'] != 3){
+	echo '<script type="text/javascript">
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
+?>
 <table class="table table-striped col-md-12">
     <thead>
         <tr>
@@ -12,11 +22,14 @@
     <tbody>
         <?php
         $user_id = $_GET['id'];
+        $login_id = $_SESSION['login_id'];
         include '../db_connect.php';
         $users = $conn->query("SELECT e.date, e.time_from, e.time_to, e.counselor_name, e.status, e.title, e.location, e.id 
                                FROM users u 
                                JOIN events e ON u.email=e.user_email 
                                WHERE u.id= $user_id
+                               AND e.counselor_id = $login_id
+                               AND status = 'Scheduled' OR status = 'Completed'
                                ORDER BY e.date DESC");
         while($row = $users->fetch_assoc()):
         ?>

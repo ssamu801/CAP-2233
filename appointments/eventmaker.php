@@ -27,6 +27,22 @@
 include_once 'config.php'; 
 include './db_connect.php';
 
+$user_id = $_SESSION['login_id'];
+$status = '';
+$result = $conn->query("SELECT status FROM events WHERE student_id = $user_id ORDER BY created DESC LIMIT 1");
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $status = $row['status'];     
+} 
+
+if($status == 'Scheduled'){
+    echo '<script type="text/javascript">
+    alert("You currently have a scheduled appointment. You cannot proceed with requesting for another appointment.");
+	setTimeout(function() {
+		window.location.href = "index.php?page=home";
+	}, 0000); 
+	</script>';
+}
  
 $postData = ''; 
 if(!empty($_SESSION['postData'])){ 

@@ -207,7 +207,7 @@
     else if($type == 8){
         $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
                        created, e.user_name, user_email, status, student_id, isPreferred,
-                       preferredCounselor, counselor_name, counselor_email, status
+                       preferredCounselor, counselor_name, counselor_email, status, counselor_id
                 FROM events e
                 WHERE id=?";
         $stmt = $conn->prepare($sql);
@@ -225,10 +225,14 @@
 
         <div class="email-desc-wrapper">
             <div class="email-body">
-                <p>Your appointment at <?php echo $formattedDate; ?>,  <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?> has 
-                    been cancelled by <?php echo htmlspecialchars($row['counselor_name']); ?>.</p>
+                <p>
+                    Your appointment with <?php echo htmlspecialchars($row['counselor_name']); ?> at <?php echo $formattedDate; ?>, <?php echo date('g:i A', strtotime($row['time_from'])) . " to " . date('g:i A', strtotime($row['time_to'])); ?>
+                    needs to be rescheduled. Please reschedule your appointment by clicking this
+                    <a href="index.php?page=appointments/eventmaker&counselor_name=<?php echo urlencode($row['counselor_name']); ?>&counselor_id=<?php echo $row['counselor_id']; ?>">link</a>.
+                </p>
             </div>
         </div>
+
     <?php }
     else if ($type == 12) {
         $sql = "SELECT n.topic_id, t.title, t.content, t.isAnonymous, u.name, n.content AS notif_content

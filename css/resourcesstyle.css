@@ -199,14 +199,14 @@ section {
 }
 
 @media screen and (max-width: 1100px) {
-    .card {
+    .card, .navbarr {
         flex: 0 0 calc(100% - 1rem);
         margin-bottom: 1rem;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .card {
+    .card, .navbarr {
         flex: 0 0 calc(100% - 1rem);
         margin-bottom: 1rem;
     }
