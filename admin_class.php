@@ -421,6 +421,13 @@ Class Action {
 		extract($_POST);
 		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
 
+		if(isset($_POST['toggle_value'])){
+			$data .= ", isAnonymous = '".isset($_POST['toggle_value'])."' ";
+	 	}
+	 	else{
+			$data .= ", isAnonymous = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
+	 	}
+
 		if(empty($id)){
 			$data .= ", article_id = '$article_id' ";
 			$data .= ", user_id = '{$_SESSION['login_id']}' ";
@@ -456,6 +463,13 @@ Class Action {
 	function save_embed_comment(){
 		extract($_POST);
 		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
+
+		if(isset($_POST['toggle_value'])){
+			$data .= ", isAnonymous = '".isset($_POST['toggle_value'])."' ";
+	 	}
+	 	else{
+			$data .= ", isAnonymous = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
+	 	}
 
 		if(empty($id)){
 			$data .= ", embed_id = '$embed_id' ";
@@ -533,6 +547,13 @@ Class Action {
 		extract($_POST);
 		$data = " comment = '".htmlentities(str_replace("'","&#x2019;",$comment))."' ";
 
+		if(isset($_POST['toggle_value'])){
+			$data .= ", isAnonymous = '".isset($_POST['toggle_value'])."' ";
+	 	}
+	 	else{
+			$data .= ", isAnonymous = '".(isset($_POST['toggle_value']) ? $_POST['toggle_value'] : 0)."' ";
+	 	}
+
 		if(empty($id)){
 			$data .= ", upload_id = '$media_id' ";
 			$data .= ", user_id = '{$_SESSION['login_id']}' ";
@@ -547,7 +568,7 @@ Class Action {
 	function delete_media_comment(){
 		extract($_POST);
 			$comment_id = 0;
-			$sql = "SELECT id FROM media_comments where upload_id=".$id;
+			$sql = "SELECT id FROM media_comments where id=".$id;
 			$result =$this->db->query($sql);
 
 			if ($result->num_rows > 0) {

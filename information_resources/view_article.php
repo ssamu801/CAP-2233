@@ -76,6 +76,63 @@ if(isset($_GET['id'])){
     .bi-star{
         color:#444444;
     }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 3%; /* Reduced width */
+        margin-top: -30px; /* Adjusted for smaller size */
+    }
+
+    input[type=checkbox] {
+        height: 0;
+        width: 0;
+        visibility: hidden;
+    }
+
+    .toggle-label {
+        cursor: pointer;
+        width: 100%; 
+        padding-top: 50%; 
+        background: grey;
+        display: block;
+        border-radius: 100px;
+        position: relative;
+    }
+
+    .toggle-label:after {
+        content: '';
+        position: absolute;
+        top: 10%; /* Adjusted for smaller size */
+        left: 10%; /* Adjusted for smaller size */
+        width: 35%; /* Reduced size */
+        height: 80%; /* Reduced size */
+        background: #fff;
+        border-radius: 90px;
+        transition: 0.3s;
+    }
+
+    #switch:checked + label {
+        background: #007bff;
+    }
+
+    #switch:checked + label:after {
+        left: calc(100% - 10%); /* Adjusted for smaller size */
+        transform: translateX(-100%);
+    }
+
+    .toggle-label:active:after {
+        width: 55%; /* Adjusted for smaller size */
+    }
+
+    .toggle-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    #desc {
+        margin-top: -20px; /* Adjusted for smaller size */
+        margin-left: 10px;
+    }
 </style>
 <div class="container-field">
     <div class="row mb-4 mt-4">
@@ -195,8 +252,12 @@ if(isset($_GET['id'])){
                     <?php endif; ?>
 	                <span class="float-right mr-4"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small></span>
 
-    				<p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
-    				
+                    <?php if($row['isAnonymous'] == 0): ?>
+    				    <p class="mb-0"><large><b><?php echo $row['name'] ?></b></large>  <span class="text-primary"><small class="mb-0"><i><?php echo $row['username'] ?></i></small></span></p>
+    				<?php else: ?>
+                        <p class="mb-0"><large><b>Anonymous</b></large></p>
+                    <?php endif; ?>    
+
     				<br>
     				<?php echo html_entity_decode($row['comment']) ?>
     				<div>
@@ -213,7 +274,14 @@ if(isset($_GET['id'])){
     						<input type="hidden" name="article_id" value="<?php echo $art_id?>">
     						<textarea class="form-control jqte" id="comment-txt" name="comment" cols="30" rows="5" placeholder="New Comment"></textarea>
     					</div>
-    					<button class="btn btn-primary">Save Comment</button>
+                        <div class="toggle-wrap">
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="switch" name="toggle_value" value=0/>
+                                <label for="switch" class="toggle-label"></label>
+                            </div>
+                            <div id="desc">Comment anonymously</div>
+                        </div> 
+    					<button class="btn btn-primary float-right">Save Comment</button>
     				</form>
     			</div>
             </div>
@@ -222,6 +290,7 @@ if(isset($_GET['id'])){
 </div>
 
 <script>
+    
 	$('.jqte').jqte()
 	$('.edit_topic').click(function(){
 		uni_modal("Edit Topic","manage_topic.php?id="+$(this).attr('data-id'),'mid-large')
@@ -264,6 +333,13 @@ if(isset($_GET['id'])){
 		e.preventDefault()
 		start_load()
 		
+        var content = $('textarea[name="comment"]').val();
+
+        if (content.trim() === '') {
+            alert("Please write a comment before submitting");
+            location.reload(); // Reload the page after the alert
+            return false;
+        }
 		$.ajax({
 			url:'ajax.php?action=save_article_comment',
 			method:'POST',
