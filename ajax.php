@@ -266,12 +266,6 @@ if($action == "search"){
 		echo $get;
 }
 
-if($action == "mark_as_read"){
-	$mark_as_read = $crud->mark_as_read();
-    if($mark_as_read)
-        echo $mark_as_read;
-}
-
 if($action == "participate"){
 	$save = $crud->participate();
 	if($save)

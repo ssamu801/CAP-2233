@@ -5,11 +5,9 @@ if(isset($_GET['id'])){
 	foreach($qry as $k =>$v){
 		$$k = $v;
 	}
-	// Set the checked status based on the value from the database
-	$checked = isset($isAnonymous) && $isAnonymous == 1 ? 'checked' : '';
 }
-?>
 
+?>
 <style>
 	/* */
 .toggle-switch {
@@ -102,11 +100,11 @@ input[type=checkbox] {
 		</div>
 		<div class="toggle-wrap">
     		<div class="toggle-switch">
-        		<input type="checkbox" id="switch" name="toggle_value" value="1" <?php echo isset($checked) ? $checked : ''; ?>/>
+        		<input type="checkbox" id="switch" name="toggle_value" value=0/>
         		<label for="switch" class="toggle-label"></label>
     		</div>
     		<div id="desc">Post anonymously</div>
-		</div>
+		</div>  
 	</form>
 </div>
 
@@ -119,6 +117,7 @@ input[type=checkbox] {
 	$('#manage-topic').submit(function(e){
 		e.preventDefault()
 
+		
 		var title = $('input[name="title"]').val();
  		var content = $('textarea[name="content"]').val();
   		var categoryIds = $('#category_ids').val();

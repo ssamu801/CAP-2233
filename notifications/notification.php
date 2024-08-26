@@ -16,14 +16,6 @@
         background-color: #e5f7f0;
         border-color: #d8f7eb;
     }
-    .notifs {
-        background-color: #f8f9fa !important; /* Default background color for read notifications */
-        cursor: pointer;
-    }
-    .unread {
-        background-color: #e0ffe0 !important; /* Background color for unread notifications */
-        cursor: pointer;
-    }
 </style>
 
 <br>
@@ -80,10 +72,10 @@
                 include "./db_connect.php";
                 $id = $_SESSION['login_id'];
                 // SQL query to select data based on ID
-                $sql = "SELECT id, posterID, time, type, topic_id, comment_id, event_id, content, is_read
+                $sql = "SELECT id, posterID, time, type, topic_id, comment_id, event_id, content
                         FROM notifications
-                        WHERE posterID = $id
-                        ORDER BY time DESC;";
+                        WHERE posterID = $id;";
+
                 $stmt = $conn->prepare($sql);
 
                 // $id = $_SESSION['login_id'];
@@ -136,18 +128,17 @@
                     }
 
                     while ($row = $result->fetch_assoc()) {
-                         $isReadClass = $row['is_read'] ? '' : 'unread';
                     ?>
-                        <div class="p-3 d-flex align-items-center bg-light border-bottom osahan-post-header notifs <?php echo $isReadClass; ?>"
+                        <div class="p-3 d-flex align-items-center bg-light border-bottom osahan-post-header">
+                            <div class="dropdown-list-image mr-3">
+                                <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" />
+                            </div>
+                            <div class="font-weight-bold mr-3 notification_record" 
                                     data-id="<?php echo $row['id'];?>"
                                     data-event-id="<?php echo $row['event_id'];?>"
                                     data-topic-id="<?php echo $row['topic_id'];?>"
                                     data-comment-id="<?php echo $row['comment_id'];?>"
                                     data-type="<?php echo $row['type'];?>">
-                            <div class="dropdown-list-image mr-3">
-                                <img class="rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="" />
-                            </div>
-                            <div class="font-weight-bold mr-3">
                                 <?php 
                                     $title = getNotificationTitle($row['type']);
                                     $description = truncateString($row['content'], 100);
@@ -189,27 +180,13 @@
 //     view_modal("Notification (ID: " + dataId + ")", "./notifications/notification_modal.php?id="+id+"&topic_id="+topic_id+"&event_id="+event_id+"&comment-id="+comment_id+"&type="+type, 'large');	
 // });
 
-$('.notifs').click(function(){
+$('.notification_record').click(function(){
     var id = $(this).attr('data-id');
-    var topic_id = $(this).attr('data-topic-id');
-    var event_id = $(this).attr('data-event-id');
-    var comment_id = $(this).attr('data-comment-id');
+    var topic_id = $(this).attr('data-topic-id');  // Corrected to 'data-topic-id'
+    var event_id = $(this).attr('data-event-id');  // Corrected to 'data-event-id'
+    var comment_id = $(this).attr('data-comment-id');  // Corrected to 'data-comment-id'
     var type = $(this).attr('data-type');
-    var notifElement = $(this); // Store the clicked element reference
-
-    // Update the notification as read in the database
-    $.ajax({
-        url: 'ajax.php?action=mark_as_read', // Create this PHP file to handle the update
-        method: 'POST',
-        data: { id: id },
-        success: function(response) {
-            // Change the background color to the default once clicked
-            notifElement.removeClass('unread');
-        }
-    });
-
-    view_modal("Notification (ID: " + id + ")", "./notifications/notification_modal.php?id="+id+"&topic_id="+topic_id+"&event_id="+event_id+"&comment_id="+comment_id+"&type="+type, 'large');
+    view_modal("Notification (ID: " + id + ")", "./notifications/notification_modal.php?id="+id+"&topic_id="+topic_id+"&event_id="+event_id+"&comment_id="+comment_id+"&type="+type, 'large');	
 });
-
 
 </script>

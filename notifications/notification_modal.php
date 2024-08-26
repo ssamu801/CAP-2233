@@ -9,13 +9,11 @@
     $comment_id = $_GET['comment_id'];
     $type = $_GET['type'];
 
-    /*
     echo "Notification ID: $nID<br>";
     echo "Event ID: $event_id<br>";
     echo "Topic ID: $topic_id<br>";
     echo "Comment ID: $comment_id<br>";
     echo "Type: $type<br>";
-    */
 
     if ($type == 1 || $type == 2) {
         // Post ID will be used
