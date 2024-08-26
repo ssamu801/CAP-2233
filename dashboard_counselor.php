@@ -319,13 +319,19 @@
 
                                             $k = 0;
                                             if (!empty($student_ids)) {
-                                                foreach ($student_ids as $student_id) {
+                                                
                                                     // Get topics for each student_id
                                                     $sql_topics = "SELECT t.*, u.name 
-                                                                    FROM topics t 
-                                                                    INNER JOIN users u ON u.id = t.user_id 
-                                                                    WHERE t.user_id = $student_id 
-                                                                    ORDER BY unix_timestamp(date_created) DESC";
+                                                                   FROM topics t 
+                                                                   INNER JOIN users u ON u.id = t.user_id 
+                                                                   WHERE t.user_id IN (
+                                                                        SELECT student_id 
+                                                                        FROM events 
+                                                                        WHERE counselor_id = 11254321
+                                                                        AND student_id != '' 
+                                                                        GROUP BY student_id
+                                                                    )
+                                                                    ORDER BY unix_timestamp(date_created) ASC;";
                                                     $topic = $conn->query($sql_topics);
                                             
                                                     while ($row = $topic->fetch_assoc()) {
@@ -397,7 +403,7 @@
                                                             <?php
                                                         }
                                                     }
-                                                }
+                                                
                                                 if($k == 0){
                                                     echo "<li class='list-group-item'>No flagged posts from clients.</li>";
                                                 }

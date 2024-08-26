@@ -120,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                     <tbody>
                                     <form class="" action="appointments/addevent.php" method="post">
                                     <?php
+                                    /*
                                      use PHPMailer\PHPMailer\PHPMailer;
                                      use PHPMailer\PHPMailer\SMTP;
                                      use PHPMailer\PHPMailer\Exception;
@@ -163,7 +164,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                  $mail->send();
                                              endwhile;
                                          endif;
-         
+                                         */
+                                        
+                                        $login_id = $_SESSION['login_id'];
+                                        include 'db_connect.php';
                                         $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face';");
                                         $total = mysqli_num_rows($requests);
                                         if($total > 0):
