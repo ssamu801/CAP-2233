@@ -1130,6 +1130,16 @@ Class Action {
         }
     }
 
+	function mark_as_read(){
+		extract($_POST);
+		$id = $_POST['id'];
+    	$update = $this->db->query("UPDATE notifications SET is_read = 1 WHERE id = $id");
+
+		if($update){
+			return 1;
+		}
+	}
+
 	/*
 	function search(){
 		extract($_POST);
