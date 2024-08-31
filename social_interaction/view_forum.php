@@ -7,7 +7,16 @@ $qry = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id 
 foreach($qry->fetch_array() as $k => $val){
 	$$k=$val;
 }
-$comments = $conn->query("SELECT c.*,u.name,u.username FROM comments c inner join users u on u.id = c.user_id where c.status='Approved' and c.topic_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+$order = "asc"; // Default sort order
+if (isset($_GET['sort'])) {
+    if ($_GET['sort'] == "newest") {
+        $order = "desc";
+    } elseif ($_GET['sort'] == "oldest") {
+        $order = "asc";
+    }
+}
+
+$comments = $conn->query("SELECT c.*,u.name,u.username FROM comments c inner join users u on u.id = c.user_id where c.status='Approved' and c.topic_id= ".$_GET['id']." order by unix_timestamp(c.date_created) $order");
 $com_arr= array();
 while($row= $comments->fetch_assoc()){
 	$com_arr[] = $row;
@@ -34,7 +43,26 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 }
 ?>
 <style type="text/css">
+	/* Adjust the overall dropdown width */
+	.sort-dropdown {
+		position: relative;
+		display: inline-block;
+
+	}
+
+	/* Style the dropdown button */
+	.sort-dropdown select {
+		width: 100%; /* Make the select fill the container */
+		padding: 8px 12px;
+		font-size: 16px;
+		border-radius: 6px;
 	
+	}
+
+	/* Style the dropdown options */
+	.sort-dropdown select option {
+		padding: 8px;
+	}
 	.avatar {
 	    display: flex;
 	    border-radius: 100%;
@@ -270,9 +298,16 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 		<div class="card">
 			<div class="card-body">
     		<div class="col-lg-12">
+				
     			<div class="row">
     				<h3><b> <i class="fa fa-comments"></i> Comment/s</b></h3>
     			</div>
+				<div class="sort-dropdown" class="col-lg-12 mb-4">
+					<select id="sort-comments" class="form-control" onchange="sortComments()">
+						<option value="newest" <?php echo isset($_GET['sort']) && $_GET['sort'] == 'newest' ? 'selected' : '' ?>>Newest First</option>
+						<option value="oldest" <?php echo isset($_GET['sort']) && $_GET['sort'] == 'oldest' ? 'selected' : '' ?>>Oldest First</option>
+					</select>
+				</div>
     			<?php 
     			foreach($com_arr as $row):
     			?>
@@ -617,6 +652,14 @@ $tag = $conn->query("SELECT * FROM categories where id in ($category_ids) order 
 			}
 		})
 	})
+
+	function sortComments() {
+		var sortOrder = document.getElementById("sort-comments").value;
+		var urlParams = new URLSearchParams(window.location.search);
+		urlParams.set('sort', sortOrder);
+		window.location.search = urlParams.toString();
+	}
+
 
 	$(document).ready(function() {
             $('.helpful-btn').on('click', function() {

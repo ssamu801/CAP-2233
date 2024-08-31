@@ -113,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                             <th class="text-center">Start Time</th>
                                             <th class="text-center">End Time</th>
                                             <th class="text-center">Location</th>
+                                            <th class="text-center">Urgency</th>
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Action</th>
                                         </tr>
@@ -168,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                         
                                         $login_id = $_SESSION['login_id'];
                                         include 'db_connect.php';
-                                        $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face';");
+                                        $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Face-to-Face' ORDER BY id DESC;");
                                         $total = mysqli_num_rows($requests);
                                         if($total > 0):
                                             while($row = $requests->fetch_assoc()):
@@ -195,6 +196,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                     ?>
                                                 </td>
                                                 <td class="text-center"><?php echo $row['location'] ?></td>
+                                                </td>
+                                                    <?php 
+                                                        if($row['urgency'] == 'Urgent'){
+                                                    ?>  <td class="text-center" style="color:#FF0000">
+                                                     <?php 
+                                                        } else{
+                                                    ?>
+                                                        <td class="text-center">
+                                                    <?php 
+                                                        } 
+                                                        echo $row['urgency'];
+                                                    ?>
+                                                </td>
                                                 <td class="text-center">
                                                     <?php if ($row['status'] == 'Cancelled'): ?>
                                                         <?php echo "Cancelled"; ?>
@@ -205,7 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                         <option value="No Show" <?php if ($row['status'] == 'No Show') echo 'selected'; ?>>No Show</option>
                                                     </select>
                                                     <?php endif; ?> 
-                                                </td>
                                                 <td class="text-center">
                                                 <?php if ($row['status'] == 'Completed'): ?>
                                                     <?php echo "Completed"; ?>
@@ -255,6 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                             <th class="text-center">Start Time</th>
                                             <th class="text-center">End Time</th>
                                             <th class="text-center">Link</th>
+                                            <th class="text-center">Urgency</th>
                                             <th class="text-center">Status</th>
                                             <th class="text-center">Action</th>
                                         </tr>
@@ -262,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                     <tbody>
                                     <form class="" action="appointments/addevent.php" method="post">
                                     <?php
-                                    $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Online';");
+                                    $requests = $conn->query("SELECT * FROM events WHERE date >= CURDATE() AND counselor_id = $login_id AND status!= 'Reschedule' AND mode = 'Online' ORDER BY id DESC;");
                                     $total = mysqli_num_rows($requests);
                                     if ($total > 0) {
                                         while ($row = $requests->fetch_assoc()) {
@@ -295,6 +309,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                                             }
                                                                             
                                                                         ?>
+                                                </td>
+                                                </td>
+                                                    <?php 
+                                                        if($row['urgency'] == 'Urgent'){
+                                                    ?>  <td class="text-center" style="color:#FF0000">
+                                                     <?php 
+                                                        } else{
+                                                    ?>
+                                                        <td class="text-center">
+                                                    <?php 
+                                                        } 
+                                                        echo $row['urgency'];
+                                                    ?>
                                                 </td>
                                                 <td class="text-center">
                                                     <?php if ($row['status'] == 'Cancelled'): ?>

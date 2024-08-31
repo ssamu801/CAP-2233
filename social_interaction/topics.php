@@ -20,7 +20,11 @@
 	<div class="col-lg-12">
 		<div class="row mb-4 mt-4">
 			<div class="col-md-12">
-				
+				<!-- Sorting Dropdown -->
+				<select id="sort_order" class="form-control col-sm-3 float-right">
+					<option value="desc" <?php echo isset($_GET['order']) && $_GET['order'] == 'desc' ? 'selected' : '' ?>>Newest to Oldest</option>
+					<option value="asc" <?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'selected' : '' ?>>Oldest to Newest</option>
+				</select>
 			</div>
 		</div>
 		<div class="row">
@@ -45,7 +49,9 @@
 							while($row= $tag->fetch_assoc()):
 								$tags[$row['id']] = $row['name'];
 							endwhile;
-							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id WHERE t.status='Approved' order by unix_timestamp(date_created) desc");
+							
+							$order = isset($_GET['order']) && $_GET['order'] == 'asc' ? 'asc' : 'desc'; // Set default order to desc
+							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id WHERE t.status='Approved' order by unix_timestamp(date_created) $order");
 							while($row= $topic->fetch_assoc()):
 								$trans = get_html_translation_table(HTML_ENTITIES,ENT_QUOTES);
 						        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
@@ -123,10 +129,10 @@
 	$(document).ready(function(){
 		$('table').dataTable()
 	})
+
 	$('#topic-list').JPaging({
 	    pageSize: 15,
 	    visiblePageSize: 10
-
 	  });
 
 	$('#new_topic').click(function(){
@@ -145,6 +151,13 @@
 		uni_modal("Report Post","social_interaction/manage_report_post.php?id="+$(this).attr('data-id'),'mid-large')
 		
 	})
+
+	// Sorting Logic
+	$('#sort_order').change(function(){
+		var order = $(this).val();
+		window.location.href = "index.php?page=social_interaction/topics&order=" + order;
+	});
+
 	function delete_topic($id){
 		start_load()
 		$.ajax({
