@@ -7,7 +7,7 @@ $qry = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id 
 foreach($qry->fetch_array() as $k => $val){
 	$$k=$val;
 }
-$order = "asc"; // Default sort order
+$order = "desc"; // Default sort order
 if (isset($_GET['sort'])) {
     if ($_GET['sort'] == "newest") {
         $order = "desc";
@@ -21,7 +21,7 @@ $com_arr= array();
 while($row= $comments->fetch_assoc()){
 	$com_arr[] = $row;
 }
-$replies = $conn->query("SELECT r.*,u.name,u.username FROM replies r inner join users u on u.id = r.user_id where r.comment_id in (SELECT id FROM comments where topic_id= ".$_GET['id'].") order by unix_timestamp(r.date_created) asc");
+$replies = $conn->query("SELECT r.*,u.name,u.username FROM replies r inner join users u on u.id = r.user_id where r.comment_id in (SELECT id FROM comments where topic_id= ".$_GET['id'].") order by unix_timestamp(r.date_created)  $order");
 $rep_arr= array();
 while($row= $replies->fetch_assoc()){
 	$rep_arr[$row['comment_id']][] = $row;

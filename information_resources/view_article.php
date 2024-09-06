@@ -13,7 +13,10 @@ if(isset($_GET['id'])){
         $conn->query("INSERT INTO resources_views (article_id, user_id, type) VALUES ({$_GET['id']}, '{$_SESSION['login_id']}', 'Article')");
     }
 
-    $comments = $conn->query("SELECT c.*,u.name,u.username FROM article_comments c inner join users u on u.id = c.user_id where c.article_id= ".$_GET['id']." order by unix_timestamp(c.date_created) asc");
+    $sort_order = 'desc';
+    $sort_order = isset($_GET['sort']) && $_GET['sort'] == 'newest' ? 'desc' : 'asc';
+
+    $comments = $conn->query("SELECT c.*,u.name,u.username FROM article_comments c inner join users u on u.id = c.user_id where c.article_id= ".$_GET['id']." order by unix_timestamp(c.date_created) $sort_order");
     $com_arr= array();
     while($row= $comments->fetch_assoc()){
 	    $com_arr[] = $row;
@@ -28,6 +31,7 @@ if(isset($_GET['id'])){
                 $tags[$row['id']] = $row['name'];
             endwhile;
     }
+
 }
 ?>
 <style type="text/css">
@@ -235,6 +239,11 @@ if(isset($_GET['id'])){
     			<div class="row">
     				<h3><b> <i class="fa fa-comments"></i> Comment/s</b></h3>
     			</div>
+                <label for="sort_comments" class="mr-2">Sort by:</label>
+                        <select id="sort_comments" class="custom-select" style="width: auto;" onchange="sortComments()">
+                            <option value="oldest" <?php echo ($sort_order == 'asc') ? 'selected' : ''; ?>>Oldest to Newest</option>
+                            <option value="newest" <?php echo ($sort_order == 'desc') ? 'selected' : ''; ?>>Newest to Oldest</option>
+                        </select>
     			<?php 
     			foreach($com_arr as $row):
     			?>
@@ -381,4 +390,9 @@ if(isset($_GET['id'])){
 		uni_modal("Edit Comment","information_resources/manage_article_comment.php?id="+$(this).attr('data-id'),'mid-large')
 		
 	})
+
+    function sortComments() {
+        var sortOrder = document.getElementById('sort_comments').value;
+        window.location.href = "<?php echo $_SERVER['PHP_SELF'] . '?page=information_resources/view_article&id=' . $_GET['id'] . '&sort='; ?>" + sortOrder;
+    }
 </script>
