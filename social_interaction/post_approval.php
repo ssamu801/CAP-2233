@@ -48,7 +48,7 @@ if(  $_SESSION['login_type'] != 4){
 							while($row= $tag->fetch_assoc()):
 								$tags[$row['id']] = $row['name'];
 							endwhile;
-							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id WHERE t.status='Pending' order by unix_timestamp(date_created) desc");
+							$topic = $conn->query("SELECT t.*,u.name FROM topics t inner join users u on u.id = t.user_id WHERE t.status='Pending' order by unix_timestamp(date_created) ASC");
 							while($row= $topic->fetch_assoc()):
 								$trans = get_html_translation_table(HTML_ENTITIES,ENT_QUOTES);
 						        unset($trans["\""], $trans["<"], $trans[">"], $trans["<h2"]);
@@ -59,6 +59,15 @@ if(  $_SESSION['login_type'] != 4){
 						        $replies = $conn->query("SELECT * FROM replies where comment_id in (SELECT id FROM comments where topic_id=".$row['id'].")")->num_rows;
 							?>
 							<li class="list-group-item mb-4">
+								<div>
+					                <div class="dropleft float-right ml-3">
+					                	<a class="text-dark" href="javascript:void(0)" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					                        <span class="fa fa-ellipsis-v"></span>
+					                    </a>
+					                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					                    <a class="dropdown-item edit_topic" data-id="<?php echo $row['id'] ?>" href="javascript:void(0)">Edit</a>
+					                </div>
+					            </div> 	
 								<div>
 									
 				                    <span class="float-right mr-1"><small><i>Created: <?php echo date('M d, Y h:i A',strtotime($row['date_created'])) ?></i></small>
@@ -149,7 +158,14 @@ if(  $_SESSION['login_type'] != 4){
 	$('.decline').click(function(){
 		uni_modal("Decline Post","social_interaction/decline_topic.php?id="+$(this).attr('data-id'),'mid-large')
 	})
+
+	$('.edit_topic').click(function(){
+		uni_modal("Edit Topic","social_interaction/manage_topic_mod.php?id="+$(this).attr('data-id'),'mid-large')
+		
+	})
 });
+
+
 
 function approve_topic(id){
 	var login_name = '<?php echo $_SESSION['login_name']; ?>'; 

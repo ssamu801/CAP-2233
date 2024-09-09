@@ -5,11 +5,9 @@ if(isset($_GET['id'])){
 	foreach($qry as $k =>$v){
 		$$k = $v;
 	}
-	// Set the checked status based on the value from the database
-	$checked = isset($isAnonymous) && $isAnonymous == 1 ? 'checked' : '';
 }
-?>
 
+?>
 <style>
 	/* */
 .toggle-switch {
@@ -100,13 +98,15 @@ input[type=checkbox] {
 				<textarea name="content" class="text-jqte"><?php echo isset($content) ? $content : '' ?></textarea>
 			</div>
 		</div>
+		<?php if(!isset($isAnonymous)):?>
 		<div class="toggle-wrap">
     		<div class="toggle-switch">
-        		<input type="checkbox" id="switch" name="toggle_value" value="1" <?php echo isset($checked) ? $checked : ''; ?>/>
+        		<input type="checkbox" id="switch" name="toggle_value" value=0/>
         		<label for="switch" class="toggle-label"></label>
     		</div>
     		<div id="desc">Post anonymously</div>
 		</div>
+		<?php endif; ?>  
 	</form>
 </div>
 
@@ -119,6 +119,7 @@ input[type=checkbox] {
 	$('#manage-topic').submit(function(e){
 		e.preventDefault()
 
+		
 		var title = $('input[name="title"]').val();
  		var content = $('textarea[name="content"]').val();
   		var categoryIds = $('#category_ids').val();
@@ -135,7 +136,7 @@ input[type=checkbox] {
 			data:$(this).serialize(),
 			success:function(resp){
 				if(resp == 1){
-					alert_toast("Post submitted. Kindly wait for approval of post.",'success')
+					alert_toast("Post edited.",'success')
 					setTimeout(function(){
 						location.reload()
 					},1000)
