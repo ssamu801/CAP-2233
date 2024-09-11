@@ -316,6 +316,6 @@ while ($row = $tag->fetch_assoc()) {
     // Handle sort option change
     $('#sortSelect').change(function(){
         var selectedSort = $(this).val();
-        window.location.href = "/index.php?page=information_resources/articles&sort=" + selectedSort;
+        window.location.href = "index.php?page=information_resources/articles&sort=" + selectedSort;
     });
 </script>
