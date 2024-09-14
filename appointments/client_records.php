@@ -75,7 +75,7 @@ $login_id = $_SESSION['login_id'];
 $('.client_record').click(function(){
     var dataId = $(this).attr('data-id');
     var clientName = $(this).find('td:eq(1)').text(); // Assuming the name is in the second column (index 1)
-    view_modal("Client Record: " + clientName + " (ID: " + dataId + ")", "appointments/session_records.php?id=" + dataId, 'large');	
+    view_modal("Client Record: " + clientName + " (ID: " + dataId + ")", "appointments/session_records.php?id=" + dataId + "&clientName=" + clientName, 'large');	
 });
 $('table').dataTable();
 

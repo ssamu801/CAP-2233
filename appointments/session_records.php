@@ -22,6 +22,7 @@ if(  $_SESSION['login_type'] != 3){
     <tbody>
         <?php
         $user_id = $_GET['id'];
+        $clientName = $_GET['clientName'];
         $login_id = $_SESSION['login_id'];
         include '../db_connect.php';
         $users = $conn->query("SELECT e.date, e.time_from, e.time_to, e.counselor_name, e.status, e.title, e.location, e.id 
@@ -51,6 +52,9 @@ if(  $_SESSION['login_type'] != 3){
     </tbody>
 </table>
 <br>
+<!-- Button to redirect to Change Counselor page -->
+<button class="btn btn-secondary float-right mr-2 change_counselor" data-id="<?php echo $user_id; ?>" data-id2="<?php echo $clientName; ?>">Change Counselor</button>
+
 <!-- Button to trigger the modal -->
 <button class="btn btn-primary float-right add_intake_schedule" data-id="<?php echo $user_id; ?>">Add Session Date</button>
 
@@ -72,6 +76,13 @@ if(  $_SESSION['login_type'] != 3){
 </div>
 
 <script>
+// Redirect to Change Counselor page
+$(document).on('click', '.change_counselor', function() {
+    var dataId = $(this).attr('data-id');
+    var dataId2 = $(this).attr('data-id2');
+    window.location.href = "index.php?page=appointments/change_counselor_form&user_id=" + dataId + "&clientName=" + dataId2 ;
+});
+
 $(document).ready(function() {
     // Handle click event on session records
     $(document).on('click', '.session_record', function() {
