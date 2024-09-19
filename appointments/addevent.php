@@ -3,9 +3,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+/*
 require 'phpmailer/src/Exception.php';
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
+*/
 
 require_once 'db_connect.php'; 
  
@@ -199,6 +201,7 @@ if(isset($_POST['Accept'])){
     $db_userID = $userID;
     $insert2 = $stmt->execute();
 
+    /*
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
@@ -214,6 +217,7 @@ if(isset($_POST['Accept'])){
     $mail->Body = "We would like to ask you to reschedule your appointment with the OCCS. Please view your notifications on our website for more information.";
     $mail->isHTML(true);
     $mail->send();
+    */
 
     if($insert0){ 
         $event_id = $db_userID; 
@@ -311,6 +315,7 @@ if(isset($_POST['Accept'])){
     $db_userID = $userID;
     $insert3 = $stmt->execute();
 
+    /*
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
@@ -325,6 +330,7 @@ if(isset($_POST['Accept'])){
     $mail->Subject = "Missed Appointment from OCCS";
     $mail->Body = "We would like to inform you that you have missed your scheduled appointment with the OCCS.";
     $mail->send();
+    */
 
     if($insert3){ 
         $event_id = $db_userID; 
