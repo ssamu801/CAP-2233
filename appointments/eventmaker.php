@@ -18,6 +18,21 @@
     .counselor-dropdown {
         display: none;
     }
+
+    .modal-content {
+        background-color: white; /* Set the modal background to white */
+        border: none;
+    }
+    .modal-header {
+        border: none;
+    }
+    .disabled-date {
+        background-color:#f1f1f1;
+        color:#b1b1b1;
+    }
+    .counselor-dropdown {
+        display: none;
+    }
 </style>
 </head>
 <body>
@@ -146,9 +161,10 @@ $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
                         <option value="">No counselors available</option>
                     <?php } ?>
                 <?php } ?>
-
-            
             </select>
+        </div>
+        <div class="form-group">
+            <input type="hidden" name="counselorReason" id="counselorReason">
         </div>
         <div class="form-group">
             <label>Select Date</label>
@@ -179,6 +195,30 @@ $counselors = $conn->query("SELECT id, name FROM users WHERE type=3");
         </div>
     </div>
 </div>
+
+<!-- Modal for preferred counselor -->
+<div class="modal fade" id="counselorPreferenceModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Student Counselor Preference Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="preferenceForm">
+          <div class="mb-3">
+            <label for="reasonInput" class="form-label">Reason for Preferred Counselor</label>
+            <textarea class="form-control" id="reasonInput" rows="4" placeholder="Enter your reason"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="savePreferenceBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
 $(document).ready(function() {
@@ -300,6 +340,9 @@ function view_modal(heading, url, size) {
 }
 // Form submission
 $('#addEventToDB').submit(function(e) {
+    // alert("Counselor Reason: "+$('#counselorReason').val());
+    // return;
+
     e.preventDefault();
 
     // Check if the checkbox is checked but no counselor is selected
@@ -349,8 +392,33 @@ $('#addEventToDB').submit(function(e) {
 // Reset dropdown to default option when page loads
 $('#assignCounselorCheckbox').trigger('change');
 
+var studentCounselorPreferenceModal;
+
+document.getElementById('counselorDropdown').addEventListener('change', function() {
+    // Show the modal when a counselor is selected from the dropdown
+    if (this.value) {
+      studentCounselorPreferenceModal = new bootstrap.Modal(document.getElementById('counselorPreferenceModal'));
+      studentCounselorPreferenceModal.show();
+    }
+  });
+
+// Add an event listener to the "Save" button
+document.getElementById('savePreferenceBtn').addEventListener('click', function() {
+    var reason = $('#reasonInput').val();
+    // Validate if reason input is not empty (you can add additional validation if needed)
+    if (reason.trim() === "") {
+        alert("Please provide a reason for your counselor preference.");
+        return;
+    }
+
+    // Perform any additional save actions here (like saving form data if needed)
+    $('#counselorReason').val(reason);
+    alert("The Preference Request has been saved.");
+    // Close the modal after clicking save
+    studentCounselorPreferenceModal.hide();    
 });
 
+});
 </script>
 
 </body>

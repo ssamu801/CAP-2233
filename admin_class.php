@@ -778,7 +778,9 @@ Class Action {
 			$data .= ", counselor_email = '$counselorEmail' ";
 			$data .= ", counselor_id = '$counselor' ";
 
-			
+			// Provide reason for preferred counselor
+			$data .= ", reason = '$counselorReason' ";
+			$data .= ", isDirectorApproved = 'Pending'";
 		}
 		else {
 			// Automatically assign a counselor if not preferred
@@ -789,9 +791,11 @@ Class Action {
 				$data .= ", counselor_id = '{$assignedCounselor['id']}' ";
 
 				$coun_id = $assignedCounselor['id'];
-
-				
 			} 
+
+			// Default values if assigned counselor is not preferred
+			$data .= ", reason = 'None'";
+			$data .= ", isDirectorApproved = 'Not Required'";
 		}
 		
 		if(empty($urgency)){ 
