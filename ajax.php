@@ -184,6 +184,18 @@ if($action == "save_appointment"){
 		echo $save;
 }
 
+if($action == "approve_counselor_request"){
+	$save = $crud->approve_counselor_request();
+	if($save)
+		echo $save;
+}
+
+if($action == "decline_counselor_request"){
+	$save = $crud->decline_counselor_request();
+	if($save)
+		echo $save;
+}
+
 if($action == "save_article_rating"){
 	$save = $crud->save_article_rating();
 	if($save)

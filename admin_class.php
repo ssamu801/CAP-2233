@@ -890,26 +890,50 @@ Class Action {
 				}
 			} else {
 				
-				// If more than one counselor is available, find the counselor with the least appointments
-				$sql1 = "SELECT a.counselorID, u.name, u.email, COUNT(*) AS total_appointments 
-						FROM availability a 
-						JOIN users u ON a.counselorID = u.id 
-						WHERE a.date = '$date' 
-						AND a.status = 'Available'
-						GROUP BY a.counselorID 
-						ORDER BY total_appointments DESC 
-						LIMIT 1";
-	
-				$res1 = $this->db->query($sql1);
-	
-				if ($res1 && $res1->num_rows > 0) {
-					$row2 = $res1->fetch_assoc();
-					
-					return [
-						'id' => $row2['counselorID'],
-						'name' => $row2['name'],
-						'email' => $row2['email']
-					];
+				$query_least_appointments = "
+					SELECT u.id AS counselorID, u.name, u.email, 
+						IFNULL(COUNT(a.counselorID), 0) AS total_appointments
+					FROM users u
+					LEFT JOIN availability a ON u.id = a.counselorID 
+					AND a.date >= CURDATE()
+					AND a.status = 'Scheduled'
+					WHERE u.id IN (SELECT DISTINCT counselorID FROM availability)
+					GROUP BY u.id
+					ORDER BY total_appointments ASC"; 
+
+				// Run the query
+				$result = mysqli_query($this->db, $query_least_appointments);
+
+				if ($result && mysqli_num_rows($result) > 0) {
+					// Step 2: Iterate over the counselors and check availability on the given date
+					while ($counselor = mysqli_fetch_assoc($result)) {
+						$counselorID = $counselor['counselorID'];
+
+						// Check if this counselor is available on the given date
+						$query_check_availability = "
+							SELECT a.counselorID, u.name, u.email 
+							FROM availability a
+							JOIN users u ON a.counselorID = u.id
+							WHERE a.counselorID = '$counselorID'
+							AND a.date = '$date'
+							AND time_from = '$startTime' 
+							AND time_to = '$endTime'
+							AND mode = '$mode'
+							AND a.status = 'Available'
+							LIMIT 1";
+
+						$availability_result = mysqli_query($this->db, $query_check_availability);
+
+						if ($availability_result && mysqli_num_rows($availability_result) > 0) {
+							// The counselor is available on the selected date, return their details
+							$row = mysqli_fetch_assoc($availability_result);
+							return [
+								'id' => $row['counselorID'],
+								'name' => $row['name'],
+								'email' => $row['email']
+							];
+						}
+					}
 				}
 			}
 
@@ -939,6 +963,98 @@ Class Action {
 		if ($update) {
 			return 1;
 		}
+	}
+
+	function approve_counselor_request(){
+		extract($_POST);
+		
+		// Prepare statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE events SET isDirectorApproved='Yes' WHERE id=?");
+		$approveStmt->bind_param("i" ,$id);
+		
+		$sql = "SELECT e.student_id, u.name AS counselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
+		$resultStmt = $this->db->prepare($sql);
+		$resultStmt->bind_param("i", $id);
+		
+		// Execute the approve statement
+		if ($approveStmt->execute()) {
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
+			
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$counselor = $row['counselor'];
+				$poster_id = $row['student_id'];
+				
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
+				$message = "Your request for ". $counselor . " as your assigned counselor has been approved";
+				$type = 14;
+				
+				$notifStmt->bind_param("iii", $poster_id, $type, $id);
+				
+				if ($notifStmt->execute()) {
+					return 1;
+					
+				} else {
+					// Notification insert failed
+					error_log("Notification insert failed: " . $notifStmt->error);
+				}
+			} else {
+				// No rows found for the topic
+				error_log("No topic found with ID: " . $id);
+			}
+		} else {
+			// Approval update failed
+			error_log("Approval update failed: " . $approveStmt->error);
+		}
+		
+		return 0;
+	}
+
+	function decline_counselor_request(){
+		extract($_POST);
+		
+		// Prepare statements to avoid SQL injection
+		$approveStmt = $this->db->prepare("UPDATE events SET isDirectorApproved='No' WHERE id=?");
+		$approveStmt->bind_param("i" ,$id);
+		
+		$sql = "SELECT e.student_id, u.name AS counselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
+		$resultStmt = $this->db->prepare($sql);
+		$resultStmt->bind_param("i", $id);
+		
+		// Execute the approve statement
+		if ($approveStmt->execute()) {
+			$resultStmt->execute();
+			$result = $resultStmt->get_result();
+			
+			if ($result->num_rows > 0) {
+				$row = $result->fetch_assoc();
+				$counselor = $row['counselor'];
+				$poster_id = $row['student_id'];
+				
+				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
+				$message = "Your request for ". $counselor . " as your assigned counselor has been declined";
+				$type = 15;
+				
+				$notifStmt->bind_param("iii", $poster_id, $type, $id);
+				
+				if ($notifStmt->execute()) {
+					return 1;
+					
+				} else {
+					// Notification insert failed
+					error_log("Notification insert failed: " . $notifStmt->error);
+				}
+			} else {
+				// No rows found for the topic
+				error_log("No topic found with ID: " . $id);
+			}
+		} else {
+			// Approval update failed
+			error_log("Approval update failed: " . $approveStmt->error);
+		}
+		
+		return 0;
 	}
 
 	function search() {

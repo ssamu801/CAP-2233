@@ -367,7 +367,55 @@
             </div>
         </div>
     <?php    
-    } 
+    }
+    else if($type == 14){
+        $sql = "SELECT counselor_name
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your request for your preferred counselor, <?php echo htmlspecialchars($row['counselor_name']); ?>, has been approved.</p>
+            </div>
+        </div>
+    <?php    
+    }
+    else if($type == 15){
+        $sql = "SELECT counselor_name
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your request for your preferred counselor, <?php echo htmlspecialchars($row['counselor_name']); ?>, has been declined.</p>
+            </div>
+        </div>
+    <?php    
+    }   
 ?>
 
 

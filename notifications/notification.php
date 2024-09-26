@@ -130,6 +130,10 @@
                                 return "New post from category followed";   
                             case 13:
                                 return "Appointment Cancelled"; 
+                            case 14:
+                                return "Request for Preferred Counselor Approved";
+                            case 15:
+                                return "Request for Preferred Counselor Declined";            
                             default:
                                 return "Notification";
                         }

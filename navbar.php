@@ -176,6 +176,9 @@
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion3">
                             <div>
                                 <ul class="nav">   
+                                <?php if($_SESSION['login_type'] == 1): ?>
+                                <li class="dditem"><a class="dropdown-item dditem-link" href="index.php?page=appointments/counselor_approval"><i class="fs-5 bi-file-earmark-check"></i> Counselor Requests</a></li>
+                                <?php endif; ?>
                                 <?php if($_SESSION['login_type'] == 5): ?>
                                 <li class="dditem1"><a class="dropdown-item dditem-link" href="index.php?page=appointments/eventmaker"><i class="fs-5 bi-clipboard-plus"></i> Add Appointment Request</a></li>
                                 <?php endif; ?>
