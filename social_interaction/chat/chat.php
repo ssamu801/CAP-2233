@@ -1,5 +1,4 @@
 <?php 
-  session_start();
   include_once "php/config.php";
   if(!isset($_SESSION['login_id'])){
     header("location: login.php");
@@ -19,7 +18,7 @@
             header("location: users.php");
           }
         ?>
-        <a href="/index.php?page=social_interaction/chat/users" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+        <a href="index.php?page=social_interaction/chat/users" class="back-icon"><i class="fas fa-arrow-left"></i></a>
         <div class="details">
           <span><?php echo $row['name'] ?></span>
           <p><?php echo $row['status']; ?></p>
