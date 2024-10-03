@@ -10,7 +10,7 @@ if(  $_SESSION['login_type'] != 1){
 
 $requests = $conn->query("SELECT * FROM events 
                             WHERE isPreferred = 'Yes'
-                            AND status='Scheduled'
+                            AND status='Pending'
                             AND isDirectorApproved='Pending';");
 ?>
 <div class="container-fluid">
@@ -164,11 +164,19 @@ function approve_request(id){
         method: 'POST',
         data: { id: id },
         success: function(resp){
-            if(resp == 1){
-                alert_toast("Request approved", 'success');
-                setTimeout(function(){
-                    location.reload();
-                }, 1500);
+            var response = JSON.parse(resp);
+            
+            if (response.id == -1) {
+                alert_toast("Request submitted.", 'success');
+                setTimeout(function() {
+                    window.location.href = 'index.php?page=appointments/add_loc_online&resp=' + encodeURIComponent(response.tempid);
+                }, 1000);
+            } else {
+                alert_toast("Request submitted.", 'success');
+                setTimeout(function() {
+                    console.log(response.id);
+                    window.location.href = 'index.php?page=appointments/add_loc_f2f&resp=' + encodeURIComponent(response.id);
+                }, 1000);
             }
         }
     });

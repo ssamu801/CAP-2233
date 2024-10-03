@@ -302,10 +302,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                     ?>
                                                 </td>
                                                 <td class="text-center"><?php 
-                                                                            if(!empty($row['location']) || $row['status'] == 'Cancelled'){
-                                                                                echo $row['location']; 
-                                                                            } else {
+                                                                            if($row['location'] == 'To be provided'){
                                                                                 ?><button id="ACCEPTBTN" class="btn btn-success text-white accept-btn" name="action" id="accept" data-id="<?php echo $row['id'] ?>">Add Link</button><?php
+                                                                            } else {
+                                                                                echo $row['location']; 
                                                                             }
                                                                             
                                                                         ?>
@@ -338,7 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reschedule'])) {
                                                     <?php if ($row['status'] == 'Completed'): ?>
                                                     <?php echo "Completed"; ?>
                                                     <?php elseif ($row['status'] == 'Scheduled'): ?>
-                                                        <input type="submit" class="btn btn-danger text-white" id="cancel" name="action" value="Cancel" data-id="<?php echo $row['id'] ?>"></input>
+                                                        <button class="btn btn-danger text-white cancel-btn" name="action" value="Cancel" data-id="<?php echo $row['id'] ?>">Cancel</button>
                                                         <button id="RESCHEDBTN" class="btn btn-warning reschedule-btn" name="action" id="reschedule" data-id="<?php echo $row['id'] ?>">Reschedule</button>
                                                         <input type="hidden" id="appointment_id" name="appointment_id" value="<?php echo $row['id'] ?>">
                                                     <?php else: ?>  
@@ -374,6 +374,14 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             var appointmentId = event.target.getAttribute('data-id');
             uni_modal2("Accept Appointment Request", "appointments/pending_modal.php?id=" + appointmentId, 'mid-large');
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('cancel-btn')) {
+            event.preventDefault();
+            var appointmentId = event.target.getAttribute('data-id');
+            uni_modal2("Cancel Appointment", "appointments/cancel_modal.php?id=" + appointmentId, 'mid-large');
         }
     });
 

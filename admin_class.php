@@ -744,6 +744,7 @@ Class Action {
 
 		$stud_id = $student_id;
 		$coun_id = 0;
+		$av_status = 'Scheduled';
 
 		$data = " title = '$title' ";
 		$data .= ", description = '$description' ";
@@ -756,11 +757,20 @@ Class Action {
 		$endTime = date('H:i:s', strtotime($timeRange[1]));
 
 		$data .= ", mode = '$mode' "; 
+		if (empty($counselor)) {
+			$data .= ", location = 'To be provided' "; 
+		}
 		$data .= ", date = '$datePart' ";
 		$data .= ", time_from = '$startTime' ";
 		$data .= ", time_to = '$endTime' ";
 		$data .= ", user_name = '$user_name' ";
 		$data .= ", user_email = '$user_email' ";
+
+		if (!empty($counselor)) {
+			$data .= ", status = 'Pending' ";
+			$av_status = 'Reserved';
+		}
+
 		$data .= ", student_id = '$student_id' ";
 
 		
@@ -811,13 +821,53 @@ Class Action {
 		if(isset($_SESSION['isCounselor'])){
 			$data .= ", isFirst = 'No' ";
 		}
-		
+
 		$appointment = $this->db->query("INSERT INTO events set ".$data);
 
-		$update_avail_status = $this->update_avail_status($mode, $datePart, $startTime, $endTime, $coun_id);
+		$update_avail_status = $this->update_avail_status($mode, $datePart, $startTime, $endTime, $coun_id, $av_status);
 
 		if($appointment && $update_avail_status){
 
+			$id = 0;
+			$sql = "SELECT MAX(id) AS max_value FROM events";
+			$result =$this->db->query($sql);
+
+			if ($result->num_rows > 0) {	
+				$row = $result->fetch_assoc();
+				$id = $row["max_value"];
+			}
+
+			if (!empty($counselor)) {
+				// notif that counselor request is pending
+				$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($stud_id, 16, $id)");
+				if($event_notif){
+					echo json_encode(['status' => 'success', 'id' => -2, 'tempid' => $id]);
+					exit();
+
+				}
+			}
+			else{ // no preferred counselor
+				
+				$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($stud_id, 6, $id)");
+
+				if($event_notif){
+					if($mode == 'Face-To-Face'){
+						echo json_encode(['status' => 'success', 'id' => $id]);
+						exit();
+					}
+					else{
+						$content_stmt = $user_name . ' booked an appointment';
+						$coun_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id, content) VALUES ($coun_id, 11, $id, '$content_stmt')");
+						if($coun_notif){
+							$_SESSION['tempid'] = $id;
+							echo json_encode(['status' => 'success', 'id' => -3, 'tempid' => $_SESSION['tempid']]);
+							exit();
+						}
+					}
+				}
+			}
+
+			/*
 			$id = 0;
 			$sql = "SELECT MAX(id) AS max_value FROM events";
 			$result =$this->db->query($sql);
@@ -831,21 +881,27 @@ Class Action {
 
 					
 				if($event_notif){
-					if($mode == 'Face-To-Face'){
-						echo json_encode(['status' => 'success', 'id' => $id]);
-            			exit();
+					if (!empty($counselor)) {
+						echo json_encode(['status' => 'success', 'id' => -2, 'tempid' => $id]);
+						exit();
 					}
 					else{
-						$content_stmt = $user_name . ' booked an appointment';
-						$coun_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id, content) VALUES ($coun_id, 11, $id, '$content_stmt')");
-						if($coun_notif){
-							$_SESSION['tempid'] = $id;
-							echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
+						if($mode == 'Face-To-Face'){
+							echo json_encode(['status' => 'success', 'id' => $id]);
 							exit();
+						}
+						else{
+							$content_stmt = $user_name . ' booked an appointment';
+							$coun_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id, content) VALUES ($coun_id, 11, $id, '$content_stmt')");
+							if($coun_notif){
+								$_SESSION['tempid'] = $id;
+								echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
+								exit();
+							}
 						}
 					}
 				
-				}
+				} */
 		}
 		
 	}
@@ -939,7 +995,7 @@ Class Action {
 
 	}
 	
-	function update_avail_status($mode, $date, $startTime, $endTime, $coun_id){
+	function update_avail_status($mode, $date, $startTime, $endTime, $coun_id, $av_status){
 		$id = 0;
 		$sql = "SELECT id 
 				FROM availability 
@@ -958,7 +1014,7 @@ Class Action {
 		} 		
 
 
-		$update = $this->db->query("UPDATE availability SET status='Scheduled' WHERE id = $id");
+		$update = $this->db->query("UPDATE availability SET status='$av_status' WHERE id = $id");
 
 		if ($update) {
 			return 1;
@@ -969,10 +1025,10 @@ Class Action {
 		extract($_POST);
 		
 		// Prepare statements to avoid SQL injection
-		$approveStmt = $this->db->prepare("UPDATE events SET isDirectorApproved='Yes' WHERE id=?");
+		$approveStmt = $this->db->prepare("UPDATE events SET status='Scheduled', isDirectorApproved='Yes' WHERE id=?");
 		$approveStmt->bind_param("i" ,$id);
 		
-		$sql = "SELECT e.student_id, u.name AS counselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
+		$sql = "SELECT e.student_id, e.user_name, u.name, e.mode, e.date, e.time_from, e.time_to, e.preferredCounselor AS counselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
 		$resultStmt = $this->db->prepare($sql);
 		$resultStmt->bind_param("i", $id);
 		
@@ -984,21 +1040,49 @@ Class Action {
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
 				$counselor = $row['counselor'];
+				$user_name = $row['user_name'];
 				$poster_id = $row['student_id'];
+				$mode = $row['mode'];
+				$date = $row['date'];
+				$startTime = $row['time_from'];
+				$endTime = $row['time_to'];
+				$av_status = 'Scheduled';
+
+				$update_avail_status = $this->update_avail_status($mode, $date, $startTime, $endTime, $counselor, $av_status);
 				
-				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
-				$message = "Your request for ". $counselor . " as your assigned counselor has been approved";
-				$type = 14;
-				
-				$notifStmt->bind_param("iii", $poster_id, $type, $id);
-				
-				if ($notifStmt->execute()) {
-					return 1;
+				if($update_avail_status){
+					$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
+					$message = "Your request for ". $counselor . " as your assigned counselor has been approved";
+					$type = 14;
 					
-				} else {
-					// Notification insert failed
-					error_log("Notification insert failed: " . $notifStmt->error);
+					$notifStmt->bind_param("iii", $poster_id, $type, $id);
+					
+					if ($notifStmt->execute()) {
+						// code for notifs sa student
+						$event_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id) VALUES ($poster_id, 6, $id)");
+
+						if($event_notif){
+							if($mode == 'Face-To-Face'){
+								echo json_encode(['status' => 'success', 'id' => $id]);
+								exit();
+							}
+							else{
+								$content_stmt = $user_name . ' booked an appointment';
+								$coun_notif = $this->db->query("INSERT INTO notifications (posterID, type, event_id, content) VALUES ($counselor, 11, $id, '$content_stmt')");
+								if($coun_notif){
+									$_SESSION['tempid'] = $id;
+									echo json_encode(['status' => 'success', 'id' => -1, 'tempid' => $_SESSION['tempid']]);
+									exit();
+								}
+							}
+						}
+
+					} else {
+						// Notification insert failed
+						error_log("Notification insert failed: " . $notifStmt->error);
+					}
 				}
+				
 			} else {
 				// No rows found for the topic
 				error_log("No topic found with ID: " . $id);
@@ -1015,10 +1099,10 @@ Class Action {
 		extract($_POST);
 		
 		// Prepare statements to avoid SQL injection
-		$approveStmt = $this->db->prepare("UPDATE events SET isDirectorApproved='No' WHERE id=?");
+		$approveStmt = $this->db->prepare("UPDATE events SET status='Rejected', isDirectorApproved='No' WHERE id=?");
 		$approveStmt->bind_param("i" ,$id);
 		
-		$sql = "SELECT e.student_id, u.name AS counselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
+		$sql = "SELECT e.student_id, u.name AS counselor, e.mode, e.date, e.time_from, e.time_to, e.preferredCounselor FROM events e JOIN users u ON e.preferredCounselor=u.id WHERE e.id=? LIMIT 1";
 		$resultStmt = $this->db->prepare($sql);
 		$resultStmt->bind_param("i", $id);
 		
@@ -1031,20 +1115,31 @@ Class Action {
 				$row = $result->fetch_assoc();
 				$counselor = $row['counselor'];
 				$poster_id = $row['student_id'];
-				
-				$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
-				$message = "Your request for ". $counselor . " as your assigned counselor has been declined";
-				$type = 15;
-				
-				$notifStmt->bind_param("iii", $poster_id, $type, $id);
-				
-				if ($notifStmt->execute()) {
-					return 1;
+				$mode = $row['mode'];
+				$date = $row['date'];
+				$startTime = $row['time_from'];
+				$endTime = $row['time_to'];
+				$counselorID = $row['preferredCounselor'];
+				$av_status = 'Available';
+
+				$update_avail_status = $this->update_avail_status($mode, $date, $startTime, $endTime, $counselorID, $av_status);
+
+				if($update_avail_status){
+					$notifStmt = $this->db->prepare("INSERT INTO notifications (posterID, time, type, event_id) VALUES (?, NOW(), ?, ?)");
+					$message = "Your request for ". $counselor . " as your assigned counselor has been declined";
+					$type = 15;
 					
-				} else {
-					// Notification insert failed
-					error_log("Notification insert failed: " . $notifStmt->error);
+					$notifStmt->bind_param("iii", $poster_id, $type, $id);
+					
+					if ($notifStmt->execute()) {
+						return 1;
+						
+					} else {
+						// Notification insert failed
+						error_log("Notification insert failed: " . $notifStmt->error);
+					}
 				}
+				
 			} else {
 				// No rows found for the topic
 				error_log("No topic found with ID: " . $id);

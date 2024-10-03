@@ -133,7 +133,9 @@
                             case 14:
                                 return "Request for Preferred Counselor Approved";
                             case 15:
-                                return "Request for Preferred Counselor Declined";            
+                                return "Request for Preferred Counselor Declined";   
+                            case 16:
+                                return "Appointment Submission Pending";             
                             default:
                                 return "Notification";
                         }

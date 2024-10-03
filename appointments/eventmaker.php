@@ -376,6 +376,16 @@ $('#addEventToDB').submit(function(e) {
             if (response.id == -1) {
                 alert_toast("Request submitted.", 'success');
                 setTimeout(function() {
+                    window.location.href = 'index.php?page=appointments/add_loc_online&resp=' + encodeURIComponent(response.tempid);
+                }, 1000);
+            } else if(response.id == -2) {
+                alert_toast("Request submitted. Kindly wait for approval for requested counselor", 'success');
+                setTimeout(function() {
+                    window.location.href = './index.php?page=home'
+                }, 1000);
+            } else if(response.id == -3) {
+                alert_toast("Request submitted. Kindly wait for Zoom link to be provided by the counselor.", 'success');
+                setTimeout(function() {
                     window.location.href = './index.php?page=home'
                 }, 1000);
             } else {

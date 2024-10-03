@@ -90,10 +90,9 @@ if(isset($_POST['Accept'])){
         $insert = $stmt->execute();
 
         // Insert data into the database 
-        $sqlQ = "UPDATE events SET location=?, counselor_name=?, counselor_email=?, status=? WHERE id=?";
+        $sqlQ = "UPDATE events SET location=?, counselor_name=?, counselor_email=? WHERE id=?";
         $stmt = $conn->prepare($sqlQ);
-        $stmt->bind_param("ssssi", $location, $counselor_name, $counselor_email, $db_status, $db_userID);
-        $db_status = "Scheduled";
+        $stmt->bind_param("sssi", $location, $counselor_name, $counselor_email, $db_userID);
         $db_userID = $userID;
         $insert = $stmt->execute();
         if($insert){ 

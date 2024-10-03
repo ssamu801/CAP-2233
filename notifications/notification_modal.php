@@ -152,7 +152,7 @@
                     <li><strong>Date:</strong> <?php echo $formattedDate; ?></li>
                     <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
                     <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
-                    <?php if(!empty($row['location'])):?>
+                    <?php if($row['location'] == "OCCS Office"):?>
                     <li><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></li>
                     <?php else:?>
                     <li><strong>Location:</strong> Zoom link for session will be provided by the counselor.</li>
@@ -415,7 +415,46 @@
             </div>
         </div>
     <?php    
-    }   
+    }
+    else if($type == 16){
+        $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
+                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       preferredCounselor, counselor_name, counselor_email, status, 
+                       counselor_id
+                FROM events e
+                WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $event_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+
+        $date = $row['date'];
+        $dateTime = new DateTime($date);
+        $formattedDate = $dateTime->format('F j, Y');
+
+        $time_from = DateTime::createFromFormat('H:i:s', $row['time_from']);
+        $time_to = DateTime::createFromFormat('H:i:s', $row['time_to']); ?>
+
+        <div class="email-desc-wrapper">
+            <div class="email-body">
+                <p>Your appointment and request for preferred counselor is currently pending. Here are the details of your pending appointment:</p>
+                <ul>
+                    <li><strong>Preferred Counselor Name:</strong> <?php echo htmlspecialchars($row['counselor_name']); ?> </li>
+                    <li><strong>Date:</strong> <?php echo $formattedDate; ?></li>
+                    <li><strong>Mode:</strong> <?php echo htmlspecialchars($row['mode']); ?></li>
+                    <li><strong>Time:</strong> <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?></li>
+                    <?php if($row['location'] == "OCCS Office"):?>
+                    <li><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></li>
+                    <?php else:?>
+                    <li><strong>Location:</strong> Zoom link for session will be provided by the counselor after request has been approved.</li>
+                    <?php endif;?>
+                </ul>
+                <p>Thank you for choosing our services. We look forward to seeing you.</p>
+            </div>
+        </div>
+    <?php } 
 ?>
 
 
