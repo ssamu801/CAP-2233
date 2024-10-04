@@ -19,7 +19,16 @@
           
           <div class="details">
             <span><?php echo $row['name'] ?></span>
-            <p><?php echo $_SESSION['login_id'] ?></p>
+            <p>
+              <?php 
+                if($row['type'] == 6)
+                  echo 'Volunteer';
+                elseif($row['type'] == 3)
+                  echo 'Counselor';
+                else
+                  echo 'Student';
+              ?>
+            </p>
           </div>
         </div>
       </header>

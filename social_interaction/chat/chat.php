@@ -35,7 +35,7 @@
     </section>
   </div>
 
-  <script src="javascript/chat.js"></script>
+  <script src="social_interaction/chat/javascript/chat.js"></script>
 
 </body>
 </html>
