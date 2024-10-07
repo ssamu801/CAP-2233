@@ -4,8 +4,9 @@ include '../db_connect.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $session_id = $_POST['session_id'];
     $notes = $_POST['notes'];
+    $login_id = $_SESSION['login_id'];
 
-    $conn->query("INSERT INTO session_notes (session_id, notes) VALUES ('$session_id', '$notes') ON DUPLICATE KEY UPDATE notes='$notes'");
+    $conn->query("INSERT INTO session_notes (session_id, notes, session_date, assigned_counselor) VALUES ('$session_id', '$notes', NOW(), $login_id) ON DUPLICATE KEY UPDATE notes='$notes'");
 
     // Redirect back to client_records.php after saving
     header("Location: ../index.php?page=appointments/client_records");
@@ -22,8 +23,8 @@ $notes = $notes_result->num_rows > 0 ? $notes_result->fetch_assoc()['notes'] : '
     <form action="appointments/session_notes.php?id=<?php echo $session_id ?>" method="POST">
         <input type="hidden" name="session_id" value="<?php echo $session_id ?>">
         <div class="form-group">
-            <label for="date">Student:</label>
-            <input type="text" id="date" class="form-control" value="<?php echo $session['user_name'] ?>" readonly>
+            <label for="student">Student:</label>
+            <input type="text" id="student" class="form-control" value="<?php echo $session['user_name'] ?>" readonly>
         </div>
         <div class="form-group">
             <label for="date">Date:</label>
@@ -42,9 +43,14 @@ $notes = $notes_result->num_rows > 0 ? $notes_result->fetch_assoc()['notes'] : '
             <textarea id="notes" name="notes" class="form-control"><?php echo $notes ?></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Save Notes</button>
+        <button type="button" class="btn btn-secondary" id="backButton">Back</button> <!-- Back button -->
     </form>
 </div>
 
 <script>
-$('table').dataTable();
+$(document).ready(function() {
+    $('#backButton').on('click', function() {
+        $('#dateModal').modal('hide'); // Hide the modal
+    });
+});
 </script>

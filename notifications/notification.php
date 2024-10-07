@@ -163,7 +163,7 @@
                             </div>
                             <span class="ml-auto mb-auto">
                                 <br />
-                                <div class="text-right text-muted pt-1"><?php echo daysFromCurrentDate($row['time']) ?>d</div>
+                                <div class="text-right text-muted pt-1"><?php  echo date("F j, Y", strtotime($row['time'])) ?></div>
                             </span>
                         </div>
 

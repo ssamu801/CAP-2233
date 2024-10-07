@@ -28,6 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update_stmt->execute();
         $update_stmt->close();
 
+        // Prepare the update statement for the assigned_counselors table
+        $update_stmt1 = $conn->prepare("UPDATE events SET counselor_id = ?, counselor_name = ? WHERE student_id = ?");
+        $update_stmt1->bind_param("isi", $new_counselor_id, $new_counselor_name, $client_id);
+        $update_stmt1->execute();
+        $update_stmt1->close();
+
         // Mark the request as approved
         $stmt = $conn->prepare("UPDATE change_requests SET approved = 'Approved' WHERE id = ?");
     } else if ($action === 'decline') {

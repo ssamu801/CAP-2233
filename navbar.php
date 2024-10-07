@@ -111,8 +111,57 @@
             color: #ffffff; /* Color for icons */
         }
 
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar-links a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .notification-badge {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 6px;
+            font-size: 12px;
+            position: relative;
+            top: -10px;
+            left: -6px;
+        }
+
 
     </style>
+
+<?php
+    // Start session and connect to your database
+    include 'db_connect.php';  // Include your database connection
+
+    // Assuming you have a session to track the logged-in user
+    $userID = $_SESSION['login_id'];
+
+    // Query to count unread notifications
+    $sql = "SELECT COUNT(*) as unread_count FROM notifications WHERE posterID=? AND is_read=0";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $unreadCount = 0;
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $unreadCount = $row['unread_count'];
+    }
+?>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
 
 <div class="container-fluid overflow-hidden">
     <div class="row overflow-auto">
@@ -127,8 +176,11 @@
                     </li>
                     <?php if($_SESSION['login_type'] != 4): ?>
                     <li class="submenu">
-                        <a href="index.php?page=notifications/notification" class="nav-link px-sm-3 px-2">
-                            <i class="fs-5 bi-bell"></i><span class="ms-1 d-none d-sm-inline"> Notifications</span>
+                        <a href="index.php?page=notifications/notification" class="nav-link px-sm-3 px-2" id="notificationLink">
+                             <i class="fas fa-bell"></i> Notifications
+                            <?php if ($unreadCount > 0): ?>
+                                <span class="notification-badge"><?php echo $unreadCount; ?></span>
+                            <?php endif; ?>
                         </a>
                     </li>
                     <?php endif; ?>

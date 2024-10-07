@@ -44,7 +44,12 @@ $login_id = $_SESSION['login_id'];
  					                include './db_connect.php';
 									$counselor_email = $_SESSION['login_email'];
  					                $type = array("","Admin","Staff","Subscriber");
- 					                $users = $conn->query("SELECT u.id, u.name, u.email FROM users u JOIN events e ON u.email=e.user_email WHERE e.counselor_id = $login_id GROUP BY u.id ORDER BY u.name ASC");
+ 					                $users = $conn->query("SELECT u.id, u.name, u.email 
+															FROM users u 
+															JOIN assigned_counselors ac ON u.id = ac.client_id
+															WHERE ac.counselor_id = $login_id 
+															GROUP BY u.id 
+															ORDER BY u.name DESC");
  					                $i = 1;
  					                while($row= $users->fetch_assoc()):
 				                ?>
@@ -71,12 +76,13 @@ $login_id = $_SESSION['login_id'];
     </div>
 </div>
 <script>
-
+	
 $('.client_record').click(function(){
     var dataId = $(this).attr('data-id');
     var clientName = $(this).find('td:eq(1)').text(); // Assuming the name is in the second column (index 1)
-    view_modal("Client Record: " + clientName + " (ID: " + dataId + ")", "appointments/session_records.php?id=" + dataId + "&clientName=" + clientName, 'large');	
+    view_modal("Client Record: " + clientName + " (ID: " + dataId + ")", "appointments/session_records.php?id=" + dataId + "&clientName=" + clientName + "&userId=" + dataId, 'large');	
 });
+
 $('table').dataTable();
 
 
