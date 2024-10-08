@@ -111,10 +111,6 @@
             color: #ffffff; /* Color for icons */
         }
 
-        .navbar {
-            background-color: #333;
-            overflow: hidden;
-        }
 
         .navbar-links a {
             float: left;
