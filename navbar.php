@@ -154,10 +154,6 @@
         $unreadCount = $row['unread_count'];
     }
 ?>
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
 
 <div class="container-fluid overflow-hidden">
     <div class="row overflow-auto">
@@ -173,10 +169,10 @@
                     <?php if($_SESSION['login_type'] != 4): ?>
                     <li class="submenu">
                         <a href="index.php?page=notifications/notification" class="nav-link px-sm-3 px-2" id="notificationLink">
-                             <i class="fas fa-bell"></i> Notifications
-                            <?php if ($unreadCount > 0): ?>
+                             <i class="fs-5 bi bi-bell"><?php if ($unreadCount > 0): ?>
                                 <span class="notification-badge"><?php echo $unreadCount; ?></span>
-                            <?php endif; ?>
+                            <?php endif; ?></i> Notifications
+                            
                         </a>
                     </li>
                     <?php endif; ?>
