@@ -182,7 +182,7 @@
     <?php } 
     else if($type == 7){
         $sql = "SELECT title, e.description, mode, location, date, time_from, time_to,
-                       created, e.user_name, user_email, status, student_id, isPreferred,
+                       created, e.user_name, user_email, status, cancel_reason, student_id, isPreferred,
                        preferredCounselor, counselor_name, counselor_email, status
                 FROM events e
                 WHERE id=?";
@@ -203,6 +203,7 @@
             <div class="email-body">
                 <p>Your appointment at <?php echo $formattedDate; ?>,  <?php echo $time_from->format('g:i A') . " to " . $time_to->format('g:i A'); ?> has 
                     been cancelled by <?php echo htmlspecialchars($row['counselor_name']); ?>.</p>
+                <p> Reason: <?php echo htmlspecialchars($row['cancel_reason']); ?> </p>    
             </div>
         </div>
     <?php }

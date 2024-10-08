@@ -14,7 +14,7 @@ session_start();
     <input type='hidden' id='counselor_name' name='counselor_name' value='<?php echo $_SESSION['login_name']; ?>'>
     <input type='hidden' id='counselor_id' name='counselor_id' value='<?php echo $row['counselor_id']; ?>'>
     <input type='hidden' id='student_id' name='student_id' value='<?php echo $row['student_id']; ?>'>
-    <input type='hidden' id='userID' name='userID' value='<?php echo $row['id']; ?>'>
+    <input type='hidden' id='event_id' name='event_id' value='<?php echo $row['id']; ?>'>
     <input type='hidden' value='<?php echo $row['user_email']; ?>' name='user_email'>
     <input type='hidden' value='<?php echo $row['user_name']; ?>' name='user_name'>
     <input type='hidden' value='<?php echo $row['title']; ?>' name='title'>
@@ -25,7 +25,7 @@ session_start();
     <input type="hidden" name="posterID" value="<?php echo $login_id?>">
 
     <label>Enter reason for cancelling:</label>
-    <input type="text" name="location" class="form-control" required>
+    <input type="text" name="reason" class="form-control" required>
     <br>
     <span class="float-right mr-1">
         <input class="btn btn-danger ml-2 text-white" type='submit' name='Cancel' value='Cancel'/>

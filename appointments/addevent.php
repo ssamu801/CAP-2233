@@ -118,6 +118,7 @@ if(isset($_POST['Accept'])){
 }else if(isset($_POST['Reschedule'])){ 
     $_SESSION['postData'] = $_POST; 
     $userID = !empty($_POST['userID'])?trim($_POST['userID']):''; 
+    $student_id = !empty($_POST['student_id'])?trim($_POST['student_id']):'';
  
     $sqlQ = "UPDATE events SET status=? WHERE id =?;"; 
     $stmt = $conn->prepare($sqlQ); 
@@ -166,7 +167,7 @@ if(isset($_POST['Accept'])){
     }
 
     error_log($posterID);
-    if($posterID){
+    
         $sql1 = "INSERT INTO notifications (posterID, type, event_id) VALUES (?, ?, ?)";
             $stmt = $conn->prepare($sql1);
         
@@ -177,7 +178,7 @@ if(isset($_POST['Accept'])){
             $type = 8; // Use a variable for the literal value
         
             // Bind parameters
-            if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+            if (!$stmt->bind_param("iii", $student_id, $type, $userID)) {
                 die('Bind param failed: ' . htmlspecialchars($stmt->error));
             }
         
@@ -186,7 +187,6 @@ if(isset($_POST['Accept'])){
         
             // Close statement
             $stmt->close();
-    }
 
     $sqlQ = "INSERT INTO event_notifications (id, description, user_email, counselor_name, time, event_start, location, event_end, event_date, event_status, user_name) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sqlQ);
@@ -238,14 +238,16 @@ if(isset($_POST['Accept'])){
 
 } else { 
     // $appointment_id = !empty($_POST['appointment_id']) ? trim($_POST['appointment_id']) : ''; 
-    $userID = !empty($_POST['userID']) ? trim($_POST['userID']) : ''; 
+    $event_id = !empty($_POST['event_id']) ? trim($_POST['event_id']) : ''; 
     $cancel_type = !empty($_POST['cancel_type']) ? trim($_POST['cancel_type']) : ''; 
     $posterID= !empty($_POST['posterID']) ? trim($_POST['posterID']) : '';
+    $reason= !empty($_POST['reason']) ? trim($_POST['reason']) : '';
+    $student_id = !empty($_POST['student_id']) ? trim($_POST['student_id']) : ''; 
     
     // Fetch the user email associated with the appointment
     $sqlFetchEmail = "SELECT user_email FROM events WHERE id=?";
     $stmtFetchEmail = $conn->prepare($sqlFetchEmail);
-    $stmtFetchEmail->bind_param("i", $userID );
+    $stmtFetchEmail->bind_param("i", $event_id );
     $stmtFetchEmail->execute();
     $resultFetchEmail = $stmtFetchEmail->get_result();
     
@@ -274,7 +276,7 @@ if(isset($_POST['Accept'])){
             $type = 7; // Use a variable for the literal value
         
             // Bind parameters
-            if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+            if (!$stmt->bind_param("iii", $student_id, $type, $event_id)) {
                 die('Bind param failed: ' . htmlspecialchars($stmt->error));
             }
         
@@ -295,7 +297,7 @@ if(isset($_POST['Accept'])){
         $type = 13; // Use a variable for the literal value
     
         // Bind parameters
-        if (!$stmt->bind_param("iii", $posterID, $type, $userID)) {
+        if (!$stmt->bind_param("iii", $posterID, $type, $event_id)) {
             die('Bind param failed: ' . htmlspecialchars($stmt->error));
         }
     
@@ -307,12 +309,24 @@ if(isset($_POST['Accept'])){
     }
 
     // Handle cancellation logic
-    $sqlQ2 = "UPDATE events SET status=? WHERE id=?";
-    $stmt = $conn->prepare($sqlQ2);
-    $stmt->bind_param("si", $db_status, $db_userID);
-    $db_status = "Cancelled";
-    $db_userID = $userID;
-    $insert3 = $stmt->execute();
+
+    if($cancel_type == 'counselor'){
+        $sqlQ2 = "UPDATE events SET status=?, cancel_reason=? WHERE id=?";
+        $stmt = $conn->prepare($sqlQ2);
+        $stmt->bind_param("ssi", $db_status, $reason, $db_userID);
+        $db_status = "Cancelled";
+        $db_userID = $event_id;
+        $insert3 = $stmt->execute();
+    } 
+    else{
+        $sqlQ2 = "UPDATE events SET status=? WHERE id=?";
+        $stmt = $conn->prepare($sqlQ2);
+        $stmt->bind_param("si", $db_status, $db_userID);
+        $db_status = "Cancelled";
+        $db_userID = $event_id;
+        $insert3 = $stmt->execute();
+    }
+    
 
     /*
     $mail = new PHPMailer(true);
