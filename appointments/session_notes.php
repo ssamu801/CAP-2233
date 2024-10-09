@@ -42,6 +42,22 @@ $notes = $notes_result->num_rows > 0 ? $notes_result->fetch_assoc()['notes'] : '
             <label for="notes">Session Notes:</label>
             <textarea id="notes" name="notes" class="form-control"><?php echo $notes ?></textarea>
         </div>
+        <?php
+        // Fetch the student's assessment for this session
+        $assessment_result = $conn->query("SELECT mood, progress FROM student_assessments WHERE session_id = $session_id");
+        $assessment = $assessment_result->num_rows > 0 ? $assessment_result->fetch_assoc() : null;
+        ?>
+
+        <div class="form-group">
+            <label for="assessment">Student Assessment:</label>
+            <?php if ($assessment): ?>
+                <p>Mood: <?php echo $assessment['mood']; ?>/5</p>
+                <p>Progress: <?php echo $assessment['progress']; ?>/5</p>
+            <?php else: ?>
+                <p>No assessment available yet.</p>
+            <?php endif; ?>
+        </div>
+
         <button type="submit" class="btn btn-primary">Save Notes</button>
         <button type="button" class="btn btn-secondary" id="backButton">Back</button> <!-- Back button -->
     </form>
